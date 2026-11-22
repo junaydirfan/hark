@@ -87,9 +87,13 @@ author, image and `itunes:new-feed-url`. Items with no audio are skipped.
 
 ## Phases
 
-1. **It plays.** Streaming source; add a feed by URL or import OPML; refresh; episode list (TUI);
-   play / pause / seek / skip / speed / volume; resume positions; mark played; cache-first
-   start. *Done when:* you can add your shows, quit mid-episode and resume exactly there.
+1. **It plays. (done, 2026-11-22)** Streaming; add a feed by URL or import OPML; refresh (conditional
+   GET, plus same-ETag skip for servers that ignore it); episode list (TUI); play / pause / seek /
+   skip / speed / volume; resume positions; mark played; unsubscribe; cache-first start.
+   Measured with 3 shows / 3,904 episodes: 11 MB idle, 16 MB streaming, ~2% CPU playing, 0 paused.
+   Lessons: keep show notes out of memory until shown; copy parsed episodes onto the main thread
+   (the parse thread's arena can then be trimmed); pin `M_MMAP_THRESHOLD`; close the audio output
+   while paused (cpal's PulseAudio thread keeps waking otherwise).
 2. **Daily driver.** Inbox, In progress and Queue (auto-continue); directory search (Apple's
    iTunes Search API needs no key and is contacted only when you search); show notes; art;
    MPRIS + media keys; mouse; background refresh; OPML export.

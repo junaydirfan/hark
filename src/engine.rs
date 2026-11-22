@@ -102,8 +102,10 @@ struct Pending {
 struct Player {
     shared: Arc<Shared>,
     events: UnboundedSender<Event>,
-    /// The output stream and the (rate, channels) it was opened for.
-    out: Option<(cpal::Stream, u32, u16)>,
+    /// The output, closed while paused or idle: an open one keeps its client thread waking.
+    stream: Option<cpal::Stream>,
+    /// (rate, channels) of the current track.
+    fmt: Option<(u32, u16)>,
     track: Option<Track>,
     sonic: Option<SonicStream>,
     paused: bool,
@@ -119,7 +121,7 @@ struct Player {
 
 impl Player {
     fn new(shared: Arc<Shared>, events: UnboundedSender<Event>, client: reqwest::Client, rt: tokio::runtime::Handle) -> Self {
-        Player { shared, events, out: None, track: None, sonic: None, paused: false, speed: 1.0, volume: 1.0, last_sec: -1, buf: Vec::new(), client, rt, pending: None, buffering: false }
+        Player { shared, events, stream: None, fmt: None, track: None, sonic: None, paused: false, speed: 1.0, volume: 1.0, last_sec: -1, buf: Vec::new(), client, rt, pending: None, buffering: false }
     }
 
     fn emit(&self, e: Event) {
@@ -161,8 +163,13 @@ impl Player {
             Cmd::Load { src, at_s } => self.load(src, at_s),
             Cmd::Pause(p) => {
                 self.paused = p;
-                if let Some((s, ..)) = &self.out {
-                    let _ = if p { s.pause() } else { s.play() };
+                if p {
+                    self.stream = None; // what's queued stays in the ring and plays on resume
+                } else if let (None, Some((rate, ch)), Some(_)) = (&self.stream, self.fmt, &self.track) {
+                    match self.open_output(rate, ch).and_then(|s| s.play().map(|_| s).map_err(|e| e.to_string())) {
+                        Ok(s) => self.stream = Some(s),
+                        Err(e) => self.emit(Event::Error(e)),
+                    }
                 }
             }
             Cmd::Seek(s) => self.seek(s),
@@ -229,16 +236,17 @@ impl Player {
             (Some(tb), Some(n)) => tb.calc_time_saturating(symphonia::core::units::Timestamp::new(n as i64)).as_secs_f64(),
             _ => 0.0,
         };
-        if self.out.as_ref().is_none_or(|(_, r, c)| (*r, *c) != (rate, channels)) {
-            self.out = None; // close the old stream before opening one for the new format
-            self.out = Some((self.open_output(rate, channels)?, rate, channels));
+        if self.stream.is_none() || self.fmt != Some((rate, channels)) {
+            self.stream = None; // close the old stream before opening one for the new format
+            self.stream = Some(self.open_output(rate, channels)?);
+            self.fmt = Some((rate, channels));
         }
         self.track = Some(Track { format, decoder, id, tb, decoded_s: 0.0, eof: false, net });
         self.buffering = false;
         self.emit(Event::Loaded { duration_s });
         self.paused = false;
         self.seek(at_s);
-        if let Some((s, ..)) = &self.out {
+        if let Some(s) = &self.stream {
             s.play().map_err(|e| e.to_string())?;
         }
         Ok(())
@@ -279,7 +287,7 @@ impl Player {
     }
 
     fn new_sonic(&mut self) {
-        let Some((_, rate, ch)) = &self.out else { return };
+        let Some((rate, ch)) = &self.fmt else { return };
         self.sonic = SonicStream::new(*rate, *ch as u32).ok().map(|mut s| {
             s.set_speed(self.speed);
             s.set_volume(self.volume);
@@ -311,7 +319,7 @@ impl Player {
 
     /// Where the listener is: what has been decoded, minus what still waits in the output buffer.
     fn position(&self) -> f64 {
-        let (Some(t), Some((_, rate, ch))) = (&self.track, &self.out) else { return 0.0 };
+        let (Some(t), Some((rate, ch))) = (&self.track, &self.fmt) else { return 0.0 };
         let queued_frames = self.shared.ring.lock().unwrap().len() as f64 / *ch as f64;
         (t.decoded_s - queued_frames / *rate as f64 * self.speed as f64).max(0.0)
     }
@@ -326,7 +334,7 @@ impl Player {
 
     /// Decode until half a second is queued (or the file ends).
     fn fill(&mut self) {
-        let Some((_, rate, ch)) = &self.out else { return };
+        let Some((rate, ch)) = &self.fmt else { return };
         let cap = (*rate as f64 * *ch as f64 * AHEAD_S) as usize;
         loop {
             if self.shared.ring.lock().unwrap().len() >= cap {
@@ -353,6 +361,7 @@ impl Player {
             if t.eof {
                 if self.shared.ring.lock().unwrap().is_empty() {
                     self.track = None;
+                    self.stream = None;
                     self.emit(Event::Ended);
                     return;
                 }
