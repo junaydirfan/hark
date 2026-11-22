@@ -9,14 +9,17 @@ use std::{
 
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers, MouseButton, MouseEvent, MouseEventKind};
 use ratatui::{
-    layout::{Position, Rect},
+    layout::{Position, Rect, Size},
     widgets::{ListState, TableState},
 };
+use ratatui_image::{FilterType, Resize, picker::Picker, protocol::Protocol};
 use tokio::sync::{Semaphore, mpsc::UnboundedSender};
 
 use crate::{
+    discover::{self, Card},
     engine::{Cmd, Engine, Event},
     feed::{self, Episode, Show},
+    mpris::Remote,
     store::{self, Cached, Listen, Prefs, Sub},
 };
 
@@ -24,7 +27,9 @@ use crate::{
 pub type Url = Rc<str>;
 
 /// Sidebar entries above the shows.
-pub const FIXED: [&str; 3] = ["Inbox", "In progress", "Queue"];
+pub const FIXED: [&str; 4] = ["Inbox", "In progress", "Queue", "Discover"];
+/// Shows looked at but not followed are kept this many at a time.
+const PREVIEWS: usize = 8;
 /// Feeds are refreshed at launch when older than this, and on `R`.
 const STALE_S: i64 = 3600;
 /// While playing, the position is saved this often (also on pause, seek, switch and quit).
@@ -38,6 +43,21 @@ const INBOX_MAX: usize = 300;
 pub enum Msg {
     /// A feed fetch finished: Some = new content, None = not modified.
     Feed { url: String, res: Result<Option<Cached>, String>, adding: bool },
+    /// A show opened from Discover or Search, before following it.
+    Preview { url: String, res: Result<Option<Cached>, String> },
+    /// Directory results for a cache key ("top:0", "foryou", "search:<q>").
+    Cards { key: String, res: Result<Vec<Card>, String> },
+    /// A cover, encoded for the terminal at `size` cells.
+    Art { url: String, size: (u16, u16), res: Result<Protocol, String> },
+}
+
+/// The playing episode's cover in the sidebar.
+pub struct Art {
+    pub url: String,
+    pub size: (u16, u16),
+    /// None while it's being fetched / encoded.
+    pub proto: Option<Protocol>,
+    busy: bool,
 }
 
 pub struct ShowView {
@@ -56,6 +76,8 @@ pub enum Kind {
     Inbox,
     InProgress,
     Queue,
+    Discover,
+    Search(String),
     Show(Url),
 }
 
@@ -63,6 +85,7 @@ pub enum Kind {
 #[derive(Clone)]
 pub enum Item {
     Ep { show: Url, i: usize },
+    Show(Card),
 }
 
 pub struct View {
@@ -81,6 +104,8 @@ pub struct Now {
     pub pos: f64,
     pub playing: bool,
     pub buffering: bool,
+    /// The episode's own artwork, else the show's.
+    pub art: Option<String>,
     saved_at: f64,
 }
 
@@ -116,6 +141,19 @@ pub struct App {
     pub notes: Option<Notes>,
     pub help_open: bool,
     pub quit: bool,
+    /// Shows opened from Discover or Search, not followed.
+    previews: Vec<ShowView>,
+    /// Directory results this session, by key; and the keys being fetched.
+    cards: HashMap<String, Vec<Card>>,
+    cards_loading: Vec<String>,
+    /// Discover's genre: 0 = all podcasts, else 1 + an index into GENRES.
+    pub genre: usize,
+    country: String,
+    /// How the terminal draws images (kitty / sixel / iTerm2 / half-blocks); None = no images.
+    pub img_picker: Option<Picker>,
+    pub art: Option<Art>,
+    /// Cells the sidebar has room for (set while drawing).
+    pub art_want: Option<(u16, u16)>,
     /// Where the last frame drew the sidebar list, the table and the progress bar (for clicks).
     pub side_area: Rect,
     pub main_area: Rect,
@@ -138,7 +176,7 @@ fn sort_episodes(show: &mut Show) {
 }
 
 impl App {
-    pub fn new(engine: Engine, tx: UnboundedSender<Msg>) -> App {
+    pub fn new(engine: Engine, tx: UnboundedSender<Msg>, img_picker: Option<Picker>) -> App {
         let prefs = store::load_prefs();
         engine.send(Cmd::Speed(prefs.speed));
         engine.send(Cmd::Volume(prefs.volume as f32 / 100.0));
@@ -176,6 +214,14 @@ impl App {
             notes: None,
             help_open: false,
             quit: false,
+            previews: Vec::new(),
+            cards: HashMap::new(),
+            cards_loading: Vec::new(),
+            genre: 0,
+            country: discover::country(),
+            img_picker,
+            art: None,
+            art_want: None,
             side_area: Rect::default(),
             main_area: Rect::default(),
             bar_area: Rect::default(),
@@ -197,12 +243,23 @@ impl App {
 
     // ---------------------------------------------------------------- lookups
 
+    /// A followed show, or one being previewed.
     pub fn show(&self, url: &str) -> Option<&ShowView> {
-        self.shows.iter().find(|s| *s.url == *url)
+        self.shows.iter().chain(&self.previews).find(|s| *s.url == *url)
+    }
+
+    pub fn is_followed(&self, url: &str) -> bool {
+        self.shows.iter().any(|s| *s.url == *url)
+    }
+
+    /// Apple's feed address isn't always the one you subscribed with (The Daily has two), so
+    /// a directory card also counts as followed when the title matches.
+    pub fn follows(&self, c: &Card) -> Option<Url> {
+        self.shows.iter().find(|s| s.sub.url == c.feed || s.show.title.eq_ignore_ascii_case(&c.title)).map(|s| s.url.clone())
     }
 
     pub fn episode(&self, item: &Item) -> Option<(&ShowView, &Episode)> {
-        let Item::Ep { show, i } = item;
+        let Item::Ep { show, i } = item else { return None };
         let s = self.show(show)?;
         Some((s, s.show.episodes.get(*i)?))
     }
@@ -217,6 +274,16 @@ impl App {
             (Focus::Main, Kind::Show(u)) => Some(u.clone()),
             _ => self.side_state.selected().and_then(|i| i.checked_sub(FIXED.len())).and_then(|i| self.shows.get(i)).map(|s| s.url.clone()),
         }
+    }
+
+    /// Whether directory results are still on their way.
+    pub fn cards_pending(&self) -> bool {
+        !self.cards_loading.is_empty()
+    }
+
+    /// The genre Discover shows: None = all podcasts.
+    pub fn genre_name(&self) -> Option<&'static str> {
+        self.genre.checked_sub(1).map(|i| discover::GENRES[i].0)
     }
 
     // ---------------------------------------------------------------- views
@@ -245,6 +312,12 @@ impl App {
                 v.into_iter().map(|(_, it)| it).collect()
             }
             Kind::Queue => self.queue.iter().filter_map(|(u, g)| self.locate(u, g)).collect(),
+            Kind::Discover => {
+                let top = format!("top:{}", self.genre);
+                let keys = if self.genre == 0 { vec!["foryou".to_string(), top] } else { vec![top] };
+                keys.iter().flat_map(|k| self.cards.get(k).into_iter().flatten()).cloned().map(Item::Show).collect()
+            }
+            Kind::Search(q) => self.cards.get(&format!("search:{q}")).into_iter().flatten().cloned().map(Item::Show).collect(),
             Kind::Show(u) => self.show(u).map_or(Vec::new(), |s| (0..s.show.episodes.len()).map(|i| Item::Ep { show: u.clone(), i }).collect()),
         }
     }
@@ -263,15 +336,32 @@ impl App {
     /// Recompute the open view and the sidebar counts, keeping the selected row selected.
     fn rebuild(&mut self) {
         let keep = self.selected_item().and_then(|it| self.key_of(it));
+        self.want_cards();
         let rows = self.rows_for(&self.view.kind);
         let n = rows.len();
         self.view.title = match &self.view.kind {
             Kind::Inbox => format!("Inbox · {n} new in the last {INBOX_DAYS} days"),
             Kind::InProgress => format!("In progress · {n}"),
             Kind::Queue => format!("Queue · {n}"),
+            Kind::Discover => {
+                let what = match self.genre_name() {
+                    Some(g) => format!("top {g} podcasts"),
+                    None if self.cards.get("foryou").is_some_and(|c| !c.is_empty()) => "for you, then the top podcasts".into(),
+                    None => "the top podcasts".into(),
+                };
+                let busy = if self.cards_loading.is_empty() { "" } else { " (loading…)" };
+                format!("Discover · {what} ({}){busy} · o/O genre · f follow", self.country.to_uppercase())
+            }
+            Kind::Search(q) => {
+                let busy = if self.cards_loading.iter().any(|k| *k == format!("search:{q}")) { " (searching…)" } else { "" };
+                format!("Search · “{q}” · {n} shows{busy} · Enter open · f follow")
+            }
             Kind::Show(u) => match self.show(u) {
                 Some(s) => {
                     let mut t = format!("{} · {n} episodes", s.show.title);
+                    if !self.is_followed(u) {
+                        t.push_str(" · not followed: f to follow");
+                    }
                     if s.loading {
                         t.push_str(" (refreshing…)");
                     }
@@ -291,11 +381,155 @@ impl App {
     }
 
     fn open(&mut self, kind: Kind) {
-        self.notes = None;
         self.back.clear();
-        self.view = View { kind, title: String::new(), rows: Vec::new(), state: TableState::default().with_selected(Some(0)) };
+        self.push(kind);
+    }
+
+    /// Open a view on top of the current one; Esc comes back.
+    fn push(&mut self, kind: Kind) {
+        self.notes = None;
+        let v = View { kind, title: String::new(), rows: Vec::new(), state: TableState::default().with_selected(Some(0)) };
+        let old = std::mem::replace(&mut self.view, v);
+        if !old.rows.is_empty() || old.kind != self.view.kind {
+            self.back.push(old);
+        }
+        self.back.truncate(20);
         self.rebuild();
         self.focus = Focus::Main;
+    }
+
+    // ---------------------------------------------------------------- discover
+
+    /// Fetch the directory results the open view needs, once per session.
+    fn want_cards(&mut self) {
+        let keys: Vec<String> = match &self.view.kind {
+            Kind::Discover if self.genre == 0 => vec!["foryou".into(), "top:0".into()],
+            Kind::Discover => vec![format!("top:{}", self.genre)],
+            _ => return,
+        };
+        for k in keys {
+            self.fetch_cards(k);
+        }
+    }
+
+    fn fetch_cards(&mut self, key: String) {
+        if self.cards.contains_key(&key) || self.cards_loading.contains(&key) {
+            return;
+        }
+        let (client, tx, cc) = (self.client.clone(), self.tx.clone(), self.country.clone());
+        if key == "foryou" {
+            // your genres, most common first, from the categories your feeds declare
+            let mut count: HashMap<u32, usize> = HashMap::new();
+            for s in &self.shows {
+                for c in &s.show.categories {
+                    if let Some(g) = discover::genre_id(c) {
+                        *count.entry(g).or_default() += 1;
+                    }
+                }
+            }
+            let mut genres: Vec<(u32, usize)> = count.into_iter().collect();
+            genres.sort_by_key(|(g, n)| (std::cmp::Reverse(*n), *g));
+            if genres.is_empty() {
+                self.cards.insert(key, Vec::new());
+                return;
+            }
+            let genres: Vec<u32> = genres.into_iter().map(|(g, _)| g).collect();
+            let follows: Vec<(String, String)> = self.shows.iter().map(|s| (s.sub.url.clone(), s.show.title.to_lowercase())).collect();
+            self.cards_loading.push(key.clone());
+            tokio::spawn(async move {
+                let followed = |c: &Card| follows.iter().any(|(u, t)| *u == c.feed || *t == c.title.to_lowercase());
+                let res = discover::for_you(&client, &cc, &genres, &followed).await;
+                let _ = tx.send(Msg::Cards { key, res });
+            });
+            return;
+        }
+        self.cards_loading.push(key.clone());
+        tokio::spawn(async move {
+            let res = match key.split_once(':') {
+                Some(("top", g)) => discover::top(&client, &cc, g.parse::<usize>().ok().and_then(|g| g.checked_sub(1)).map(|i| discover::GENRES[i].1)).await,
+                Some(("search", q)) => discover::search(&client, q, &cc).await,
+                _ => Ok(Vec::new()),
+            };
+            let _ = tx.send(Msg::Cards { key, res });
+        });
+    }
+
+    fn search(&mut self, q: String) {
+        self.cards.remove(&format!("search:{q}")); // a new search asks again
+        self.fetch_cards(format!("search:{q}"));
+        self.push(Kind::Search(q));
+    }
+
+    /// `o` / `O` in Discover: the next / previous genre.
+    fn cycle_genre(&mut self, delta: isize) {
+        if self.view.kind != Kind::Discover {
+            return;
+        }
+        let n = discover::GENRES.len() as isize + 1;
+        self.genre = (self.genre as isize + delta).rem_euclid(n) as usize;
+        self.view.state.select(Some(0));
+        self.rebuild();
+    }
+
+    /// Enter on a show card: its episodes, followed or not.
+    fn open_card(&mut self, c: &Card) {
+        if let Some(url) = self.follows(c) {
+            return self.push(Kind::Show(url));
+        }
+        if !self.previews.iter().any(|p| p.sub.url == c.feed) {
+            let placeholder = Show { title: c.title.clone(), ..Default::default() };
+            self.previews.push(ShowView { sub: Sub { url: c.feed.clone(), title: c.title.clone() }, url: c.feed.as_str().into(), show: placeholder, etag: String::new(), last_modified: String::new(), fetched: 0, loading: true, error: None });
+            let (client, tx, url) = (self.client.clone(), self.tx.clone(), c.feed.clone());
+            tokio::spawn(async move {
+                let res = fetch_feed(&client, &url, "", "").await;
+                let _ = tx.send(Msg::Preview { url, res });
+            });
+        }
+        let url = self.previews.iter().find(|p| p.sub.url == c.feed).map(|p| p.url.clone());
+        if let Some(url) = url {
+            self.push(Kind::Show(url));
+        }
+    }
+
+    /// `f`: follow the highlighted show (or the previewed one that's open).
+    fn follow(&mut self) {
+        let target: Option<String> = match (self.selected_item(), &self.view.kind) {
+            (Some(Item::Show(c)), _) if self.focus == Focus::Main => {
+                if self.follows(c).is_some() {
+                    self.status = format!("You already follow {}. (D D unfollows it from its page.)", c.title);
+                    return;
+                }
+                Some(c.feed.clone())
+            }
+            (_, Kind::Show(u)) if !self.is_followed(u) => Some(u.to_string()),
+            (_, Kind::Show(_)) => {
+                self.status = "You already follow this show. D D unfollows it.".into();
+                return;
+            }
+            _ => None,
+        };
+        let Some(url) = target else {
+            self.status = "Highlight a show in Discover or Search to follow it.".into();
+            return;
+        };
+        match self.previews.iter().position(|p| p.sub.url == url && !p.loading && p.error.is_none()) {
+            Some(i) => {
+                let p = self.previews.remove(i);
+                let title = p.show.title.clone();
+                let c = Cached { show: p.show, etag: p.etag, last_modified: p.last_modified, fetched: p.fetched };
+                let _ = store::save_feed(&url, &c);
+                self.shows.push(ShowView { sub: Sub { url: url.clone(), title: title.clone() }, url: p.url, show: c.show, etag: c.etag, last_modified: c.last_modified, fetched: c.fetched, loading: false, error: None });
+                self.save_subs();
+                self.sort_shows();
+                self.cards.remove("foryou"); // your genres changed
+                self.status = format!("Following {title}.");
+            }
+            None => {
+                self.status = "Following…".into();
+                self.fetch(url, String::new(), String::new(), true);
+            }
+        }
+        self.rebuild();
     }
 
     fn open_side(&mut self) {
@@ -304,6 +538,7 @@ impl App {
             0 => Kind::Inbox,
             1 => Kind::InProgress,
             2 => Kind::Queue,
+            3 => Kind::Discover,
             _ => match self.shows.get(i - FIXED.len()) {
                 Some(s) => Kind::Show(s.url.clone()),
                 None => return,
@@ -359,7 +594,33 @@ impl App {
     }
 
     pub fn on_msg(&mut self, msg: Msg) {
-        let Msg::Feed { url, res, adding } = msg;
+        let (url, res, adding) = match msg {
+            Msg::Feed { url, res, adding } => (url, res, adding),
+            Msg::Preview { url, res } => return self.on_preview(url, res),
+            Msg::Art { url, size, res } => {
+                if let Some(a) = self.art.as_mut().filter(|a| a.url == url) {
+                    a.busy = false;
+                    match res {
+                        Ok(p) if a.size == size => a.proto = Some(p),
+                        Ok(_) => {} // the room changed meanwhile: the next draw asks again
+                        Err(_) => a.proto = None,
+                    }
+                }
+                // podcast covers are often 3000 px: decoding one allocates tens of MB, freed now
+                crate::trim_heap();
+                return;
+            }
+            Msg::Cards { key, res } => {
+                self.cards_loading.retain(|k| *k != key);
+                match res {
+                    Ok(c) => {
+                        self.cards.insert(key, c);
+                    }
+                    Err(e) => self.status = format!("Apple Podcasts didn't answer: {e}"),
+                }
+                return self.rebuild();
+            }
+        };
         // a page that isn't RSS fails as XML; say what that means
         let res = res.map_err(|e| if e.starts_with("XML error") || e == "not a podcast feed" { "that address isn't a podcast feed".to_string() } else { e });
         let i = self.shows.iter().position(|s| s.sub.url == url);
@@ -426,6 +687,33 @@ impl App {
         self.rebuild();
     }
 
+    fn on_preview(&mut self, url: String, res: Result<Option<Cached>, String>) {
+        let Some(p) = self.previews.iter_mut().find(|p| p.sub.url == url) else { return };
+        p.loading = false;
+        match res {
+            Ok(Some(mut c)) => {
+                c.show.episodes = c.show.episodes.to_vec();
+                sort_episodes(&mut c.show);
+                (p.show, p.etag, p.last_modified, p.fetched) = (c.show, c.etag, c.last_modified, c.fetched);
+            }
+            Ok(None) => {}
+            Err(e) => {
+                let e = if e.starts_with("XML error") { "the show's feed is broken".to_string() } else { e };
+                p.error = Some(e);
+            }
+        }
+        // keep the newest few, but never the one on screen
+        while self.previews.len() > PREVIEWS {
+            let on_screen = |p: &ShowView| self.view.kind == Kind::Show(p.url.clone()) || self.back.iter().any(|v| v.kind == Kind::Show(p.url.clone()));
+            match self.previews.iter().position(|p| !on_screen(p)) {
+                Some(i) => drop(self.previews.remove(i)),
+                None => break,
+            }
+        }
+        crate::trim_heap();
+        self.rebuild();
+    }
+
     fn save_subs(&mut self) {
         for s in &mut self.shows {
             if !s.show.title.is_empty() {
@@ -453,7 +741,7 @@ impl App {
         }
     }
 
-    /// `/`: a feed url subscribes; anything else is read as an OPML file to import.
+    /// `/`: a feed url subscribes, an OPML file imports, anything else searches.
     fn add(&mut self, text: String) {
         let t = text.trim();
         if t.is_empty() {
@@ -468,14 +756,18 @@ impl App {
             }
             return;
         }
-        let path = match t.strip_prefix("~/") {
+        let path: std::path::PathBuf = match t.strip_prefix("~/") {
             Some(rest) => std::env::var_os("HOME").map_or(t.into(), |h| std::path::Path::new(&h).join(rest)),
             None => t.into(),
         };
+        // not an address and not a file: it's a search
+        if !path.is_file() {
+            return self.search(t.to_string());
+        }
         let subs = match std::fs::read(&path) {
             Ok(b) => store::parse_opml(&b),
             Err(e) => {
-                self.status = format!("{}: {e} (paste a feed URL starting with https://, or an OPML file's path)", path.display());
+                self.status = format!("{}: {e}", path.display());
                 return;
             }
         };
@@ -527,6 +819,7 @@ impl App {
     fn play(&mut self, item: &Item) {
         let Some((s, e)) = self.episode(item) else { return };
         let (show_url, guid, title, url, dur, show) = (s.url.clone(), e.guid.clone(), e.title.clone(), e.url.clone(), e.duration_s as f64, s.show.title.clone());
+        let art = e.image.clone().or_else(|| s.show.image.clone());
         self.remember();
         let l = self.state.get(&guid).copied().unwrap_or_default();
         let at = if l.played || (dur > 0.0 && l.pos > dur - NEAR_END_S) { 0.0 } else { l.pos };
@@ -536,7 +829,7 @@ impl App {
             self.queue.remove(q);
             self.save_queue();
         }
-        self.now = Some(Now { show_url, guid: guid.clone(), title, show, duration: dur, pos: at, playing: true, buffering: false, saved_at: at });
+        self.now = Some(Now { show_url, guid: guid.clone(), title, show, duration: dur, pos: at, playing: true, buffering: false, art, saved_at: at });
         // a replayed episode starts unplayed again
         let l = self.state.entry(guid).or_default();
         (l.played, l.pos, l.updated) = (false, at, unix_now());
@@ -544,9 +837,12 @@ impl App {
         self.rebuild();
     }
 
+    /// Enter on a row: play an episode, open a show.
     fn play_selected(&mut self) {
-        if let Some(it) = self.selected_item().cloned() {
-            self.play(&it);
+        match self.selected_item().cloned() {
+            Some(Item::Show(c)) => self.open_card(&c),
+            Some(it) => self.play(&it),
+            None => {}
         }
     }
 
@@ -584,13 +880,21 @@ impl App {
     }
 
     fn set_speed(&mut self, delta: f32) {
-        self.prefs.speed = ((self.prefs.speed + delta) * 10.0).round().clamp(5.0, 30.0) / 10.0;
+        self.set_speed_to(self.prefs.speed + delta);
+    }
+
+    fn set_speed_to(&mut self, x: f32) {
+        self.prefs.speed = (x * 10.0).round().clamp(5.0, 30.0) / 10.0;
         self.engine.send(Cmd::Speed(self.prefs.speed));
         let _ = store::save_prefs(&self.prefs);
     }
 
     fn set_volume(&mut self, delta: i16) {
-        self.prefs.volume = (self.prefs.volume as i16 + delta).clamp(0, 100) as u8;
+        self.set_volume_to((self.prefs.volume as i16 + delta).clamp(0, 100) as u8);
+    }
+
+    fn set_volume_to(&mut self, v: u8) {
+        self.prefs.volume = v.min(100);
         self.engine.send(Cmd::Volume(self.prefs.volume as f32 / 100.0));
         let _ = store::save_prefs(&self.prefs);
     }
@@ -718,6 +1022,89 @@ impl App {
         true
     }
 
+    /// Media keys, the desktop's media widget, playerctl.
+    pub fn on_remote(&mut self, r: Remote) {
+        let playing = self.now.as_ref().is_some_and(|n| n.playing);
+        match r {
+            Remote::PlayPause => self.toggle_pause(),
+            Remote::Play if !playing => self.toggle_pause(),
+            Remote::Pause if playing => self.toggle_pause(),
+            Remote::Play | Remote::Pause => {}
+            Remote::Next => {
+                if !self.play_next() {
+                    self.status = "The queue is empty.".into();
+                }
+            }
+            Remote::Prev => self.seek_to(0.0),
+            Remote::Seek(d) => self.seek_by(d),
+            Remote::SetPosition(s) => self.seek_to(s),
+            Remote::Volume(v) => self.set_volume_to(v),
+            Remote::Rate(r) => self.set_speed_to(r),
+        }
+    }
+
+    // ---------------------------------------------------------------- art
+
+    /// `i`: the cover in the sidebar on / off.
+    fn toggle_art(&mut self) {
+        if self.img_picker.is_none() {
+            self.status = "This terminal can't show images here.".into();
+            return;
+        }
+        self.prefs.art = !self.prefs.art;
+        if !self.prefs.art {
+            self.art = None; // free the encoded image
+        }
+        let _ = store::save_prefs(&self.prefs);
+    }
+
+    /// Zooming changes the font's pixel size, which iTerm2 and sixel images are drawn in: pick
+    /// up the new size and re-encode the cover. One ioctl per resize.
+    pub fn on_resize(&mut self) {
+        let (Some(p), Ok(ws)) = (self.img_picker.as_ref(), crossterm::terminal::window_size()) else { return };
+        if ws.width == 0 || ws.height == 0 || ws.columns == 0 || ws.rows == 0 {
+            return;
+        }
+        let (w, h) = (ws.width / ws.columns, ws.height / ws.rows);
+        let old = p.font_size();
+        if (w, h) == (old.width, old.height) {
+            return;
+        }
+        // The query-built picker can't change its font size; from_fontsize is the only way.
+        #[allow(deprecated)]
+        let mut np = Picker::from_fontsize(ratatui_image::FontSize::new(w, h));
+        np.set_protocol_type(p.protocol_type());
+        self.img_picker = Some(np);
+        if let Some(a) = self.art.as_mut() {
+            a.size = (0, 0); // no longer matches art_want, so refresh_media re-encodes
+        }
+    }
+
+    /// Fetch and encode the playing episode's cover if the sidebar wants one it doesn't have.
+    /// Called after each draw (the draw says how much room there is); cheap when nothing changed.
+    pub fn refresh_media(&mut self) {
+        let Some(url) = self.now.as_ref().and_then(|n| n.art.clone()) else {
+            self.art = None;
+            return;
+        };
+        let (Some(picker), Some(size), true) = (self.img_picker.as_ref(), self.art_want, self.prefs.art) else { return };
+        if self.art.as_ref().is_some_and(|a| a.url == url && (a.size == size || a.busy)) {
+            return;
+        }
+        // keep showing the old cover until the new one is ready (no flicker)
+        let keep = self.art.take().and_then(|a| a.proto);
+        self.art = Some(Art { url: url.clone(), size, proto: keep, busy: true });
+        let (client, tx, picker) = (self.client.clone(), self.tx.clone(), picker.clone());
+        tokio::spawn(async move {
+            let bytes = async { client.get(&url).send().await?.error_for_status()?.bytes().await }.await.map_err(cause);
+            let res = match bytes {
+                Ok(b) => tokio::task::spawn_blocking(move || encode_art(&picker, &b, size)).await.unwrap_or_else(|e| Err(e.to_string())),
+                Err(e) => Err(e),
+            };
+            let _ = tx.send(Msg::Art { url, size, res });
+        });
+    }
+
     pub fn shutdown(&mut self) {
         self.remember();
         let _ = store::save_prefs(&self.prefs);
@@ -800,7 +1187,10 @@ impl App {
                 }
             }
             KeyCode::Esc | KeyCode::Backspace => match self.back.pop() {
-                Some(v) => self.view = v,
+                Some(v) => {
+                    self.view = v;
+                    self.rebuild();
+                }
                 None => self.focus = Focus::Side,
             },
             KeyCode::Char(' ') => self.toggle_pause(),
@@ -821,6 +1211,7 @@ impl App {
             KeyCode::Char('m') => self.toggle_played(),
             KeyCode::Char('L') => self.toggle_notes(),
             KeyCode::Char('w') => self.jump_to_playing(),
+            KeyCode::Char('i') => self.toggle_art(),
             KeyCode::Char('t') => {
                 self.prefs.theme = (self.prefs.theme + 1) % crate::theme::THEMES.len();
                 crate::theme::set(self.prefs.theme);
@@ -832,6 +1223,9 @@ impl App {
                 self.status.clear();
             }
             KeyCode::Char('R') => self.refresh(true),
+            KeyCode::Char('f') => self.follow(),
+            KeyCode::Char('o') => self.cycle_genre(1),
+            KeyCode::Char('O') => self.cycle_genre(-1),
             KeyCode::Char('D') => self.unsubscribe(),
             _ => {}
         }
@@ -902,6 +1296,16 @@ fn row_at(area: Rect, top: u16, offset: usize, len: usize, pos: Position) -> Opt
     }
     let i = offset + (pos.y - area.y - top) as usize;
     (i < len).then_some(i)
+}
+
+/// Decode a cover and encode it for the terminal at `size` cells (on a blocking thread).
+fn encode_art(picker: &Picker, bytes: &[u8], size: (u16, u16)) -> Result<Protocol, String> {
+    let img = image::load_from_memory(bytes).map_err(|e| e.to_string())?;
+    // Shrink with a cheap filter first: covers are up to 3000 px, the target a few hundred.
+    let fs = picker.font_size();
+    let (w, h) = (size.0 as u32 * fs.width as u32, size.1 as u32 * fs.height as u32);
+    let img = if img.width() > w * 2 || img.height() > h * 2 { img.thumbnail(w * 2, h * 2) } else { img };
+    picker.new_protocol(img, Size::new(size.0, size.1), Resize::Fit(Some(FilterType::Triangle))).map_err(|e| e.to_string())
 }
 
 /// GET with "only if changed" headers. Parsing (~20 ms for a big feed) and writing the show
