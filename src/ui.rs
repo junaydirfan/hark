@@ -173,14 +173,16 @@ fn draw_table(f: &mut Frame, app: &mut App, area: Rect) {
             let l = app.state.get(&e.guid).copied().unwrap_or_default();
             let queued = app.queue.iter().any(|(u, g)| *u == s.url && *g == e.guid);
             let now = Some(e.guid.as_str()) == playing;
+            // the length the player measured beats the feed's own figure
+            let dur = if l.dur > 0.0 { l.dur } else { e.duration_s as f64 };
             let (mark, len) = if now {
-                ("▶", fmt_s(e.duration_s as f64))
+                ("▶", fmt_s(dur))
             } else if l.played {
-                ("✓", fmt_s(e.duration_s as f64))
+                ("✓", fmt_s(dur))
             } else if l.pos > 0.0 {
-                ("◐", if e.duration_s > 0 { format!("{} left", fmt_s(e.duration_s as f64 - l.pos)) } else { fmt_s(l.pos) })
+                (progress_glyph(l.pos, dur), if dur > 0.0 { format!("{} left", fmt_s(dur - l.pos)) } else { fmt_s(l.pos) })
             } else {
-                (" ", if e.duration_s > 0 { fmt_s(e.duration_s as f64) } else { String::new() })
+                (" ", if dur > 0.0 { fmt_s(dur) } else { String::new() })
             };
             let mut title = vec![Span::raw(e.title.as_str())];
             if queued {
@@ -279,6 +281,15 @@ fn draw_notes(f: &mut Frame, app: &App, area: Rect) {
     f.render_widget(Paragraph::new(lines).wrap(Wrap { trim: false }).block(blk), area);
 }
 
+/// ◔ ◑ ◕: how far into an episode you are, at a glance.
+fn progress_glyph(pos: f64, dur: f64) -> &'static str {
+    match if dur > 0.0 { pos / dur } else { 0.0 } {
+        f if f < 0.375 => "◔",
+        f if f < 0.625 => "◑",
+        _ => "◕",
+    }
+}
+
 /// The right side of the now-playing line: what has a value, then the speed as a pill that's
 /// lit when it isn't 1×, so the state is visible at a glance (like trill's flags).
 fn now_flags(app: &App) -> Line<'static> {
@@ -286,6 +297,10 @@ fn now_flags(app: &App) -> Line<'static> {
     let mut s = Vec::new();
     if app.now.as_ref().is_some_and(|n| n.buffering) {
         s.push(Span::styled("buffering…  ", Style::new().fg(accent())));
+    }
+    // what's left in real time at your speed: what a podcast listener plans around
+    if let Some(n) = app.now.as_ref().filter(|n| n.duration > 0.0) {
+        s.push(Span::styled(format!("{} left  ", fmt_s((n.duration - n.pos).max(0.0) / app.prefs.speed as f64)), info));
     }
     if !app.queue.is_empty() {
         s.push(Span::styled(format!("queue {}  ", app.queue.len()), info));
@@ -420,6 +435,14 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn progress_glyphs() {
+        assert_eq!(super::progress_glyph(100.0, 1000.0), "◔");
+        assert_eq!(super::progress_glyph(500.0, 1000.0), "◑");
+        assert_eq!(super::progress_glyph(900.0, 1000.0), "◕");
+        assert_eq!(super::progress_glyph(100.0, 0.0), "◔", "unknown length");
     }
 
     #[test]

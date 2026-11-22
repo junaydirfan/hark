@@ -88,6 +88,8 @@ async fn run() -> Result<(), String> {
         hook(p)
     }));
     app.refresh(false);
+    let quit_signal = quit_signal();
+    tokio::pin!(quit_signal);
     let mut dirty = true;
     while !app.quit {
         if dirty {
@@ -109,6 +111,8 @@ async fn run() -> Result<(), String> {
             Some(ev) = eng_rx.recv() => dirty |= app.on_engine(ev),
             Some(m) = msg_rx.recv() => { app.on_msg(m); dirty = true; }
             Some(r) = remote_rx.recv() => { app.on_remote(r); dirty = true; }
+            // the terminal closed, the session is ending, or someone asked us to stop: save first
+            _ = &mut quit_signal => app.quit = true,
             else => break,
         }
     }
@@ -116,6 +120,44 @@ async fn run() -> Result<(), String> {
     let _ = crossterm::execute!(std::io::stdout(), crossterm::event::DisableMouseCapture);
     ratatui::restore();
     Ok(())
+}
+
+/// Resolves when hark is asked to stop from outside: the terminal window closing (SIGHUP),
+/// logout or shutdown (SIGTERM), `kill -INT` or SIGQUIT; on Windows, the console closing.
+async fn quit_signal() {
+    #[cfg(unix)]
+    {
+        use tokio::signal::unix::{SignalKind, signal};
+        let mut sigs: Vec<_> = [SignalKind::hangup(), SignalKind::terminate(), SignalKind::interrupt(), SignalKind::quit()].into_iter().filter_map(|k| signal(k).ok()).collect();
+        if sigs.is_empty() {
+            return std::future::pending().await;
+        }
+        let any = futures_any(sigs.iter_mut().map(|s| Box::pin(s.recv())).collect());
+        any.await;
+    }
+    #[cfg(windows)]
+    {
+        match tokio::signal::windows::ctrl_close() {
+            Ok(mut c) => {
+                c.recv().await;
+            }
+            Err(_) => std::future::pending().await,
+        }
+    }
+}
+
+/// The first of several futures to finish (a tiny select over a list, without a dependency).
+#[cfg(unix)]
+async fn futures_any<F: std::future::Future + Unpin>(mut fs: Vec<F>) {
+    std::future::poll_fn(|cx| {
+        for f in &mut fs {
+            if std::pin::Pin::new(f).poll(cx).is_ready() {
+                return std::task::Poll::Ready(());
+            }
+        }
+        std::task::Poll::Pending
+    })
+    .await
 }
 
 /// Which image protocol the terminal supports (from trill). Terminals answer in a few ms; if one

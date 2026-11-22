@@ -139,8 +139,11 @@ pub struct Listen {
     /// Seconds in; 0 = not started.
     pub pos: f64,
     pub played: bool,
-    /// When it last changed (Unix seconds), for "In progress" order.
+    /// When it last changed (Unix seconds), for "In progress" order and smart resume.
     pub updated: i64,
+    /// The real length the player measured (seconds; 0 = not played yet). Feeds' own
+    /// durations are often off, more so with ads inserted on the fly.
+    pub dur: f64,
 }
 
 fn state_path() -> PathBuf {
@@ -157,7 +160,8 @@ pub fn load_state() -> HashMap<String, Listen> {
             let pos = f.next()?.parse().ok()?;
             let played = f.next()? == "1";
             let updated = f.next().and_then(|u| u.parse().ok()).unwrap_or(0);
-            Some((guid, Listen { pos, played, updated }))
+            let dur = f.next().and_then(|d| d.parse().ok()).unwrap_or(0.0);
+            Some((guid, Listen { pos, played, updated, dur }))
         })
         .collect()
 }
@@ -166,7 +170,7 @@ pub fn save_state(state: &HashMap<String, Listen>) -> std::io::Result<()> {
     let mut out = String::with_capacity(state.len() * 48);
     for (g, l) in state {
         if l.played || l.pos > 0.0 {
-            out.push_str(&format!("{}\t{:.1}\t{}\t{}\n", clean(g), l.pos, l.played as u8, l.updated));
+            out.push_str(&format!("{}\t{:.1}\t{}\t{}\t{:.0}\n", clean(g), l.pos, l.played as u8, l.updated, l.dur));
         }
     }
     write_atomic(&state_path(), out.as_bytes())
