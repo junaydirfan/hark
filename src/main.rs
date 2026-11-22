@@ -48,6 +48,10 @@ async fn async_main() {
     let res = match args.first().map(String::as_str) {
         Some("feed") if args.len() > 1 => show_feed(&args[1]).await,
         Some("play") if args.len() > 1 => play(&args[1..]).await,
+        Some("--version" | "-V") => {
+            println!("hark {}", env!("CARGO_PKG_VERSION"));
+            Ok(())
+        }
         None => run().await,
         _ => Err("usage: hark | hark feed <url|file> | hark play <file|url> [speed] [start_s] [volume]".into()),
     };

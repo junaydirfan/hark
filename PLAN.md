@@ -107,6 +107,15 @@ author, image and `itunes:new-feed-url`. Items with no audio are skipped.
 4. **Sync.** gPodder-compatible sync (gpodder.net / Nextcloud) with phone apps like
    AntennaPod; Windows media controls.
 
+## Progress (2026-11-23)
+
+Saving your place is the feature podcast listeners care about most, so it's hardened. The
+position is saved every 10 s while playing, plus on pause, seek, switch, quit and every
+"stop" signal (terminal closed, logout, kill). Tested: closing the terminal saved the exact
+second; `kill -9` lost 6 s. Smart resume rewinds 3/10/20 s after a minute/hour/day away. The
+outro (last 30 s) counts as finished. The length the decoder measures replaces the feed's.
+Next: sync with phone apps (gPodder, Phase 4), so your place follows you.
+
 ## Targets
 
 Launch to list < 30 ms (from cache) · own RAM < 15 MB with 50 shows / 10k episodes · idle CPU 0 ·
