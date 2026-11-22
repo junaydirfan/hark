@@ -1,116 +1,193 @@
-//! Drawing. Only what fits on screen is built each frame.
+//! Drawing, in trill's look. Only what fits on screen is built each frame.
 
 use ratatui::{
     Frame,
     layout::{Constraint, Layout, Rect},
     style::{Color, Modifier, Style, Stylize},
     text::{Line, Span},
-    widgets::{Block, BorderType, Cell, List, ListItem, Paragraph, Row, Table, TableState},
+    widgets::{Block, BorderType, Cell, Clear, List, ListItem, Paragraph, Row, Table, TableState, Wrap},
 };
 
-use crate::app::{App, Focus, fmt_date, fmt_s};
+use crate::{
+    app::{App, FIXED, Focus, Kind, fmt_date, fmt_s},
+    theme::{accent, grad, on_accent},
+};
 
-const ACCENT: Color = Color::Rgb(255, 176, 59);
-const ON_ACCENT: Color = Color::Black;
+/// figlet "Slant", like trill's logo; shown above the sidebar when there's room.
+const LOGO: [&str; 5] = [
+    "    __               __  ",
+    "   / /_  ____ ______/ /__",
+    "  / __ \\/ __ `/ ___/ //_/",
+    " / / / / /_/ / /  / ,<   ",
+    "/_/ /_/\\__,_/_/  /_/|_|  ",
+];
+
+/// The logo with the theme's gradient across it, if it fits `width`.
+fn logo(width: u16) -> Option<Vec<Line<'static>>> {
+    if LOGO[0].chars().count() as u16 > width {
+        return None;
+    }
+    Some(
+        LOGO.iter()
+            .map(|row| {
+                let n = row.chars().count().max(2) as f32 - 1.0;
+                Line::from(row.chars().enumerate().map(|(i, c)| Span::styled(c.to_string(), Style::new().fg(grad(i as f32 / n)).bold())).collect::<Vec<_>>()).centered()
+            })
+            .collect(),
+    )
+}
 
 fn block(title: &str, focused: bool) -> Block<'_> {
     let b = Block::bordered().border_type(BorderType::Rounded).title(format!(" {title} "));
-    if focused { b.border_style(Style::new().fg(ACCENT)) } else { b.border_style(Style::new().dim()) }
+    if focused { b.border_style(Style::new().fg(accent())) } else { b.border_style(Style::new().dim()) }
 }
 
 fn highlight(focused: bool) -> Style {
-    if focused { Style::new().fg(ON_ACCENT).bg(ACCENT) } else { Style::new().add_modifier(Modifier::REVERSED) }
+    if focused { Style::new().fg(on_accent()).bg(accent()) } else { Style::new().add_modifier(Modifier::REVERSED) }
 }
 
 pub fn draw(f: &mut Frame, app: &mut App) {
     let [body, now, bottom] = Layout::vertical([Constraint::Min(5), Constraint::Length(2), Constraint::Length(1)]).areas(f.area());
-    let side_w = (f.area().width / 4).clamp(18, 36);
+    // Narrow terminals: the sidebar only takes room while it has focus (Tab shows it).
+    let side_w = if f.area().width < 70 && app.focus != Focus::Side { 0 } else { (f.area().width / 4).clamp(20, 34) };
     let [side, main] = Layout::horizontal([Constraint::Length(side_w), Constraint::Min(20)]).areas(body);
 
-    let items: Vec<ListItem> = app
-        .shows
-        .iter()
-        .map(|s| {
-            let mark = if s.loading { Span::raw(" …").dim() } else if s.error.is_some() { Span::raw(" !").fg(Color::Red) } else { Span::raw("") };
-            ListItem::new(Line::from(vec![Span::raw(s.show.title.as_str()), mark]))
-        })
-        .collect();
-    let shows_focused = app.focus == Focus::Shows;
-    let list = List::new(items).block(block("Shows", shows_focused)).highlight_style(highlight(shows_focused));
-    f.render_stateful_widget(list, side, &mut app.show_state);
+    let side = match logo(side.width).filter(|l| side.height >= l.len() as u16 + 12) {
+        Some(l) => {
+            let [a, s] = Layout::vertical([Constraint::Length(l.len() as u16), Constraint::Min(6)]).areas(side);
+            f.render_widget(Paragraph::new(l), a);
+            s
+        }
+        None => side,
+    };
+    let fixed = FIXED.iter().zip(app.counts).map(|(name, n)| {
+        let count = if n > 0 { Span::raw(format!("  {n}")).dim() } else { Span::raw("") };
+        ListItem::new(Line::from(vec![Span::raw(*name).bold(), count]))
+    });
+    let shows = app.shows.iter().map(|s| {
+        let mark = if s.loading { Span::raw(" …").dim() } else if s.error.is_some() { Span::raw(" !").fg(Color::Red) } else { Span::raw("") };
+        ListItem::new(Line::from(vec![Span::raw(s.show.title.as_str()), mark]))
+    });
+    let mut items: Vec<ListItem> = fixed.collect();
+    if !app.shows.is_empty() {
+        items.push(ListItem::new(Line::from("─ Shows ─").dim()));
+    }
+    let n_fixed = items.len();
+    items.extend(shows);
+    // the "Shows" divider is a row of its own: map the selection around it
+    let mut state = app.side_state;
+    if let Some(sel) = state.selected().filter(|&s| s >= FIXED.len() && n_fixed > FIXED.len()) {
+        state.select(Some(sel + 1));
+    }
+    let focused = app.focus == Focus::Side;
+    let list = List::new(items).block(block("Library", focused)).highlight_style(highlight(focused));
+    f.render_stateful_widget(list, side, &mut state);
+    *app.side_state.offset_mut() = state.offset();
+    app.side_area = side;
 
-    draw_episodes(f, app, main);
+    app.main_area = main;
+    if app.notes.is_some() {
+        draw_notes(f, app, main);
+    } else {
+        draw_table(f, app, main);
+    }
     draw_now(f, app, now);
 
     if app.focus == Focus::Input {
-        let text = format!(" Add: {}", app.input);
+        let text = format!(" Add a feed URL or an OPML file: {}", app.input);
         let x = bottom.x + text.chars().count() as u16;
-        f.render_widget(Paragraph::new(text).fg(ACCENT), bottom);
+        f.render_widget(Paragraph::new(text).fg(accent()), bottom);
         f.set_cursor_position((x.min(bottom.right().saturating_sub(1)), bottom.y));
     } else if !app.status.is_empty() {
         f.render_widget(Paragraph::new(format!(" {}", app.status)).dim(), bottom);
     } else {
-        let hint = " Enter play · Space pause · ←/→ −15/+30 s · [ ] speed · +/− volume · m played · a add · R refresh · D remove · q quit";
-        f.render_widget(Paragraph::new(hint).dim(), bottom);
+        f.render_widget(Paragraph::new(" ? keys · Enter play · Space pause · a queue · L notes · / add · q quit").dim(), bottom);
+    }
+    if app.help_open {
+        draw_help(f);
     }
 }
 
-fn draw_episodes(f: &mut Frame, app: &mut App, area: Rect) {
-    let focused = app.focus == Focus::Episodes;
-    let Some(show) = app.show_state.selected().and_then(|i| app.shows.get(i)) else {
-        let msg = "\n No shows yet.\n\n Press a, then paste a podcast's feed URL,\n or the path to an OPML file exported from another podcast app.";
-        f.render_widget(Paragraph::new(msg).block(block("Episodes", focused)), area);
-        return;
-    };
-    let eps = &show.show.episodes;
-    let mut title = format!("{} · {} episodes", show.show.title, eps.len());
-    if show.loading {
-        title.push_str(" (refreshing…)");
-    }
-    if let Some(e) = &show.error {
-        title.push_str(&format!(" (couldn't refresh: {e})"));
-    }
-    if eps.is_empty() {
-        let msg = if show.loading { "\n Loading…" } else { "\n No episodes." };
-        f.render_widget(Paragraph::new(msg).block(block(&title, focused)), area);
+fn draw_table(f: &mut Frame, app: &mut App, area: Rect) {
+    let focused = app.focus == Focus::Main;
+    if app.shows.is_empty() {
+        let msg = "\n No shows yet.\n\n Press /, then paste a podcast's feed URL,\n or the path to an OPML file exported from another podcast app.";
+        f.render_widget(Paragraph::new(msg).block(block("Welcome", focused)), area);
         return;
     }
+    let title = app.view.title.clone();
+    if app.view.rows.is_empty() {
+        let msg = match app.view.kind {
+            Kind::Inbox => "\n Nothing new in the last 30 days. Episodes from your shows land here as they come out.",
+            Kind::InProgress => "\n Nothing in progress. Episodes you start and don't finish wait here.",
+            Kind::Queue => "\n The queue is empty. Press a on an episode to add it, A to play it next.\n When an episode ends, the next one in the queue starts.",
+            Kind::Show(_) => "\n Loading…",
+        };
+        f.render_widget(Paragraph::new(msg).dim().block(block(&title, focused)), area);
+        return;
+    }
+    let many_shows = !matches!(app.view.kind, Kind::Show(_));
 
     // only the rows that fit: some shows have thousands of episodes
+    let n = app.view.rows.len();
     let visible = area.height.saturating_sub(3).max(1) as usize;
-    let sel = app.ep_state.selected().unwrap_or(0).min(eps.len() - 1);
-    let mut off = app.ep_state.offset().min(eps.len() - 1);
+    let sel = app.view.state.selected().unwrap_or(0).min(n - 1);
+    let mut off = app.view.state.offset().min(n - 1);
     if sel < off {
         off = sel;
     } else if sel >= off + visible {
         off = sel + 1 - visible;
     }
-    *app.ep_state.offset_mut() = off;
-    let end = (off + visible).min(eps.len());
+    *app.view.state.offset_mut() = off;
+    let end = (off + visible).min(n);
     let playing = app.now.as_ref().map(|n| n.guid.as_str());
 
-    let rows = eps[off..end].iter().map(|e| {
-        let l = app.state.get(&e.guid).copied().unwrap_or_default();
-        let (mark, len) = if Some(e.guid.as_str()) == playing {
-            ("▶", fmt_s(e.duration_s as f64))
-        } else if l.played {
-            ("✓", fmt_s(e.duration_s as f64))
-        } else if l.pos > 0.0 {
-            ("◐", if e.duration_s > 0 { format!("{} left", fmt_s(e.duration_s as f64 - l.pos)) } else { fmt_s(l.pos) })
-        } else {
-            (" ", if e.duration_s > 0 { fmt_s(e.duration_s as f64) } else { String::new() })
-        };
-        let mut row = Row::new(vec![Cell::from(mark).fg(ACCENT), Cell::from(e.title.as_str()), Cell::from(fmt_date(e.published)).dim(), Cell::from(Line::from(len).right_aligned())]);
-        if l.played && Some(e.guid.as_str()) != playing {
-            row = row.style(Style::new().dim());
-        } else if Some(e.guid.as_str()) == playing {
-            row = row.style(Style::new().fg(ACCENT).bold());
-        }
-        row
-    });
-    let widths = [Constraint::Length(1), Constraint::Fill(1), Constraint::Length(10), Constraint::Length(13)];
+    let rows: Vec<Row> = app.view.rows[off..end]
+        .iter()
+        .filter_map(|it| app.episode(it))
+        .map(|(s, e)| {
+            let l = app.state.get(&e.guid).copied().unwrap_or_default();
+            let queued = app.queue.iter().any(|(u, g)| *u == s.url && *g == e.guid);
+            let now = Some(e.guid.as_str()) == playing;
+            let (mark, len) = if now {
+                ("▶", fmt_s(e.duration_s as f64))
+            } else if l.played {
+                ("✓", fmt_s(e.duration_s as f64))
+            } else if l.pos > 0.0 {
+                ("◐", if e.duration_s > 0 { format!("{} left", fmt_s(e.duration_s as f64 - l.pos)) } else { fmt_s(l.pos) })
+            } else {
+                (" ", if e.duration_s > 0 { fmt_s(e.duration_s as f64) } else { String::new() })
+            };
+            let mut title = vec![Span::raw(e.title.as_str())];
+            if queued {
+                title.insert(0, Span::raw("≡ ").fg(accent()));
+            }
+            let mut cells = vec![Cell::from(mark).fg(accent()), Cell::from(Line::from(title))];
+            if many_shows {
+                cells.push(Cell::from(s.show.title.as_str()).dim());
+            }
+            cells.push(Cell::from(fmt_date(e.published)).dim());
+            cells.push(Cell::from(Line::from(len).right_aligned()));
+            let row = Row::new(cells);
+            if now {
+                row.style(Style::new().fg(accent()).bold())
+            } else if l.played {
+                row.style(Style::new().dim())
+            } else {
+                row
+            }
+        })
+        .collect();
+    let mut widths = vec![Constraint::Length(1), Constraint::Fill(3)];
+    let mut header = vec!["", "Episode"];
+    if many_shows {
+        widths.push(Constraint::Fill(1));
+        header.push("Show");
+    }
+    widths.extend([Constraint::Length(10), Constraint::Length(13)]);
+    header.extend(["Date", "Length"]);
     let table = Table::new(rows, widths)
-        .header(Row::new(vec!["", "Episode", "Date", "Length"]).dim())
+        .header(Row::new(header).dim())
         .block(block(&title, focused))
         .row_highlight_style(highlight(focused))
         .column_spacing(1);
@@ -118,47 +195,163 @@ fn draw_episodes(f: &mut Frame, app: &mut App, area: Rect) {
     f.render_stateful_widget(table, area, &mut window);
 }
 
-fn draw_now(f: &mut Frame, app: &App, area: Rect) {
-    let [line1, line2] = Layout::vertical([Constraint::Length(1), Constraint::Length(1)]).areas(area);
-    let mut right = Vec::new();
-    if let Some(n) = &app.now
-        && n.buffering
-    {
-        right.push(Span::raw("buffering…  ").fg(ACCENT));
+/// `L`: show notes in place of the table, scrolled with j/k.
+fn draw_notes(f: &mut Frame, app: &App, area: Rect) {
+    let Some(n) = &app.notes else { return };
+    let blk = block(&n.title, true).title_bottom(Line::from(" L or Esc closes · j/k scroll ").dim().right_aligned());
+    let mut lines: Vec<Line> = n.lines.iter().skip(n.scroll).map(|l| Line::raw(l.as_str())).collect();
+    if !n.links.is_empty() {
+        lines.push(Line::raw(""));
+        lines.push(Line::styled("Links", Style::new().fg(accent()).bold()));
+        lines.extend(n.links.iter().map(|u| Line::raw(u.as_str()).dim()));
     }
-    right.push(Span::raw(format!("{:.1}×  vol {}% ", app.prefs.speed, app.prefs.volume)).dim());
-    let right = Line::from(right);
+    f.render_widget(Paragraph::new(lines).wrap(Wrap { trim: false }).block(blk), area);
+}
+
+/// The right side of the now-playing line: what has a value, then the speed as a pill that's
+/// lit when it isn't 1×, so the state is visible at a glance (like trill's flags).
+fn now_flags(app: &App) -> Line<'static> {
+    let info = Style::new().dim();
+    let mut s = Vec::new();
+    if app.now.as_ref().is_some_and(|n| n.buffering) {
+        s.push(Span::styled("buffering…  ", Style::new().fg(accent())));
+    }
+    if !app.queue.is_empty() {
+        s.push(Span::styled(format!("queue {}  ", app.queue.len()), info));
+    }
+    s.push(Span::styled(format!("vol {}%  ", app.prefs.volume), info));
+    let lit = (app.prefs.speed - 1.0).abs() > 0.01;
+    let style = if lit { Style::new().fg(Color::Black).bg(accent()).bold() } else { Style::new().fg(Color::DarkGray) };
+    s.push(Span::styled(format!(" {:.1}× ", app.prefs.speed), style));
+    Line::from(s)
+}
+
+fn draw_now(f: &mut Frame, app: &mut App, area: Rect) {
+    let [line1, line2] = Layout::vertical([Constraint::Length(1), Constraint::Length(1)]).areas(area);
+    let flags = now_flags(app);
+    app.bar_area = Rect::default();
     let Some(n) = &app.now else {
         f.render_widget(Paragraph::new(" ■ Nothing playing").dim(), line1);
-        f.render_widget(Paragraph::new(right).right_aligned(), line1);
+        f.render_widget(Paragraph::new(flags).right_aligned(), line1);
         return;
     };
-    let [l, r] = Layout::horizontal([Constraint::Min(10), Constraint::Length(right.width() as u16)]).areas(line1);
+    let [l, r] = Layout::horizontal([Constraint::Min(10), Constraint::Length((flags.width() as u16).min(line1.width / 2))]).areas(line1);
     let icon = if n.playing { "▶" } else { "⏸" };
     f.render_widget(
         Paragraph::new(Line::from(vec![
-            Span::raw(format!(" {icon} ")).fg(ACCENT).bold(),
-            Span::raw(n.title.as_str()).fg(ACCENT).bold(),
+            Span::styled(format!(" {icon} "), Style::new().fg(accent()).bold()),
+            Span::styled(n.title.as_str(), Style::new().fg(accent()).bold()),
             Span::raw("  "),
-            Span::raw(n.show.as_str()).dim(),
+            Span::styled(n.show.as_str(), Style::new().dim()),
         ])),
         l,
     );
-    f.render_widget(Paragraph::new(right).right_aligned(), r);
+    f.render_widget(Paragraph::new(flags).right_aligned(), r);
 
-    // " 12:03 ██████▌░░░░░ 41:10 ": 1/8-cell precision
+    // " 12:03 ██████▌░░░░░ 41:10 ": solid bar, 1/8-cell precision, gradient fill (like trill)
     let ratio = if n.duration > 0.0 { (n.pos / n.duration).clamp(0.0, 1.0) } else { 0.0 };
     let (ta, tb) = (format!(" {} ", fmt_s(n.pos)), format!(" {} ", if n.duration > 0.0 { fmt_s(n.duration) } else { "--:--".into() }));
     let bar = (line2.width as usize).saturating_sub(ta.len() + tb.len());
+    app.bar_area = Rect { x: line2.x + ta.len() as u16, width: bar as u16, ..line2 };
     let eighths = (ratio * (bar * 8) as f64) as usize;
     let track = Color::Rgb(55, 55, 60);
-    let fill = if n.playing { ACCENT } else { Color::Rgb(120, 120, 120) };
-    let mut spans = vec![Span::raw(ta).dim()];
+    let last = bar.max(2) as f32 - 1.0;
+    let fill = |i: usize| if n.playing { grad(i as f32 / last) } else { Color::Rgb(120, 120, 120) };
+    let mut spans = vec![Span::styled(ta, Style::new().dim())];
     spans.extend((0..bar).map(|i| match (eighths / 8).cmp(&i) {
-        std::cmp::Ordering::Greater => Span::styled("█", Style::new().fg(fill)),
-        std::cmp::Ordering::Equal if !eighths.is_multiple_of(8) => Span::styled(["", "▏", "▎", "▍", "▌", "▋", "▊", "▉"][eighths % 8], Style::new().fg(fill).bg(track)),
+        std::cmp::Ordering::Greater => Span::styled("█", Style::new().fg(fill(i))),
+        std::cmp::Ordering::Equal if !eighths.is_multiple_of(8) => Span::styled(["", "▏", "▎", "▍", "▌", "▋", "▊", "▉"][eighths % 8], Style::new().fg(fill(i)).bg(track)),
         _ => Span::styled(" ", Style::new().bg(track)),
     }));
-    spans.push(Span::raw(tb).dim());
+    spans.push(Span::styled(tb, Style::new().dim()));
     f.render_widget(Paragraph::new(Line::from(spans)), line2);
+}
+
+const HELP: [(&str, &[(&str, &str)]); 4] = [
+    ("Move", &[
+        ("↑↓ jk", "move · PgUp/PgDn · g/G top/bottom"),
+        ("Tab h l", "switch pane"),
+        ("Enter", "open · play"),
+        ("Esc", "back"),
+        ("w", "jump to the playing episode"),
+    ]),
+    ("Listen", &[
+        ("Space", "play / pause"),
+        ("← →  , .", "back 15 s / forward 30 s"),
+        ("p", "back to the start"),
+        ("[ ]", "speed −/+ 0.1× (pitch stays)"),
+        ("+ -", "volume ±5%"),
+    ]),
+    ("Queue", &[
+        ("a", "add to the queue (again: take out)"),
+        ("A", "play next"),
+        ("n", "next in the queue"),
+        ("m", "mark played / unplayed"),
+    ]),
+    ("Shows", &[
+        ("/", "add a feed URL or import OPML"),
+        ("L", "show notes"),
+        ("R", "refresh every show now"),
+        ("D D", "unsubscribe"),
+        ("t", "next colour theme"),
+        ("?  q", "this help · quit (also Ctrl-C)"),
+    ]),
+];
+
+fn help_lines(groups: &[(&str, &[(&str, &str)])]) -> Vec<Line<'static>> {
+    let mut lines = Vec::new();
+    for (i, (name, keys)) in groups.iter().enumerate() {
+        if i > 0 {
+            lines.push(Line::from(""));
+        }
+        lines.push(Line::from(Span::styled(name.to_string(), Style::new().fg(accent()).bold())));
+        for (k, what) in keys.iter() {
+            lines.push(Line::from(vec![Span::styled(format!(" {k:<10}"), Style::new().bold()), Span::raw(what.to_string())]));
+        }
+    }
+    lines
+}
+
+/// `?`: every key in a centred pane, two columns when there's room.
+fn draw_help(f: &mut Frame) {
+    let area = f.area();
+    let two = area.width >= 100;
+    let (left, right) = if two { (help_lines(&HELP[..2]), help_lines(&HELP[2..])) } else { (help_lines(&HELP), Vec::new()) };
+    let w = if two { 92 } else { 50 }.min(area.width.saturating_sub(2));
+    let h = (left.len().max(right.len()) as u16 + 3).min(area.height.saturating_sub(2));
+    let rect = Rect { x: area.x + (area.width - w) / 2, y: area.y + (area.height - h) / 2, width: w, height: h };
+    f.render_widget(Clear, rect);
+    let blk = block("Keys · any key closes", true);
+    let inner = blk.inner(rect);
+    f.render_widget(blk, rect);
+    if two {
+        let [l, r] = Layout::horizontal([Constraint::Fill(1), Constraint::Fill(1)]).areas(inner);
+        f.render_widget(Paragraph::new(left), l);
+        f.render_widget(Paragraph::new(right), r);
+    } else {
+        f.render_widget(Paragraph::new(left), inner);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn help_shows_every_key() {
+        for (w, h) in [(120, 40), (60, 40)] {
+            let mut t = ratatui::Terminal::new(ratatui::backend::TestBackend::new(w, h)).unwrap();
+            t.draw(super::draw_help).unwrap();
+            let screen: String = t.backend().buffer().content().iter().map(|c| c.symbol()).collect();
+            for (_, keys) in super::HELP {
+                for (_, what) in keys {
+                    assert!(screen.contains(what), "{w}x{h} is missing {what}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn logo_rows_line_up() {
+        let w = super::LOGO[0].chars().count();
+        assert!(super::LOGO.iter().all(|r| r.chars().count() == w));
+    }
 }
