@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 352" width="880" height="352" role="img" aria-label="Your place, never lost. hark saves where you are every 10 seconds while playing, and on pause, seek, switching episodes, quitting, closing the terminal and logging out. Tested: closing the terminal saved the exact second; a kill -9 lost 6 seconds. Coming back rewinds a little for context: 3 seconds after a minute away, 10 after an hour, 20 after a day. Stopping in the last 30 seconds, the outro, marks the episode played.">
+<style>
+@font-face{font-family:hm;font-weight:400;src:url(data:font/woff2;base64,d09GMgABAAAAAAggAA4AAAAAEAQAAAfPAAJN0wAAAAAAAAAAAAAAAAAAAAAAAAAAGhwbIBwqBmAAdhEICpdgkigBNgIkA4EoC1YABCAFVAcgGwEMUZRNUhjg54HdeCEIl0fximtCU211jGCdAyOTAbhpl1BLOxeoGFQ8eFALUMkYeCHYTI2+irAXFwvXcjeX0k5yfcISuLJSDwDG/Nl7WwSjKkyFwQYQWABk/5sjUzuhkvNM6t6yWDU77v/+0tn/ylbk5DnGdAiNRKqb3b9jL8XcqkERhKpsUA3qFzXWVKewtSiJDXOWWE0IFyOz34aBAGEUYDgJBYakDVIg5GdVIoM5IPRGuw8V0P8VqOEQMb17aAS5uzHZyNI8piEBpBJykDiIUhC5m4sAsIUhRBCdBBMnQRQeEwSgYNWSHoIQqwT//AcQbIQER5P1ZDEsRBmy6YBANcloeKRK0LnuBIyDAAobaEALeiGHBTxW1ZCL75agHVIqgoymovbo68D/d/2fX8X64DF7E+rXoB7VqEUdCHA62VgzmnfwzaQBwQgwjP7cmwJszQQdKyyXXs/XJjUab+agBMsRovHacUwGUTdzEBIr4awbFevu8swzez0gchgJ2fWEu+oaJLNQQ8xQQhvjakc2WLC6MzV1uwDmDxa2JBqU98me/ANPSe0fGVmeP3eksLyiMBdm8R/6bfvcEpIFUA4fMCOzCf0G7xtViFE5yxInj+blnYJqmMs2fkBVNlFg6CJMHkfBi7DIL2GSw7q5YtdSUI4wggEUhVQJicozqlFZlFdIKayLzSCVIFTGuwBVe4/iiFyCMw5bBYLsW0SpLAUh65NlYT0bMU8hvNyYn9lHIRNUr692Drh4EUKzFBpbWCeUBxLlalHxDnkqKnXJxi2iuPlFxxH2XACzE1R6s2cLX8yB8wG5vwRVctAm/1uu2FQ3GArlG6xux5uheoBnjgAaKD/lyYdyvYpahOwOpRV0s5pU7ovUbZYooVpB/sqP3oRxfU6+DmKXXiSXL6al4+hNqhmVI6gGyftmB1lQ9Dv2egq1dPNaDea4CJcFV79Fg+KRHrmcrbQWgYNMFS4atpT7Ve2fWjY8RI/AUOCsY8nkuwC1OU2VnlZRij7sL0NMlRMcmzRTjV0uAsX/oO1HJcer8hk4hv60KWdXOdJDiRdlgjdKDV27ypaGFZQsN428Hle8rLgoK5ZJJi6TyMGzx3qPsduffhX+pvyxoKOrxeZp7rlGnFnW/et4roTJ+wLxdKh/9VCcXOyXtdu0DnWfoyCJS1ofg41SuRQJgueKXIFYSyx1K1XeSC40EnQHLXRI/9YV9H9J+xiD6rhqGIkuKr5iQfR4VNp4aGmCHOBqNTQtN2pVJ1RGnZzWSGs4cmBpAlUUG80FR0KRnFflVi4liLUFrsjxRMKlmOug1TkydCAt/Utf0P0NMRVZvjS5OTk8OKIJd/XMZ6KD3UqDUdbJ1Ie5Cv0S9xs2zNJojUqlk1aDN3cV2MISjcdqHmFHGNmSD9kPd6FwK3umzdfSSQwJFjq65f5IJrg0GMn55Y6+hWRoqN47HB4aV1t4E59Qaeh1tGkQBIrcbGLYJld7I4nBxVxMpdL20oyBCcLPPrr5RpZ67ZNFpMid4E99lLyp9J65/IVfMr9iraXfZ/z2AXaaurpfeA0LRb3TQupH19dOv5SIUfU9Kqf6Et+lot9mzfxVdJmV6Zg5qxKBeo4vsTOqJorLY0uXpNbzSxbH43cyvz61dEnUJddqmMOMdcllOsuQF/NuVWRG5Y1kQyqmXcq4YMsVv/fXjJFbC8RaQdzVp7FQNMv2dtnLv/dD4/7JXMP8iYX1HE/GbUqmPzAcauPaVi6TK3VMEJPLA3HWztVzHZLOTKOJqTgxeYXSrjZHPQMSd9ypnjerrknSKq2VmfZN3DPxoCPuCyCm9zi1uvPs+TPcmQ/ZD3WzyJkFFs1UaNHCSJALKtTGPpoxKtgDI0sW4sd76iIrFhX+aWfeOTgpQzESYdVQnbNvS50P4/Q9+i2cfktPHON8ddIt1vl1MdUaeX4c1ts0a9D5yIw7KtPZq9NP9zU8TeQ7qh5Oppfdmn7OTH+zenggbr7V/fpzgsgm75KLbW0XYyu9ofFvQ0wlli+NMtFJk1jJmp5wtFtrV5jtSkZJOgVNkP80c/SsmaNmbpLPGo0K+4Ts8SPJy1av2XkJi37vTwKTeKBZoTfKlUaziiOjK5bEEssXRbvpJXrTY8/bWQipxLKFEU5hMCi8utP8Cy7nLfdL2MO+G+8ZKkvm53VGli/EwYJ1H3Xd8OSHGn64hbsMdUmv0KLQGWRPxraxHcQDyxO5fKJl+igJZUzL5ClDe038s6ta47fSooc65mrCdG9Ma5SnU3KjS+P2GwwWa56NeBQ39AIrVAfpnhomOc/LDSY+m02DaY59+UJvR9bQAfGZphPV1SeansobL49wQnTqGhReI5w0spwlJU31s3tEbsYNXF8uHi4TQ7xT5Jk9hxWJ2DmzPSDrUQVCOQ7JJAAhLj/hB0ixgAKDQDpetXpGD4bGKn6tGCv4ggC8/8XwquczU1v/lP63kPy3JAygDOo3ofD7z0AOItr/r3L7wkuymRwEdwcedBCAQRgAH/ThQRn2E0RgDlYQ9j3DAF6IgzbgoBfm4k4euy3YsfEOthYGXoG34XnYC3+mAfy3r/Z7aybuQh47UNYWjSDOVYILTl2iMW8A2PsVXATKNGSaRaqfQgSLkUEOC5C/T2WRQBLLkDVmAS5d/yfoxFgEAA==)}
+@font-face{font-family:hm;font-weight:500;src:url(data:font/woff2;base64,d09GMgABAAAAAARsAA4AAAAAB/AAAAQaAAJN0wAAAAAAAAAAAAAAAAAAAAAAAAAAGhYbIBwqBmAAfBEICokEhxsBNgIkAyQLJAAEIAVUByAb8AURlZwoID8OcrJTk1Q6P6bMTlO23SakIHh0qDTnNXjq17LXPX/pdwBJRxO7zNaq5IgVuxm7K9Q50ickqVMJD1SdE7c/5Om/EU7aAUihZEnTUT7ti77xKPU/APz4ocvpn/1uWLw5oDDjaOxFH84JFHFgYyyCbXEcRdlc2zkp23xQQzhJP2YiQAvqU0QYbcje4BlhDNnaOTpBEQfQFFQM9hwLaGfqr+6/fYMhD7DYaU2+UACtaw3g0Botp3jLGqBQQcWFiQcbAH+Y4FPw538C3S0rLJbO6T/GBMViBQKgBwaxGI5nv9ZHBwFFJljhPgQkNAWUUEVtU0SYRZR9CzdfLFuyYNaMaZMJKiRIU+0YOgGm+vSBPAUkAUwcKQGK8ACxqK1Gd1wQDNvIQKWvrbetXt6z2NPV2uas0OoevGzhtcqF9Uzi3ExiXz8f8flgQiNFvfgvSbWRi/ipa6Kb+zypyKPR0K9l3rcSiFJr3E1bkiCRAi0R5Go4yUZFYna2FYwTW8/tC+Jbrw9tndgj8NLqop9msFrXhtxBiBZkjn9vCafIo9JelE35kJzGXTHdkkQt4iVOGrXowiTjSuJq9e/25RsTmPvlff3cvx2mKVULtJm0UrxGP8y477Wb7tGQmzMTOzXW56+D89+HOcYNF+WMoUWwbKWzvk+GsZ9vPC8tcAl21al0DYEflSycn5RE8TJXnckS74uauGx4cTafLBTk1IpIaTw7xCWdGY/4xc24hDu7jIFPhawtIcbx2hJSVEVJY7hVqL9fUHhoyDgSzgzy/2qFS2NVFLhUiJpKqo2Si4lw3NefzyRyPJGwiCDPBwJCKaoy7R5l/M2YyYwICcHfA/acOAi0FJmIMNNFYqyEEIWc8fVHwxEeNCWwcuLenGRbBFpFW26zAbPHJVRSiBS4lMiqcrqJLmbSLMjNDgxloCMozIGYDDkHnuN5UpUpKCNdVCRYFMKajg436pSWpuWy/wFXQxdCrwb4oWHIGAI/FNizXywRDc3i0QJPwqO8NCg4DOWAXokvzkjEbWM9XL3i7CPCFMZ7dpjJzHgije2aKU6RDss1+eLk6qZgHUD16QxpjydTmQIgYtLTIv0X2YvzxPwb9hs/k3fGq2xwrojKS3EuwQ1Gwv380fDgwTXiFaXw+ZidpIJe/uPl9XK5nJYct4PdAykPb8pK6iMr/ltZvakoi5RoPoPzZT+vymgvAAAAKQDp4wd7hq78ELQjXxU1ZN4DwJv3VG1bSff8RP6V6F8nBAB5dJ7y2LFK1+Lwf07rQ2C+lGLAhjDIglTAwAzM0hVclCvZ4P1+7hYAUgBacpQi6Ab5LAYZj1+WVbvKKYHQAdxcpY2ONkfEUMT+NIigDPKhEIqhCIohHUgQQyUUwCGDSvafxBsAKQAAAA==)}
+@font-face{font-family:hm;font-weight:600;src:url(data:font/woff2;base64,d09GMgABAAAAAAVMAA4AAAAACYgAAAT5AAJN0wAAAAAAAAAAAAAAAAAAAAAAAAAAGhwbIBwqBmAAdBEICotoiTsBNgIkA1QLLAAEIAVUByAbPgcgrgZsdxrUyTgJK0qzaXq+elIHH02xQVT7ffbM7oc3cxAghN2qqCMfICEj3AkfYnflE3v/oC6dyNgjmBSyX31J+e9f9tPNT+MEIsqWBZSV+BAYC8cYvP9/d5di09r9DzBP3YhL09uUUqxUjlCMQ6V2algrBcOhxJ4frDTroKWNv/A/sLy6sY6HVyqezO/PDOpFgDr0pRVFKBCcbggCGAMYhKxYJVBAPBGgJgAg2lGMQU+XeuFovxDkA8FZUfeohhjQpq4EWH+9HKJTKIBCgVoKt65bBkA7Q7gZ/nQClIxMgCl1lD4RDqE8rkAAelBQRBw58tQuBCJDWIEIOVaceAnTf4orBlMHbgL0+ZtuVskEPC6HlaBmgtTUCKsnd48D+oP8Dd0N0LC8CJCwZr3UJFJFPhgkhlBn3cYXJWU15BdFDbmWOrJnamqPsdmZyUml+njsfLKxPsZL3ow+ogk+2C6fSiRkbJbOO/jswScJHu3QU0jn0aYH4glJPR+zdpmLmXz2fozlnzW9pH3mzvuIBB92Tskx92QzFc8+hhxDTewN7IoQFIfAF9OWHObOobsikqKJEHddAddb/SPUjT3Gm5/+fm/7IEkytibYGZHkc7D7zT0LZ+fjBLaP+73k7JC1UwkF05nq4sGkXp365rjriGl2xyHnrx8uXAOl53Ijku2oOnCbg65Meh+kF1r1aWCSuebpcup5JMuqCytnA6l2Ji5ZrD2ROOWihm2OcZd9EtMUu3N0OOX6VRz9fys4N+WE5NWbZ9K070n41UATrjmrfzMetn8713hROAe9kImze9Ecs8WCZ9IJhTgmA28B6TezQ0UxYlWOGOx4YnSoMFoQ5CNGQmsRyL12H5pNIuDpZKT+6JQzRdwshZdH6NZYO6hUWwdKg/e1fZo27dKkkaO5/mJ+lrqvmIo1ubvgH73jmEko8po0i+rN/va5Zb5oxlWNxRW2qAf53BGOnfg6DZGF62TPaqqoa+yByGLb0bB5qcUaluEl+P2Rj14Gnqie9SJ8jrF7B246dkd39wLCQuICGF847/Z3jXEN7u9k2LtRZopd1YL7P3viLoM/kXlLdkPJ+9xnIZGKxRJpsLQ8uLSlo6khQt/OI1ilNWgJm61hJZaPnDroq1QGbKaUzuk7sA7Mji5kancfZCrs+KbtgzP030AgyawebShgxizr7NqJ1YP02EnbVlveuXdgtGjQCW73ajoqkLINNkBGGYSRqMG11c3zYeeAui6KiLTWtqJ0T0HB6tKVmo1YQ+w+CTtG+b3BuSbseU1V153+rlHugf3cF/+ogVmnCXVtbhv22qwW44z3Tw/AgI0kitLotXQEWsNB1AyCGnKq5vNKob8qt7W5DVVNpsXPYi4ulVD5DpmxReWTRtIuFL4ZPbHp/eAZEyd2nZM1X+xV2sC+Vinn1C+1LV16YemLYy/Yfrf6vbVBY+G40ceuC2gxWEpXN46C0QZ09gF9oOlJ1byy8nlV5zeWl80DHYUBFXqoF2AJwFZAJ4ZUBNCN76Wj+C+HGwn/q42hI+B3x6nB8uwzE34u/or+jUcAyigAAv/jmO4BMOzfg6CtnqpBd0AOKaggQQwhJFBQpSgBElZA4AEfDZD9JoBOHQF6yiHqEiOIfWwwlEJk1k08FoQurqpXGuiyEzEFy/T0M1jpg58gYUKEkeHETX8ClIxCratFJyAAAAAA)}
+text{font-family:hm,hf,ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace}
+</style>
+<defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffb03b"/><stop offset="1" stop-color="#ff5f6d"/></linearGradient></defs>
+<rect x="0.00" y="0.00" width="880.00" height="352.00" rx="6" fill="#0d0d0d"/>
+<rect x="0.50" y="0.50" width="879.00" height="351.00" rx="6" fill="none" stroke="#1f1f1f"/>
+<rect x="24.50" y="26.50" width="831.00" height="299.00" rx="3" fill="none" stroke="#2a2a2a"/>
+<rect x="36.00" y="24.00" width="185.60" height="5.00" fill="#0d0d0d"/>
+<text x="42.00" y="30.50" font-size="13" font-weight="500" fill="#8f8f8f" text-anchor="start" xml:space="preserve">your place, never lost</text>
+<rect x="687.00" y="24.00" width="158.00" height="5.00" fill="#0d0d0d"/>
+<text x="851.00" y="30.50" font-size="12" font-weight="400" fill="#5b5b5b" text-anchor="end" xml:space="preserve">tested, not promised</text>
+<rect x="60.00" y="92.00" width="760.00" height="8.00" fill="#1b1b1b"/>
+<rect x="60.00" y="92.00" width="440.80" height="8.00" fill="url(#pg)"/>
+<rect x="785.80" y="92.00" width="34.20" height="8.00" fill="#3a2a14"/>
+<line x1="78.4" y1="87" x2="78.4" y2="92" stroke="#5b5b5b"/>
+<line x1="96.7" y1="87" x2="96.7" y2="92" stroke="#5b5b5b"/>
+<line x1="115.1" y1="87" x2="115.1" y2="92" stroke="#5b5b5b"/>
+<line x1="133.5" y1="87" x2="133.5" y2="92" stroke="#5b5b5b"/>
+<line x1="151.8" y1="87" x2="151.8" y2="92" stroke="#5b5b5b"/>
+<line x1="170.2" y1="87" x2="170.2" y2="92" stroke="#5b5b5b"/>
+<line x1="188.6" y1="87" x2="188.6" y2="92" stroke="#5b5b5b"/>
+<line x1="206.9" y1="87" x2="206.9" y2="92" stroke="#5b5b5b"/>
+<line x1="225.3" y1="87" x2="225.3" y2="92" stroke="#5b5b5b"/>
+<line x1="243.7" y1="87" x2="243.7" y2="92" stroke="#5b5b5b"/>
+<line x1="262.0" y1="87" x2="262.0" y2="92" stroke="#5b5b5b"/>
+<line x1="280.4" y1="87" x2="280.4" y2="92" stroke="#5b5b5b"/>
+<line x1="298.8" y1="87" x2="298.8" y2="92" stroke="#5b5b5b"/>
+<line x1="317.1" y1="87" x2="317.1" y2="92" stroke="#5b5b5b"/>
+<line x1="335.5" y1="87" x2="335.5" y2="92" stroke="#5b5b5b"/>
+<line x1="353.9" y1="87" x2="353.9" y2="92" stroke="#5b5b5b"/>
+<line x1="372.2" y1="87" x2="372.2" y2="92" stroke="#5b5b5b"/>
+<line x1="390.6" y1="87" x2="390.6" y2="92" stroke="#5b5b5b"/>
+<line x1="409.0" y1="87" x2="409.0" y2="92" stroke="#5b5b5b"/>
+<line x1="427.3" y1="87" x2="427.3" y2="92" stroke="#5b5b5b"/>
+<line x1="445.7" y1="87" x2="445.7" y2="92" stroke="#5b5b5b"/>
+<line x1="464.1" y1="87" x2="464.1" y2="92" stroke="#5b5b5b"/>
+<line x1="482.4" y1="87" x2="482.4" y2="92" stroke="#5b5b5b"/>
+<circle cx="500.8" cy="96" r="6" fill="#ececec"/>
+<text x="60.00" y="80.00" font-size="12" font-weight="400" fill="#8f8f8f" text-anchor="start" xml:space="preserve">saved every 10 s</text>
+<text x="500.80" y="80.00" font-size="12" font-weight="500" fill="#ececec" text-anchor="middle" xml:space="preserve">you are here</text>
+<text x="820.00" y="80.00" font-size="12" font-weight="400" fill="#ffb03b" text-anchor="end" xml:space="preserve">outro</text>
+<text x="60.00" y="118.00" font-size="11" font-weight="400" fill="#5b5b5b" text-anchor="start" xml:space="preserve">0:00</text>
+<text x="820.00" y="118.00" font-size="11" font-weight="400" fill="#5b5b5b" text-anchor="end" xml:space="preserve">44:51</text>
+<rect x="44.50" y="150.50" width="253.33" height="150.00" rx="4" fill="#1b1b1b" stroke="#2a2a2a"/>
+<text x="60.00" y="178.00" font-size="14" font-weight="600" fill="#ffb03b" text-anchor="start" xml:space="preserve">Nothing to lose</text>
+<text x="60.00" y="202.00" font-size="12" font-weight="400" fill="#ececec" text-anchor="start" xml:space="preserve">saved every 10 s, and on</text>
+<text x="60.00" y="220.00" font-size="12" font-weight="400" fill="#8f8f8f" text-anchor="start" xml:space="preserve">pause, seek, switch, quit,</text>
+<text x="60.00" y="238.00" font-size="12" font-weight="400" fill="#8f8f8f" text-anchor="start" xml:space="preserve">a closed terminal, logout</text>
+<text x="60.00" y="286.00" font-size="11" font-weight="400" fill="#5b5b5b" text-anchor="start" xml:space="preserve">tested: kill -9 lost 6 s</text>
+<rect x="313.83" y="150.50" width="253.33" height="150.00" rx="4" fill="#1b1b1b" stroke="#2a2a2a"/>
+<text x="329.33" y="178.00" font-size="14" font-weight="600" fill="#ffb03b" text-anchor="start" xml:space="preserve">Smart resume</text>
+<text x="329.33" y="202.00" font-size="12" font-weight="400" fill="#ececec" text-anchor="start" xml:space="preserve">back a bit, for context:</text>
+<text x="329.33" y="220.00" font-size="12" font-weight="400" fill="#8f8f8f" text-anchor="start" xml:space="preserve">3 s after a minute away</text>
+<text x="329.33" y="238.00" font-size="12" font-weight="400" fill="#8f8f8f" text-anchor="start" xml:space="preserve">10 s after an hour</text>
+<text x="329.33" y="256.00" font-size="12" font-weight="400" fill="#8f8f8f" text-anchor="start" xml:space="preserve">20 s after a day</text>
+<text x="329.33" y="286.00" font-size="11" font-weight="400" fill="#5b5b5b" text-anchor="start" xml:space="preserve">you hear the sentence again</text>
+<rect x="583.17" y="150.50" width="253.33" height="150.00" rx="4" fill="#1b1b1b" stroke="#2a2a2a"/>
+<text x="598.67" y="178.00" font-size="14" font-weight="600" fill="#ffb03b" text-anchor="start" xml:space="preserve">Done means done</text>
+<text x="598.67" y="202.00" font-size="12" font-weight="400" fill="#ececec" text-anchor="start" xml:space="preserve">stop in the last 30 s and</text>
+<text x="598.67" y="220.00" font-size="12" font-weight="400" fill="#8f8f8f" text-anchor="start" xml:space="preserve">it's marked played;</text>
+<text x="598.67" y="238.00" font-size="12" font-weight="400" fill="#8f8f8f" text-anchor="start" xml:space="preserve">seek back and it isn't</text>
+<text x="598.67" y="286.00" font-size="11" font-weight="400" fill="#5b5b5b" text-anchor="start" xml:space="preserve">no 'In progress' forever</text>
+</svg>

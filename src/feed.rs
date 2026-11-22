@@ -168,7 +168,9 @@ pub fn notes_text(html: &str) -> (Vec<String>, Vec<String>) {
         }
         match name.as_str() {
             "script" | "style" if !tag.starts_with('/') => skip_until = Some(if name == "script" { "/script" } else { "/style" }),
-            "br" | "p" | "div" | "tr" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "ul" | "ol" | "blockquote" => text.push('\n'),
+            // a paragraph right inside a list item (<li><p>…) stays on the bullet's line
+            "br" | "p" | "div" | "tr" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "ul" | "ol" | "blockquote" if !text.trim_end_matches(' ').ends_with('•') => text.push('\n'),
+            "br" | "p" | "div" | "tr" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "ul" | "ol" | "blockquote" => {}
             "li" if !tag.starts_with('/') => text.push_str("\n• "),
             "a" => {
                 if let Some(h) = tag.split("href=").nth(1) {
@@ -370,7 +372,7 @@ mod tests {
 
     #[test]
     fn notes_from_html() {
-        let html = r#"<p>Hi &amp; welcome&nbsp;to <b>Ep&#32;1</b>.</p><p>Topics:</p><ul><li>One</li><li>Two &#x2014; three</li></ul>
+        let html = r#"<p>Hi &amp; welcome&nbsp;to <b>Ep&#32;1</b>.</p><p>Topics:</p><ul><li>One</li><li><p>Two &#x2014; three</p></li></ul>
 <script>var x = "<p>nope</p>";</script><p>Links: <a href="https://ex.com/a?b=1&amp;c=2">here</a>, <a href='https://ex.com/z'>z</a></p><br/><br/>"#;
         let (lines, links) = notes_text(html);
         // paragraphs keep one blank line between them, never more
