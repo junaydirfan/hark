@@ -4,8 +4,11 @@
 
 use std::{
     collections::VecDeque,
-    path::PathBuf,
-    sync::{Arc, Condvar, Mutex},
+    hash::{Hash, Hasher},
+    sync::{
+        Arc, Condvar, Mutex,
+        atomic::{AtomicU64, Ordering},
+    },
     time::Duration,
 };
 
@@ -15,15 +18,17 @@ use symphonia::core::{
     codecs::audio::{AudioDecoder, AudioDecoderOptions},
     errors::Error as SymErr,
     formats::{FormatOptions, FormatReader, SeekMode, SeekTo, TrackType, probe::Hint},
-    io::MediaSourceStream,
+    io::{MediaSource, MediaSourceStream},
     meta::MetadataOptions,
     units::{Time, TimeBase},
 };
 use tokio::sync::mpsc::UnboundedSender;
 
+use crate::stream::{self, Src};
+
 pub enum Cmd {
-    /// Play a file from `at_s` seconds in.
-    Load { path: PathBuf, at_s: f64 },
+    /// Play a file path or an http(s) url from `at_s` seconds in.
+    Load { src: String, at_s: f64 },
     Pause(bool),
     Seek(f64),
     Speed(f32),
@@ -36,6 +41,8 @@ pub enum Event {
     Loaded { duration_s: f64 },
     /// Where playback is, in the episode's own seconds; sent when the whole second changes.
     Position(f64),
+    /// true: waiting for the download; false: playing again.
+    Buffering(bool),
     Ended,
     Error(String),
 }
@@ -56,8 +63,13 @@ pub struct Engine {
 impl Engine {
     pub fn start(events: UnboundedSender<Event>) -> Engine {
         let shared = Arc::new(Shared { ring: Mutex::new(VecDeque::new()), inbox: Mutex::new(VecDeque::new()), wake: Condvar::new() });
+        // stream caches left by an exit or crash mid-download (a running download deletes its own)
+        let _ = std::fs::remove_dir_all(stream::tmp_dir());
         let s = shared.clone();
-        std::thread::Builder::new().name("audio".into()).spawn(move || Player::new(s, events).run()).expect("audio thread");
+        // audio gets its own client: a compressed reply would break the byte offsets seeking uses
+        let client = reqwest::Client::builder().no_gzip().build().expect("http client");
+        let rt = tokio::runtime::Handle::current();
+        std::thread::Builder::new().name("audio".into()).spawn(move || Player::new(s, events, client, rt).run()).expect("audio thread");
         Engine { shared }
     }
 
@@ -75,6 +87,16 @@ struct Track {
     /// Source seconds at the end of the last decoded packet.
     decoded_s: f64,
     eof: bool,
+    /// Set when streaming: how much has downloaded.
+    net: Option<Arc<Src>>,
+}
+
+/// A stream waiting for its first bytes before its format can be read.
+struct Pending {
+    source: Box<dyn MediaSource>,
+    net: Arc<Src>,
+    hint: Hint,
+    at_s: f64,
 }
 
 struct Player {
@@ -89,11 +111,15 @@ struct Player {
     volume: f32,
     last_sec: i64,
     buf: Vec<f32>,
+    client: reqwest::Client,
+    rt: tokio::runtime::Handle,
+    pending: Option<Pending>,
+    buffering: bool,
 }
 
 impl Player {
-    fn new(shared: Arc<Shared>, events: UnboundedSender<Event>) -> Self {
-        Player { shared, events, out: None, track: None, sonic: None, paused: false, speed: 1.0, volume: 1.0, last_sec: -1, buf: Vec::new() }
+    fn new(shared: Arc<Shared>, events: UnboundedSender<Event>, client: reqwest::Client, rt: tokio::runtime::Handle) -> Self {
+        Player { shared, events, out: None, track: None, sonic: None, paused: false, speed: 1.0, volume: 1.0, last_sec: -1, buf: Vec::new(), client, rt, pending: None, buffering: false }
     }
 
     fn emit(&self, e: Event) {
@@ -102,7 +128,7 @@ impl Player {
 
     fn run(mut self) {
         loop {
-            let busy = self.track.is_some() && !self.paused;
+            let busy = (self.track.is_some() && !self.paused) || self.pending.is_some();
             let cmds: Vec<Cmd> = {
                 let mut q = self.shared.inbox.lock().unwrap();
                 if q.is_empty() {
@@ -118,6 +144,12 @@ impl Player {
             for c in cmds {
                 self.handle(c);
             }
+            if let Some(p) = self.pending.take_if(|p| p.net.ready()) {
+                match p.net.failed() {
+                    Some(e) => self.emit(Event::Error(format!("download failed: {e}"))),
+                    None => self.start(p.source, Some(p.net), p.hint, p.at_s),
+                }
+            }
             if self.track.is_some() && !self.paused {
                 self.fill();
             }
@@ -126,12 +158,7 @@ impl Player {
 
     fn handle(&mut self, c: Cmd) {
         match c {
-            Cmd::Load { path, at_s } => {
-                if let Err(e) = self.load(path, at_s) {
-                    self.track = None;
-                    self.emit(Event::Error(e));
-                }
-            }
+            Cmd::Load { src, at_s } => self.load(src, at_s),
             Cmd::Pause(p) => {
                 self.paused = p;
                 if let Some((s, ..)) = &self.out {
@@ -154,13 +181,43 @@ impl Player {
         }
     }
 
-    fn load(&mut self, path: PathBuf, at_s: f64) -> Result<(), String> {
-        let file = std::fs::File::open(&path).map_err(|e| format!("{}: {e}", path.display()))?;
-        let mss = MediaSourceStream::new(Box::new(file), Default::default());
+    fn load(&mut self, src: String, at_s: f64) {
+        // drop the old track first: that stops its download and deletes its cache file
+        self.track = None;
+        self.pending = None;
+        self.shared.ring.lock().unwrap().clear();
         let mut hint = Hint::new();
-        if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
+        let path_part = src.split(['?', '#']).next().unwrap_or("");
+        if let Some(ext) = path_part.rsplit_once('.').map(|(_, e)| e).filter(|e| e.len() <= 4 && !e.contains('/')) {
             hint.with_extension(ext);
         }
+        if src.starts_with("http://") || src.starts_with("https://") {
+            static N: AtomicU64 = AtomicU64::new(0);
+            let mut h = std::hash::DefaultHasher::new();
+            src.hash(&mut h);
+            let path = stream::tmp_dir().join(format!("{:016x}-{}.part", h.finish(), N.fetch_add(1, Ordering::Relaxed)));
+            let shared = self.shared.clone();
+            match stream::open(self.client.clone(), src, path, &self.rt, Box::new(move || shared.wake.notify_one())) {
+                Ok((reader, net)) => self.pending = Some(Pending { source: Box::new(reader), net, hint, at_s }),
+                Err(e) => self.emit(Event::Error(format!("can't cache the stream: {e}"))),
+            }
+        } else {
+            match std::fs::File::open(&src) {
+                Ok(f) => self.start(Box::new(f), None, hint, at_s),
+                Err(e) => self.emit(Event::Error(format!("{src}: {e}"))),
+            }
+        }
+    }
+
+    fn start(&mut self, source: Box<dyn MediaSource>, net: Option<Arc<Src>>, hint: Hint, at_s: f64) {
+        if let Err(e) = self.open_track(source, net, hint, at_s) {
+            self.track = None;
+            self.emit(Event::Error(e));
+        }
+    }
+
+    fn open_track(&mut self, source: Box<dyn MediaSource>, net: Option<Arc<Src>>, hint: Hint, at_s: f64) -> Result<(), String> {
+        let mss = MediaSourceStream::new(source, Default::default());
         let format = symphonia::default::get_probe().probe(&hint, mss, FormatOptions::default(), MetadataOptions::default()).map_err(|e| format!("can't read this audio: {e}"))?;
         let track = format.default_track(TrackType::Audio).ok_or("no audio in this file")?;
         let params = track.codec_params.as_ref().and_then(|p| p.audio()).ok_or("no audio in this file")?.clone();
@@ -176,7 +233,8 @@ impl Player {
             self.out = None; // close the old stream before opening one for the new format
             self.out = Some((self.open_output(rate, channels)?, rate, channels));
         }
-        self.track = Some(Track { format, decoder, id, tb, decoded_s: 0.0, eof: false });
+        self.track = Some(Track { format, decoder, id, tb, decoded_s: 0.0, eof: false, net });
+        self.buffering = false;
         self.emit(Event::Loaded { duration_s });
         self.paused = false;
         self.seek(at_s);
@@ -275,6 +333,23 @@ impl Player {
                 break;
             }
             let Some(t) = &mut self.track else { return };
+            if let Some(net) = &t.net {
+                if let Some(e) = net.failed() {
+                    self.track = None;
+                    return self.emit(Event::Error(format!("download failed: {e}")));
+                }
+                if !t.eof && !net.ready() {
+                    if !self.buffering {
+                        self.buffering = true;
+                        let _ = self.events.send(Event::Buffering(true));
+                    }
+                    break;
+                }
+            }
+            if self.buffering {
+                self.buffering = false;
+                let _ = self.events.send(Event::Buffering(false));
+            }
             if t.eof {
                 if self.shared.ring.lock().unwrap().is_empty() {
                     self.track = None;

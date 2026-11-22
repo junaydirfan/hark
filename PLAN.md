@@ -40,8 +40,11 @@ Same NPR episode (128 kbps MP3), silent, i9-14900HX:
   0.5 s. Paused or idle, it waits on a command with no timer.
 
 Known gaps:
-- **Streaming:** the engine plays files. It still needs a source that downloads progressively
-  to `~/.cache/hark/` while playing, and uses range requests to jump ahead on a seek.
+- **Streaming (done):** a download task writes the episode into `~/.cache/hark/tmp/` while it
+  plays. Seeking past what has arrived restarts the download there with a range request. The
+  engine decodes only with 64 KB ready (otherwise it reports `Buffering`), so a slow network
+  never blocks pause or seek. It retries 3 times. Measured: ~0.6 s from url to playing, 8.1 MB.
+  Gap behind a forward seek is only fetched when playback seeks back into it.
 - **Resampling for macOS/Windows:** the output uses the file's own sample rate and f32 samples.
   PulseAudio converts on Linux; CoreAudio/WASAPI may refuse, so those need a resampler (rubato).
 - **VBR seeking:** MP3 seeks are coarse (they use the bitrate). That's fine for constant-bitrate
