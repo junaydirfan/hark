@@ -173,14 +173,16 @@ fn draw_table(f: &mut Frame, app: &mut App, area: Rect) {
             let l = app.state.get(&e.guid).copied().unwrap_or_default();
             let queued = app.queue.iter().any(|(u, g)| *u == s.url && *g == e.guid);
             let now = Some(e.guid.as_str()) == playing;
+            // the length the player measured beats the feed's own figure
+            let dur = if l.dur > 0.0 { l.dur } else { e.duration_s as f64 };
             let (mark, len) = if now {
-                ("▶", fmt_s(e.duration_s as f64))
+                ("▶", fmt_s(dur))
             } else if l.played {
-                ("✓", fmt_s(e.duration_s as f64))
+                ("✓", fmt_s(dur))
             } else if l.pos > 0.0 {
-                ("◐", if e.duration_s > 0 { format!("{} left", fmt_s(e.duration_s as f64 - l.pos)) } else { fmt_s(l.pos) })
+                (progress_glyph(l.pos, dur), if dur > 0.0 { format!("{} left", fmt_s(dur - l.pos)) } else { fmt_s(l.pos) })
             } else {
-                (" ", if e.duration_s > 0 { fmt_s(e.duration_s as f64) } else { String::new() })
+                (" ", if dur > 0.0 { fmt_s(dur) } else { String::new() })
             };
             let mut title = vec![Span::raw(e.title.as_str())];
             if queued {
@@ -233,8 +235,35 @@ fn window(state: &mut TableState, n: usize, area: Rect) -> (usize, usize, usize)
     (off, (off + visible).min(n), sel)
 }
 
+/// Discover's genres in a line, the current one lit, scrolled so it stays in view.
+fn genre_strip(app: &App, width: u16) -> Line<'static> {
+    let names: Vec<&str> = std::iter::once("All").chain(crate::discover::GENRES.iter().map(|g| g.0)).collect();
+    let cur = app.genre;
+    // start far enough left that the current genre fits
+    let mut start = cur;
+    let mut used: usize = names[cur].chars().count() + 3;
+    while start > 0 && used + names[start - 1].chars().count() + 3 <= width as usize / 2 {
+        start -= 1;
+        used += names[start].chars().count() + 3;
+    }
+    let mut spans = vec![Span::raw(if start > 0 { " ‹ " } else { " " }).dim()];
+    for (i, n) in names.iter().enumerate().skip(start) {
+        spans.push(if i == cur { Span::styled(format!(" {n} "), Style::new().fg(on_accent()).bg(accent()).bold()) } else { Span::raw(format!(" {n} ")).dim() });
+        spans.push(Span::raw(" "));
+    }
+    Line::from(spans)
+}
+
 /// Discover and Search: shows, with ✓ on the ones you follow.
 fn draw_cards(f: &mut Frame, app: &mut App, area: Rect, title: &str, focused: bool) {
+    let area = if app.view.kind == Kind::Discover {
+        let [strip, rest] = Layout::vertical([Constraint::Length(1), Constraint::Min(3)]).areas(area);
+        f.render_widget(Paragraph::new(genre_strip(app, strip.width)), strip);
+        rest
+    } else {
+        area
+    };
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_secs() as i64);
     let (off, end, sel) = window(&mut app.view.state, app.view.rows.len(), area);
     let rows: Vec<Row> = app.view.rows[off..end]
         .iter()
@@ -245,10 +274,11 @@ fn draw_cards(f: &mut Frame, app: &mut App, area: Rect, title: &str, focused: bo
             let mut row = Row::new(vec![
                 Cell::from(if followed { "✓" } else { " " }).fg(accent()),
                 Cell::from(tag),
-                Cell::from(c.title.as_str()),
+                Cell::from(Line::from(vec![Span::raw(c.title.as_str()), Span::raw(if c.explicit { " [E]" } else { "" }).dim()])),
                 Cell::from(c.author.as_str()).dim(),
-                Cell::from(c.genre.as_str()).dim(),
+                Cell::from(c.genre.as_str()),
                 Cell::from(Line::from(if c.episodes > 0 { c.episodes.to_string() } else { String::new() }).right_aligned()).dim(),
+                Cell::from(Line::from(crate::discover::ago(now, c.updated)).right_aligned()).dim(),
             ]);
             if followed {
                 row = row.style(Style::new().dim());
@@ -256,9 +286,9 @@ fn draw_cards(f: &mut Frame, app: &mut App, area: Rect, title: &str, focused: bo
             row
         })
         .collect();
-    let widths = [Constraint::Length(1), Constraint::Length(7), Constraint::Fill(3), Constraint::Fill(2), Constraint::Length(18), Constraint::Length(8)];
+    let widths = [Constraint::Length(1), Constraint::Length(7), Constraint::Fill(3), Constraint::Fill(2), Constraint::Length(18), Constraint::Length(8), Constraint::Length(10)];
     let table = Table::new(rows, widths)
-        .header(Row::new(vec!["", "", "Show", "By", "Genre", "Episodes"]).dim())
+        .header(Row::new(vec!["", "", "Show", "By", "Genre", "Episodes", "Latest"]).dim())
         .block(block(title, focused))
         .row_highlight_style(highlight(focused))
         .column_spacing(1);
@@ -279,6 +309,15 @@ fn draw_notes(f: &mut Frame, app: &App, area: Rect) {
     f.render_widget(Paragraph::new(lines).wrap(Wrap { trim: false }).block(blk), area);
 }
 
+/// ◔ ◑ ◕: how far into an episode you are, at a glance.
+fn progress_glyph(pos: f64, dur: f64) -> &'static str {
+    match if dur > 0.0 { pos / dur } else { 0.0 } {
+        f if f < 0.375 => "◔",
+        f if f < 0.625 => "◑",
+        _ => "◕",
+    }
+}
+
 /// The right side of the now-playing line: what has a value, then the speed as a pill that's
 /// lit when it isn't 1×, so the state is visible at a glance (like trill's flags).
 fn now_flags(app: &App) -> Line<'static> {
@@ -286,6 +325,10 @@ fn now_flags(app: &App) -> Line<'static> {
     let mut s = Vec::new();
     if app.now.as_ref().is_some_and(|n| n.buffering) {
         s.push(Span::styled("buffering…  ", Style::new().fg(accent())));
+    }
+    // what's left in real time at your speed: what a podcast listener plans around
+    if let Some(n) = app.now.as_ref().filter(|n| n.duration > 0.0) {
+        s.push(Span::styled(format!("{} left  ", fmt_s((n.duration - n.pos).max(0.0) / app.prefs.speed as f64)), info));
     }
     if !app.queue.is_empty() {
         s.push(Span::styled(format!("queue {}  ", app.queue.len()), info));
@@ -420,6 +463,14 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn progress_glyphs() {
+        assert_eq!(super::progress_glyph(100.0, 1000.0), "◔");
+        assert_eq!(super::progress_glyph(500.0, 1000.0), "◑");
+        assert_eq!(super::progress_glyph(900.0, 1000.0), "◕");
+        assert_eq!(super::progress_glyph(100.0, 0.0), "◔", "unknown length");
     }
 
     #[test]

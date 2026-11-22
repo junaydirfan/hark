@@ -12,8 +12,37 @@ pub struct Card {
     pub feed: String,
     pub genre: String,
     pub episodes: u32,
+    /// When the latest episode came out (Unix seconds; 0 = unknown): a dead show looks dead.
+    pub updated: i64,
+    pub explicit: bool,
     /// "for you", "#3" (chart position) or "" (search).
     pub tag: String,
+}
+
+/// "2026-11-05T09:00:00Z" → Unix seconds.
+fn iso_date(s: &str) -> Option<i64> {
+    let (date, time) = s.split_once('T').unwrap_or((s, "0:0:0"));
+    let mut d = date.split('-').map(|p| p.parse::<i64>().ok());
+    let (y, m, day) = (d.next()??, d.next()??, d.next()??);
+    let mut t = time.trim_end_matches('Z').split(':').map(|p| p.parse::<i64>().unwrap_or(0));
+    let secs = t.next().unwrap_or(0) * 3600 + t.next().unwrap_or(0) * 60 + t.next().unwrap_or(0);
+    Some(crate::feed::days_from_civil(y, m, day) * 86400 + secs)
+}
+
+/// How long ago, the way people say it: "today", "3d ago", "5mo ago".
+pub fn ago(now: i64, t: i64) -> String {
+    if t <= 0 {
+        return String::new();
+    }
+    let days = (now - t).max(0) / 86400;
+    match days {
+        0 => "today".into(),
+        1 => "yesterday".into(),
+        2..14 => format!("{days}d ago"),
+        14..60 => format!("{}w ago", days / 7),
+        60..730 => format!("{}mo ago", days / 30),
+        _ => format!("{}y ago", days / 365),
+    }
 }
 
 /// Apple's podcast genres (`/ws/genres?id=26`). Feeds use the same names in `itunes:category`.
@@ -63,6 +92,8 @@ fn card(r: &Value, tag: String) -> Option<Card> {
         feed: feed.to_string(),
         genre: r["primaryGenreName"].as_str().unwrap_or("").to_string(),
         episodes: r["trackCount"].as_u64().unwrap_or(0) as u32,
+        updated: r["releaseDate"].as_str().and_then(iso_date).unwrap_or(0),
+        explicit: r["collectionExplicitness"].as_str() == Some("explicit"),
         tag,
     })
 }
@@ -146,18 +177,20 @@ mod tests {
     use super::*;
 
     fn c(title: &str, feed: &str) -> Card {
-        Card { title: title.into(), author: String::new(), feed: feed.into(), genre: String::new(), episodes: 0, tag: String::new() }
+        Card { title: title.into(), author: String::new(), feed: feed.into(), genre: String::new(), episodes: 0, updated: 0, explicit: false, tag: String::new() }
     }
 
     #[test]
     fn parses_search_and_charts() {
         let v: Value = serde_json::from_str(r#"{"resultCount":3,"results":[
-            {"collectionId":1,"collectionName":"Planet Money","artistName":"NPR","feedUrl":"https://feeds.npr.org/510289/podcast.xml","primaryGenreName":"Business","trackCount":706},
+            {"collectionId":1,"collectionName":"Planet Money","artistName":"NPR","feedUrl":"https://feeds.npr.org/510289/podcast.xml","primaryGenreName":"Business","trackCount":706,"releaseDate":"2026-11-05T09:00:00Z","collectionExplicitness":"explicit"},
             {"collectionId":2,"collectionName":"No feed","artistName":"X"},
             {"collectionId":3,"trackName":"Only track name","feedUrl":" https://x/feed "}]}"#).unwrap();
         let cards = parse_results(&v);
         assert_eq!(cards.len(), 2);
         assert_eq!((cards[0].title.as_str(), cards[0].genre.as_str(), cards[0].episodes), ("Planet Money", "Business", 706));
+        assert_eq!((cards[0].updated, cards[0].explicit), (crate::feed::rfc2822("Thu, 05 Nov 2026 09:00:00 GMT").unwrap(), true));
+        assert_eq!((cards[1].updated, cards[1].explicit), (0, false));
         assert_eq!((cards[1].title.as_str(), cards[1].feed.as_str()), ("Only track name", "https://x/feed"));
         let chart: Value = serde_json::from_str(r#"{"feed":{"entry":[{"id":{"attributes":{"im:id":"77"}}},{"id":{"attributes":{"im:id":"5"}}}]}}"#).unwrap();
         assert_eq!(parse_chart(&chart), ["77", "5"]);
@@ -169,6 +202,18 @@ mod tests {
         let comedy = vec![c("X", "x"), c("a", "a2"), c("Y", "y")];
         let got: Vec<String> = interleave(vec![biz, comedy], &|c| c.feed == "f", 10).into_iter().map(|c| c.title).collect();
         assert_eq!(got, ["A", "X", "B", "Y"], "turns; the followed show and the same title twice are skipped");
+    }
+
+    #[test]
+    fn ages() {
+        let now = 1_800_000_000;
+        assert_eq!(ago(now, 0), "");
+        assert_eq!(ago(now, now - 3600), "today");
+        assert_eq!(ago(now, now - 86400), "yesterday");
+        assert_eq!(ago(now, now - 5 * 86400), "5d ago");
+        assert_eq!(ago(now, now - 21 * 86400), "3w ago");
+        assert_eq!(ago(now, now - 200 * 86400), "6mo ago");
+        assert_eq!(ago(now, now - 3 * 365 * 86400), "3y ago");
     }
 
     #[test]

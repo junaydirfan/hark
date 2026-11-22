@@ -32,10 +32,27 @@ pub const FIXED: [&str; 4] = ["Inbox", "In progress", "Queue", "Discover"];
 const PREVIEWS: usize = 8;
 /// Feeds are refreshed at launch when older than this, and on `R`.
 const STALE_S: i64 = 3600;
-/// While playing, the position is saved this often (also on pause, seek, switch and quit).
-const SAVE_EVERY_S: f64 = 30.0;
-/// Seconds before the end that count as finished when picking where to resume.
+/// While playing, the position is saved this often (also on pause, seek, switch, quit, and when
+/// the terminal closes), so a crash or a pulled plug loses at most this much.
+const SAVE_EVERY_S: f64 = 10.0;
+/// Stopping this close to the end (the outro, usually) counts as finished.
 const NEAR_END_S: f64 = 30.0;
+
+/// Whether stopping at `pos` of `dur` means the episode is done.
+fn finished(pos: f64, dur: f64) -> bool {
+    dur > 0.0 && pos >= dur - NEAR_END_S
+}
+
+/// Smart resume: how far to go back when you come back to an episode, so you hear the end of
+/// the sentence again. The longer you were away, the more context you need.
+pub fn rewind_for(away_s: i64) -> f64 {
+    match away_s {
+        ..60 => 0.0,
+        60..3600 => 3.0,
+        3600..86400 => 10.0,
+        _ => 20.0,
+    }
+}
 /// The Inbox: unplayed episodes from the last 30 days, newest first.
 const INBOX_DAYS: i64 = 30;
 const INBOX_MAX: usize = 300;
@@ -107,6 +124,8 @@ pub struct Now {
     /// The episode's own artwork, else the show's.
     pub art: Option<String>,
     saved_at: f64,
+    /// When it was paused, for smart resume on un-pause.
+    paused_at: Option<Instant>,
 }
 
 /// `L`: an episode's show notes in place of the table.
@@ -358,7 +377,11 @@ impl App {
             }
             Kind::Show(u) => match self.show(u) {
                 Some(s) => {
-                    let mut t = format!("{} · {n} episodes", s.show.title);
+                    let mut t = s.show.title.clone();
+                    if !s.show.categories.is_empty() {
+                        t.push_str(&format!(" · {}", s.show.categories.join(", ")));
+                    }
+                    t.push_str(&format!(" · {n} episodes"));
                     if !self.is_followed(u) {
                         t.push_str(" · not followed: f to follow");
                     }
@@ -822,14 +845,20 @@ impl App {
         let art = e.image.clone().or_else(|| s.show.image.clone());
         self.remember();
         let l = self.state.get(&guid).copied().unwrap_or_default();
-        let at = if l.played || (dur > 0.0 && l.pos > dur - NEAR_END_S) { 0.0 } else { l.pos };
+        let dur = if l.dur > 0.0 { l.dur } else { dur };
+        let back = rewind_for(unix_now() - l.updated);
+        let at = if l.played || l.pos <= 0.0 || finished(l.pos, dur) { 0.0 } else { (l.pos - back).max(0.0) };
         self.engine.send(Cmd::Load { src: url, at_s: at });
-        self.status = if at > 0.0 { format!("Resuming at {}.", fmt_s(at)) } else { String::new() };
+        self.status = match (at > 0.0, back > 0.0) {
+            (false, _) => String::new(),
+            (true, false) => format!("Resuming at {}.", fmt_s(at)),
+            (true, true) => format!("Resuming at {} ({back:.0} s back, for context).", fmt_s(at)),
+        };
         if let Some(q) = self.queue.iter().position(|(u, g)| *u == show_url && *g == guid) {
             self.queue.remove(q);
             self.save_queue();
         }
-        self.now = Some(Now { show_url, guid: guid.clone(), title, show, duration: dur, pos: at, playing: true, buffering: false, art, saved_at: at });
+        self.now = Some(Now { show_url, guid: guid.clone(), title, show, duration: dur, pos: at, playing: true, buffering: false, art, saved_at: at, paused_at: None });
         // a replayed episode starts unplayed again
         let l = self.state.entry(guid).or_default();
         (l.played, l.pos, l.updated) = (false, at, unix_now());
@@ -861,6 +890,16 @@ impl App {
     fn toggle_pause(&mut self) {
         let Some(n) = &mut self.now else { return };
         n.playing = !n.playing;
+        if n.playing {
+            // back from a long pause: a few seconds of context, as when reopening an episode
+            let back = n.paused_at.take().map_or(0.0, |t| rewind_for(t.elapsed().as_secs() as i64));
+            if back > 0.0 {
+                n.pos = (n.pos - back).max(0.0);
+                self.engine.send(Cmd::Seek(n.pos));
+            }
+        } else {
+            n.paused_at = Some(Instant::now());
+        }
         self.engine.send(Cmd::Pause(!n.playing));
         self.remember();
     }
@@ -899,13 +938,16 @@ impl App {
         let _ = store::save_prefs(&self.prefs);
     }
 
-    /// Save where the playing episode is.
+    /// Save where the playing episode is. Within the last 30 s it counts as played; seeking back
+    /// out of that makes it unplayed again.
     fn remember(&mut self) {
         let Some(n) = &mut self.now else { return };
         n.saved_at = n.pos;
+        let done = finished(n.pos, n.duration);
         let l = self.state.entry(n.guid.clone()).or_default();
-        if !l.played {
-            (l.pos, l.updated) = (n.pos, unix_now());
+        (l.played, l.pos, l.updated) = (done, if done { 0.0 } else { n.pos }, unix_now());
+        if n.duration > 0.0 {
+            l.dur = n.duration;
         }
         self.save_state();
     }
@@ -925,9 +967,17 @@ impl App {
     fn toggle_played(&mut self) {
         let Some(it) = self.selected_item().cloned() else { return };
         let Some((_, e)) = self.episode(&it) else { return };
-        let l = self.state.entry(e.guid.clone()).or_default();
-        *l = Listen { pos: 0.0, played: !l.played, updated: unix_now() };
-        self.status = if l.played { "Marked played.".into() } else { "Marked unplayed.".into() };
+        let guid = e.guid.clone();
+        let l = self.state.entry(guid.clone()).or_default();
+        (l.pos, l.played, l.updated) = (0.0, !l.played, unix_now());
+        let played = l.played;
+        self.status = if played { "Marked played.".into() } else { "Marked unplayed.".into() };
+        // marking the playing episode played means you're done with it: stop it here, or the
+        // next position save would make it unplayed again
+        if let Some(n) = self.now.as_mut().filter(|n| played && n.guid == guid && n.playing) {
+            n.playing = false;
+            self.engine.send(Cmd::Pause(true));
+        }
         self.save_state();
         if matches!(self.view.kind, Kind::Show(_)) {
             self.move_sel(1);
@@ -994,6 +1044,7 @@ impl App {
             Event::Loaded { duration_s } => {
                 if duration_s > 0.0 {
                     n.duration = duration_s;
+                    self.state.entry(n.guid.clone()).or_default().dur = duration_s;
                 }
             }
             Event::Position(p) => {
@@ -1007,7 +1058,7 @@ impl App {
                 n.playing = false;
                 n.pos = n.duration;
                 let title = n.title.clone();
-                self.state.insert(n.guid.clone(), Listen { pos: 0.0, played: true, updated: unix_now() });
+                self.state.insert(n.guid.clone(), Listen { pos: 0.0, played: true, updated: unix_now(), dur: n.duration });
                 self.save_state();
                 if !self.play_next() {
                     self.status = format!("Finished {title}. The queue is empty.");
@@ -1391,6 +1442,17 @@ mod tests {
         assert_eq!(fmt_date(86400), "1970-01-02");
         assert_eq!(fmt_date(1582957800), "2020-02-29");
         assert_eq!(fmt_date(feed::rfc2822("Wed, 31 Dec 2025 23:00:00 GMT").unwrap()), "2025-12-31");
+    }
+
+    #[test]
+    fn progress_rules() {
+        assert_eq!(rewind_for(30), 0.0, "a quick pause: no rewind");
+        assert_eq!(rewind_for(10 * 60), 3.0);
+        assert_eq!(rewind_for(5 * 3600), 10.0);
+        assert_eq!(rewind_for(3 * 86400), 20.0);
+        assert!(finished(1790.0, 1800.0) && finished(1770.0, 1800.0), "the last 30 s count as finished");
+        assert!(!finished(1700.0, 1800.0));
+        assert!(!finished(5000.0, 0.0), "unknown length: never auto-finished");
     }
 
     #[test]

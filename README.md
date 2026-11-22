@@ -7,12 +7,27 @@ no accounts, nothing running while paused. Built on the same principles as
 **Status:** Phases 1 and 2 of [PLAN.md](PLAN.md) are done. Next: chapters, synced transcripts,
 downloads, sleep timer.
 
-## Get started
+## Install
+
+Download the file for your system from the [latest release](https://github.com/junaydirfan/hark/releases/latest),
+unpack it, and put `hark` somewhere on your `PATH`:
+
+```sh
+# Linux x86_64
+curl -L https://github.com/junaydirfan/hark/releases/latest/download/hark-linux-x86_64.tar.gz | tar xz
+install -m 755 hark ~/.local/bin/
+hark
+```
+
+hark is developed and tested on Linux (CachyOS); the macOS (Apple Silicon) and Windows builds compile in CI
+but are less tested. Or build it yourself (Rust 1.88+; on Linux, `libasound2-dev` / `alsa-lib`):
 
 ```sh
 cargo build --release
 ./target/release/hark
 ```
+
+## Get started
 
 Press `/` and search for a podcast, or open **Discover** in the sidebar. You can also paste a
 feed URL, or the path to an OPML file exported from another podcast app (AntennaPod, Pocket Casts,
@@ -20,14 +35,18 @@ Overcast, Apple Podcasts…) to bring all your shows over.
 
 ## What's in it
 
-- **Search** (`/`) every podcast in the Apple Podcasts directory.
+- **Search** (`/`) every podcast in the Apple Podcasts directory, with each show's genre, size,
+  and when its latest episode came out, so a dead show looks dead.
 - **Discover:** "For you", then the top charts for your country. `o` / `O` flips through genres
   (Business, Comedy, True Crime, Technology…).
 - **Preview before you follow:** open any show, browse and play its episodes, then `f` to follow it.
 - **Inbox:** every unplayed episode from your shows in the last 30 days, newest first.
 - **In progress:** what you started and didn't finish, most recent first, with the time left.
 - **Queue:** `a` adds an episode, `A` plays it next. When an episode ends, the next one starts. It's saved between runs.
-- **Resume anywhere:** your place is saved on pause, seek, switch and quit, and every 30 s.
+- **Your place, never lost:** saved every 10 s while playing, and on pause, seek, switch and quit,
+  even when you just close the terminal. Coming back rewinds a little for context (3 s after a
+  minute away, up to 20 s after a day). Stopping in the outro counts as finished. ◔ ◑ ◕ show how
+  far in you are, and the now-playing line shows the time left at your speed.
 - **Speed without chipmunks:** 0.5–3×, pitch kept ([Sonic](https://github.com/waywardgeek/sonic)).
 - **Show notes:** `L` shows the highlighted episode's notes as clean text, with its links listed below.
 - **Cover art** of the playing episode under the library: real images in kitty, Ghostty, WezTerm,
@@ -55,7 +74,7 @@ Press `?` in hark for all of them.
 | `D` `D` | unsubscribe | | `t` / `i` | next colour theme / cover on-off |
 | `q` `Ctrl-C` | quit (your place is saved) | | | |
 
-In lists: `▶` playing, `◐` started (with the time left), `✓` played, `≡` queued.
+In lists: `▶` playing, `◔ ◑ ◕` started (with the time left), `✓` played, `≡` queued; `[E]` marks explicit shows.
 
 ## Privacy
 
