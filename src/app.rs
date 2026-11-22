@@ -377,7 +377,11 @@ impl App {
             }
             Kind::Show(u) => match self.show(u) {
                 Some(s) => {
-                    let mut t = format!("{} · {n} episodes", s.show.title);
+                    let mut t = s.show.title.clone();
+                    if !s.show.categories.is_empty() {
+                        t.push_str(&format!(" · {}", s.show.categories.join(", ")));
+                    }
+                    t.push_str(&format!(" · {n} episodes"));
                     if !self.is_followed(u) {
                         t.push_str(" · not followed: f to follow");
                     }

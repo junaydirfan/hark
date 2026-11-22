@@ -235,8 +235,35 @@ fn window(state: &mut TableState, n: usize, area: Rect) -> (usize, usize, usize)
     (off, (off + visible).min(n), sel)
 }
 
+/// Discover's genres in a line, the current one lit, scrolled so it stays in view.
+fn genre_strip(app: &App, width: u16) -> Line<'static> {
+    let names: Vec<&str> = std::iter::once("All").chain(crate::discover::GENRES.iter().map(|g| g.0)).collect();
+    let cur = app.genre;
+    // start far enough left that the current genre fits
+    let mut start = cur;
+    let mut used: usize = names[cur].chars().count() + 3;
+    while start > 0 && used + names[start - 1].chars().count() + 3 <= width as usize / 2 {
+        start -= 1;
+        used += names[start].chars().count() + 3;
+    }
+    let mut spans = vec![Span::raw(if start > 0 { " ‹ " } else { " " }).dim()];
+    for (i, n) in names.iter().enumerate().skip(start) {
+        spans.push(if i == cur { Span::styled(format!(" {n} "), Style::new().fg(on_accent()).bg(accent()).bold()) } else { Span::raw(format!(" {n} ")).dim() });
+        spans.push(Span::raw(" "));
+    }
+    Line::from(spans)
+}
+
 /// Discover and Search: shows, with ✓ on the ones you follow.
 fn draw_cards(f: &mut Frame, app: &mut App, area: Rect, title: &str, focused: bool) {
+    let area = if app.view.kind == Kind::Discover {
+        let [strip, rest] = Layout::vertical([Constraint::Length(1), Constraint::Min(3)]).areas(area);
+        f.render_widget(Paragraph::new(genre_strip(app, strip.width)), strip);
+        rest
+    } else {
+        area
+    };
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_secs() as i64);
     let (off, end, sel) = window(&mut app.view.state, app.view.rows.len(), area);
     let rows: Vec<Row> = app.view.rows[off..end]
         .iter()
@@ -247,10 +274,11 @@ fn draw_cards(f: &mut Frame, app: &mut App, area: Rect, title: &str, focused: bo
             let mut row = Row::new(vec![
                 Cell::from(if followed { "✓" } else { " " }).fg(accent()),
                 Cell::from(tag),
-                Cell::from(c.title.as_str()),
+                Cell::from(Line::from(vec![Span::raw(c.title.as_str()), Span::raw(if c.explicit { " [E]" } else { "" }).dim()])),
                 Cell::from(c.author.as_str()).dim(),
-                Cell::from(c.genre.as_str()).dim(),
+                Cell::from(c.genre.as_str()),
                 Cell::from(Line::from(if c.episodes > 0 { c.episodes.to_string() } else { String::new() }).right_aligned()).dim(),
+                Cell::from(Line::from(crate::discover::ago(now, c.updated)).right_aligned()).dim(),
             ]);
             if followed {
                 row = row.style(Style::new().dim());
@@ -258,9 +286,9 @@ fn draw_cards(f: &mut Frame, app: &mut App, area: Rect, title: &str, focused: bo
             row
         })
         .collect();
-    let widths = [Constraint::Length(1), Constraint::Length(7), Constraint::Fill(3), Constraint::Fill(2), Constraint::Length(18), Constraint::Length(8)];
+    let widths = [Constraint::Length(1), Constraint::Length(7), Constraint::Fill(3), Constraint::Fill(2), Constraint::Length(18), Constraint::Length(8), Constraint::Length(10)];
     let table = Table::new(rows, widths)
-        .header(Row::new(vec!["", "", "Show", "By", "Genre", "Episodes"]).dim())
+        .header(Row::new(vec!["", "", "Show", "By", "Genre", "Episodes", "Latest"]).dim())
         .block(block(title, focused))
         .row_highlight_style(highlight(focused))
         .column_spacing(1);
