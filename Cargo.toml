@@ -1,0 +1,24 @@
+[package]
+name = "hark"
+version = "0.1.0"
+edition = "2024"
+description = "Lean terminal podcast player"
+
+[dependencies]
+cpal = "0.18"
+libsonic = "0.1"
+quick-xml = "0.42"
+reqwest = { version = "0.13", default-features = false, features = ["native-tls", "gzip", "stream"] }
+symphonia = { version = "0.6", default-features = false, features = ["mp3"] }
+tokio = { version = "1", features = ["rt", "macros", "sync", "time", "net", "io-util"] }
+
+# Linux: talk to PulseAudio/PipeWire directly (cpal's own pure-Rust client), not through ALSA.
+[target.'cfg(target_os = "linux")'.dependencies]
+cpal = { version = "0.18", features = ["pulseaudio"] }
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
