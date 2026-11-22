@@ -45,8 +45,9 @@ Known gaps:
   engine decodes only with 64 KB ready (otherwise it reports `Buffering`), so a slow network
   never blocks pause or seek. It retries 3 times. Measured: ~0.6 s from url to playing, 8.1 MB.
   Gap behind a forward seek is only fetched when playback seeks back into it.
-- **Resampling for macOS/Windows:** the output uses the file's own sample rate and f32 samples.
-  PulseAudio converts on Linux; CoreAudio/WASAPI may refuse, so those need a resampler (rubato).
+- **Sample rates:** the output uses the file's own rate in f32. PulseAudio converts on Linux, cpal
+  opens WASAPI with AUTOCONVERTPCM on Windows, and CoreAudio switches the device's rate on macOS,
+  so no resampler is needed (checked in cpal 0.18's source; not yet heard on real hardware).
 - **VBR seeking:** MP3 seeks are coarse (they use the bitrate). That's fine for constant-bitrate
   files, but it can land a few seconds off on VBR without a Xing table of contents.
 

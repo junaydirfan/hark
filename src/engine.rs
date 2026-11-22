@@ -252,8 +252,8 @@ impl Player {
         Ok(())
     }
 
-    // shortcut: plays at the file's own rate and f32 samples. PulseAudio (Linux, also on PipeWire)
-    // converts as needed; CoreAudio/WASAPI may refuse other rates. Add a resampler for macOS/Windows.
+    // Plays at the file's own rate in f32: PulseAudio (Linux, also on PipeWire) converts as needed,
+    // WASAPI converts too (cpal opens it with AUTOCONVERTPCM), and CoreAudio switches the device's rate.
     fn open_output(&self, rate: u32, channels: u16) -> Result<cpal::Stream, String> {
         #[cfg(target_os = "linux")]
         let host = cpal::host_from_id(cpal::HostId::PulseAudio).unwrap_or_else(|_| cpal::default_host());
