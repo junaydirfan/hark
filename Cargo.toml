@@ -7,9 +7,11 @@ description = "Lean terminal podcast player"
 [dependencies]
 cpal = "0.18"
 crossterm = "0.29"
+image = { version = "0.25", default-features = false, features = ["jpeg", "png"] }
 libsonic = "0.1"
 quick-xml = "0.42"
 ratatui = { version = "0.30", default-features = false, features = ["crossterm"] }
+ratatui-image = { version = "11.1", default-features = false, features = ["crossterm"] }
 reqwest = { version = "0.13", default-features = false, features = ["native-tls", "gzip", "stream"] }
 serde_json = "1"
 symphonia = { version = "0.6", default-features = false, features = ["mp3"] }
@@ -19,6 +21,7 @@ tokio = { version = "1", features = ["rt", "macros", "sync", "time", "net", "io-
 [target.'cfg(target_os = "linux")'.dependencies]
 cpal = { version = "0.18", features = ["pulseaudio"] }
 libc = "0.2" # malloc_trim / mallopt: hand freed heap back after big feeds
+mpris-server = { version = "0.11", default-features = false, features = ["tokio"] }
 
 [profile.release]
 opt-level = 3

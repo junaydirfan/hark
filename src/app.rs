@@ -9,15 +9,17 @@ use std::{
 
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers, MouseButton, MouseEvent, MouseEventKind};
 use ratatui::{
-    layout::{Position, Rect},
+    layout::{Position, Rect, Size},
     widgets::{ListState, TableState},
 };
+use ratatui_image::{FilterType, Resize, picker::Picker, protocol::Protocol};
 use tokio::sync::{Semaphore, mpsc::UnboundedSender};
 
 use crate::{
     discover::{self, Card},
     engine::{Cmd, Engine, Event},
     feed::{self, Episode, Show},
+    mpris::Remote,
     store::{self, Cached, Listen, Prefs, Sub},
 };
 
@@ -45,6 +47,17 @@ pub enum Msg {
     Preview { url: String, res: Result<Option<Cached>, String> },
     /// Directory results for a cache key ("top:0", "foryou", "search:<q>").
     Cards { key: String, res: Result<Vec<Card>, String> },
+    /// A cover, encoded for the terminal at `size` cells.
+    Art { url: String, size: (u16, u16), res: Result<Protocol, String> },
+}
+
+/// The playing episode's cover in the sidebar.
+pub struct Art {
+    pub url: String,
+    pub size: (u16, u16),
+    /// None while it's being fetched / encoded.
+    pub proto: Option<Protocol>,
+    busy: bool,
 }
 
 pub struct ShowView {
@@ -91,6 +104,8 @@ pub struct Now {
     pub pos: f64,
     pub playing: bool,
     pub buffering: bool,
+    /// The episode's own artwork, else the show's.
+    pub art: Option<String>,
     saved_at: f64,
 }
 
@@ -134,6 +149,11 @@ pub struct App {
     /// Discover's genre: 0 = all podcasts, else 1 + an index into GENRES.
     pub genre: usize,
     country: String,
+    /// How the terminal draws images (kitty / sixel / iTerm2 / half-blocks); None = no images.
+    pub img_picker: Option<Picker>,
+    pub art: Option<Art>,
+    /// Cells the sidebar has room for (set while drawing).
+    pub art_want: Option<(u16, u16)>,
     /// Where the last frame drew the sidebar list, the table and the progress bar (for clicks).
     pub side_area: Rect,
     pub main_area: Rect,
@@ -156,7 +176,7 @@ fn sort_episodes(show: &mut Show) {
 }
 
 impl App {
-    pub fn new(engine: Engine, tx: UnboundedSender<Msg>) -> App {
+    pub fn new(engine: Engine, tx: UnboundedSender<Msg>, img_picker: Option<Picker>) -> App {
         let prefs = store::load_prefs();
         engine.send(Cmd::Speed(prefs.speed));
         engine.send(Cmd::Volume(prefs.volume as f32 / 100.0));
@@ -199,6 +219,9 @@ impl App {
             cards_loading: Vec::new(),
             genre: 0,
             country: discover::country(),
+            img_picker,
+            art: None,
+            art_want: None,
             side_area: Rect::default(),
             main_area: Rect::default(),
             bar_area: Rect::default(),
@@ -574,6 +597,19 @@ impl App {
         let (url, res, adding) = match msg {
             Msg::Feed { url, res, adding } => (url, res, adding),
             Msg::Preview { url, res } => return self.on_preview(url, res),
+            Msg::Art { url, size, res } => {
+                if let Some(a) = self.art.as_mut().filter(|a| a.url == url) {
+                    a.busy = false;
+                    match res {
+                        Ok(p) if a.size == size => a.proto = Some(p),
+                        Ok(_) => {} // the room changed meanwhile: the next draw asks again
+                        Err(_) => a.proto = None,
+                    }
+                }
+                // podcast covers are often 3000 px: decoding one allocates tens of MB, freed now
+                crate::trim_heap();
+                return;
+            }
             Msg::Cards { key, res } => {
                 self.cards_loading.retain(|k| *k != key);
                 match res {
@@ -783,6 +819,7 @@ impl App {
     fn play(&mut self, item: &Item) {
         let Some((s, e)) = self.episode(item) else { return };
         let (show_url, guid, title, url, dur, show) = (s.url.clone(), e.guid.clone(), e.title.clone(), e.url.clone(), e.duration_s as f64, s.show.title.clone());
+        let art = e.image.clone().or_else(|| s.show.image.clone());
         self.remember();
         let l = self.state.get(&guid).copied().unwrap_or_default();
         let at = if l.played || (dur > 0.0 && l.pos > dur - NEAR_END_S) { 0.0 } else { l.pos };
@@ -792,7 +829,7 @@ impl App {
             self.queue.remove(q);
             self.save_queue();
         }
-        self.now = Some(Now { show_url, guid: guid.clone(), title, show, duration: dur, pos: at, playing: true, buffering: false, saved_at: at });
+        self.now = Some(Now { show_url, guid: guid.clone(), title, show, duration: dur, pos: at, playing: true, buffering: false, art, saved_at: at });
         // a replayed episode starts unplayed again
         let l = self.state.entry(guid).or_default();
         (l.played, l.pos, l.updated) = (false, at, unix_now());
@@ -843,13 +880,21 @@ impl App {
     }
 
     fn set_speed(&mut self, delta: f32) {
-        self.prefs.speed = ((self.prefs.speed + delta) * 10.0).round().clamp(5.0, 30.0) / 10.0;
+        self.set_speed_to(self.prefs.speed + delta);
+    }
+
+    fn set_speed_to(&mut self, x: f32) {
+        self.prefs.speed = (x * 10.0).round().clamp(5.0, 30.0) / 10.0;
         self.engine.send(Cmd::Speed(self.prefs.speed));
         let _ = store::save_prefs(&self.prefs);
     }
 
     fn set_volume(&mut self, delta: i16) {
-        self.prefs.volume = (self.prefs.volume as i16 + delta).clamp(0, 100) as u8;
+        self.set_volume_to((self.prefs.volume as i16 + delta).clamp(0, 100) as u8);
+    }
+
+    fn set_volume_to(&mut self, v: u8) {
+        self.prefs.volume = v.min(100);
         self.engine.send(Cmd::Volume(self.prefs.volume as f32 / 100.0));
         let _ = store::save_prefs(&self.prefs);
     }
@@ -977,6 +1022,89 @@ impl App {
         true
     }
 
+    /// Media keys, the desktop's media widget, playerctl.
+    pub fn on_remote(&mut self, r: Remote) {
+        let playing = self.now.as_ref().is_some_and(|n| n.playing);
+        match r {
+            Remote::PlayPause => self.toggle_pause(),
+            Remote::Play if !playing => self.toggle_pause(),
+            Remote::Pause if playing => self.toggle_pause(),
+            Remote::Play | Remote::Pause => {}
+            Remote::Next => {
+                if !self.play_next() {
+                    self.status = "The queue is empty.".into();
+                }
+            }
+            Remote::Prev => self.seek_to(0.0),
+            Remote::Seek(d) => self.seek_by(d),
+            Remote::SetPosition(s) => self.seek_to(s),
+            Remote::Volume(v) => self.set_volume_to(v),
+            Remote::Rate(r) => self.set_speed_to(r),
+        }
+    }
+
+    // ---------------------------------------------------------------- art
+
+    /// `i`: the cover in the sidebar on / off.
+    fn toggle_art(&mut self) {
+        if self.img_picker.is_none() {
+            self.status = "This terminal can't show images here.".into();
+            return;
+        }
+        self.prefs.art = !self.prefs.art;
+        if !self.prefs.art {
+            self.art = None; // free the encoded image
+        }
+        let _ = store::save_prefs(&self.prefs);
+    }
+
+    /// Zooming changes the font's pixel size, which iTerm2 and sixel images are drawn in: pick
+    /// up the new size and re-encode the cover. One ioctl per resize.
+    pub fn on_resize(&mut self) {
+        let (Some(p), Ok(ws)) = (self.img_picker.as_ref(), crossterm::terminal::window_size()) else { return };
+        if ws.width == 0 || ws.height == 0 || ws.columns == 0 || ws.rows == 0 {
+            return;
+        }
+        let (w, h) = (ws.width / ws.columns, ws.height / ws.rows);
+        let old = p.font_size();
+        if (w, h) == (old.width, old.height) {
+            return;
+        }
+        // The query-built picker can't change its font size; from_fontsize is the only way.
+        #[allow(deprecated)]
+        let mut np = Picker::from_fontsize(ratatui_image::FontSize::new(w, h));
+        np.set_protocol_type(p.protocol_type());
+        self.img_picker = Some(np);
+        if let Some(a) = self.art.as_mut() {
+            a.size = (0, 0); // no longer matches art_want, so refresh_media re-encodes
+        }
+    }
+
+    /// Fetch and encode the playing episode's cover if the sidebar wants one it doesn't have.
+    /// Called after each draw (the draw says how much room there is); cheap when nothing changed.
+    pub fn refresh_media(&mut self) {
+        let Some(url) = self.now.as_ref().and_then(|n| n.art.clone()) else {
+            self.art = None;
+            return;
+        };
+        let (Some(picker), Some(size), true) = (self.img_picker.as_ref(), self.art_want, self.prefs.art) else { return };
+        if self.art.as_ref().is_some_and(|a| a.url == url && (a.size == size || a.busy)) {
+            return;
+        }
+        // keep showing the old cover until the new one is ready (no flicker)
+        let keep = self.art.take().and_then(|a| a.proto);
+        self.art = Some(Art { url: url.clone(), size, proto: keep, busy: true });
+        let (client, tx, picker) = (self.client.clone(), self.tx.clone(), picker.clone());
+        tokio::spawn(async move {
+            let bytes = async { client.get(&url).send().await?.error_for_status()?.bytes().await }.await.map_err(cause);
+            let res = match bytes {
+                Ok(b) => tokio::task::spawn_blocking(move || encode_art(&picker, &b, size)).await.unwrap_or_else(|e| Err(e.to_string())),
+                Err(e) => Err(e),
+            };
+            let _ = tx.send(Msg::Art { url, size, res });
+        });
+    }
+
     pub fn shutdown(&mut self) {
         self.remember();
         let _ = store::save_prefs(&self.prefs);
@@ -1083,6 +1211,7 @@ impl App {
             KeyCode::Char('m') => self.toggle_played(),
             KeyCode::Char('L') => self.toggle_notes(),
             KeyCode::Char('w') => self.jump_to_playing(),
+            KeyCode::Char('i') => self.toggle_art(),
             KeyCode::Char('t') => {
                 self.prefs.theme = (self.prefs.theme + 1) % crate::theme::THEMES.len();
                 crate::theme::set(self.prefs.theme);
@@ -1167,6 +1296,16 @@ fn row_at(area: Rect, top: u16, offset: usize, len: usize, pos: Position) -> Opt
     }
     let i = offset + (pos.y - area.y - top) as usize;
     (i < len).then_some(i)
+}
+
+/// Decode a cover and encode it for the terminal at `size` cells (on a blocking thread).
+fn encode_art(picker: &Picker, bytes: &[u8], size: (u16, u16)) -> Result<Protocol, String> {
+    let img = image::load_from_memory(bytes).map_err(|e| e.to_string())?;
+    // Shrink with a cheap filter first: covers are up to 3000 px, the target a few hundred.
+    let fs = picker.font_size();
+    let (w, h) = (size.0 as u32 * fs.width as u32, size.1 as u32 * fs.height as u32);
+    let img = if img.width() > w * 2 || img.height() > h * 2 { img.thumbnail(w * 2, h * 2) } else { img };
+    picker.new_protocol(img, Size::new(size.0, size.1), Resize::Fit(Some(FilterType::Triangle))).map_err(|e| e.to_string())
 }
 
 /// GET with "only if changed" headers. Parsing (~20 ms for a big feed) and writing the show

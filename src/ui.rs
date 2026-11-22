@@ -52,6 +52,16 @@ pub fn draw(f: &mut Frame, app: &mut App) {
     let side_w = if f.area().width < 70 && app.focus != Focus::Side { 0 } else { (f.area().width / 4).clamp(20, 34) };
     let [side, main] = Layout::horizontal([Constraint::Length(side_w), Constraint::Min(20)]).areas(body);
 
+    // the playing episode's cover under the library, when there's room (like trill)
+    let rows = art_rows(app, side);
+    app.art_want = rows.map(|r| (side.width, r));
+    let (side, art_area) = match rows {
+        Some(r) => {
+            let [s, a] = Layout::vertical([Constraint::Min(6), Constraint::Length(r)]).areas(side);
+            (s, Some(a))
+        }
+        None => (side, None),
+    };
     let side = match logo(side.width).filter(|l| side.height >= l.len() as u16 + 12) {
         Some(l) => {
             let [a, s] = Layout::vertical([Constraint::Length(l.len() as u16), Constraint::Min(6)]).areas(side);
@@ -106,7 +116,23 @@ pub fn draw(f: &mut Frame, app: &mut App) {
     }
     if app.help_open {
         draw_help(f);
+    } else if let (Some(area), Some(proto)) = (art_area, app.art.as_ref().and_then(|a| a.proto.as_ref())) {
+        // terminal graphics drop every image row anything else is drawn across, so a popup hides the cover
+        let sz = proto.size();
+        let x = area.x + area.width.saturating_sub(sz.width) / 2;
+        f.render_widget(ratatui_image::Image::new(proto), Rect { x, y: area.y, width: sz.width.min(area.width), height: sz.height.min(area.height) });
     }
+}
+
+/// Rows for a square cover as wide as the sidebar, if images are on and there's room for it.
+fn art_rows(app: &App, side: Rect) -> Option<u16> {
+    let picker = app.img_picker.as_ref()?;
+    if !app.prefs.art || app.now.as_ref()?.art.is_none() {
+        return None;
+    }
+    let fs = picker.font_size();
+    let rows = (side.width as u32 * fs.width as u32 / fs.height.max(1) as u32) as u16;
+    (rows >= 4 && side.height >= rows + 10).then_some(rows)
 }
 
 fn draw_table(f: &mut Frame, app: &mut App, area: Rect) {
@@ -340,7 +366,7 @@ const HELP: [(&str, &[(&str, &str)]); 4] = [
         ("L", "show notes"),
         ("R", "refresh every show now"),
         ("D D", "unsubscribe"),
-        ("t", "next colour theme"),
+        ("t  i", "next colour theme · cover on/off"),
         ("?  q", "this help · quit (also Ctrl-C)"),
     ]),
 ];

@@ -8,6 +8,7 @@ mod app;
 mod discover;
 mod engine;
 mod feed;
+mod mpris;
 mod paths;
 mod store;
 mod stream;
@@ -38,7 +39,8 @@ fn main() {
         libc::mallopt(libc::M_MMAP_THRESHOLD, 256 * 1024);
     }
     let rt = tokio::runtime::Builder::new_current_thread().enable_all().build().expect("tokio runtime");
-    rt.block_on(async_main());
+    // LocalSet: the MPRIS server is single-threaded (!Send), like the rest of the app
+    tokio::task::LocalSet::new().block_on(&rt, async_main());
 }
 
 async fn async_main() {
@@ -58,7 +60,10 @@ async fn async_main() {
 /// The player: one async thread for the screen and the network, input on its own thread,
 /// audio on its own thread. Redraws only when something changed.
 async fn run() -> Result<(), String> {
+    // which image protocol the terminal speaks; must finish before anything reads key events
+    let picker = std::io::IsTerminal::is_terminal(&std::io::stdout()).then(query_terminal_images).flatten();
     let (eng_tx, mut eng_rx) = tokio::sync::mpsc::unbounded_channel();
+    let (remote_tx, mut remote_rx) = tokio::sync::mpsc::unbounded_channel();
     let (msg_tx, mut msg_rx) = tokio::sync::mpsc::unbounded_channel();
     let (key_tx, mut key_rx) = tokio::sync::mpsc::unbounded_channel();
     // sleeps in read() until there's input, so it costs nothing while idle
@@ -72,7 +77,8 @@ async fn run() -> Result<(), String> {
             }
         })
         .map_err(|e| e.to_string())?;
-    let mut app = app::App::new(Engine::start(eng_tx), msg_tx);
+    let mut app = app::App::new(Engine::start(eng_tx), msg_tx, picker);
+    let mut desktop = mpris::Mpris::new(remote_tx).await;
     let mut term = ratatui::init();
     let _ = crossterm::execute!(std::io::stdout(), crossterm::event::EnableMouseCapture);
     // ratatui's panic hook restores the terminal but not mouse reporting, which would leak into the shell
@@ -86,17 +92,23 @@ async fn run() -> Result<(), String> {
     while !app.quit {
         if dirty {
             let _ = term.draw(|f| ui::draw(f, &mut app));
+            // after drawing: the UI has said how much room the cover gets
+            app.refresh_media();
+            if let Some(d) = desktop.as_mut() {
+                d.sync(&app).await;
+            }
             dirty = false;
         }
         tokio::select! {
             Some(ev) = key_rx.recv() => match ev {
                 crossterm::event::Event::Key(k) => { app.on_key(k); dirty = true; }
-                crossterm::event::Event::Resize(..) => dirty = true,
+                crossterm::event::Event::Resize(..) => { app.on_resize(); dirty = true; }
                 crossterm::event::Event::Mouse(m) => dirty |= app.on_mouse(m),
                 _ => {}
             },
             Some(ev) = eng_rx.recv() => dirty |= app.on_engine(ev),
             Some(m) = msg_rx.recv() => { app.on_msg(m); dirty = true; }
+            Some(r) = remote_rx.recv() => { app.on_remote(r); dirty = true; }
             else => break,
         }
     }
@@ -104,6 +116,42 @@ async fn run() -> Result<(), String> {
     let _ = crossterm::execute!(std::io::stdout(), crossterm::event::DisableMouseCapture);
     ratatui::restore();
     Ok(())
+}
+
+/// Which image protocol the terminal supports (from trill). Terminals answer in a few ms; if one
+/// doesn't, ratatui-image gives up but leaves a thread blocked reading stdin, which would eat the
+/// first keypresses. A Device Status Report query (which every terminal, and tmux, answers)
+/// completes that read so the thread exits before we start reading keys.
+fn query_terminal_images() -> Option<ratatui_image::picker::Picker> {
+    use ratatui_image::picker::{Picker, ProtocolType, cap_parser::QueryStdioOptions};
+    use std::io::Write;
+    const TIMEOUT: Duration = Duration::from_millis(400);
+    let t0 = Instant::now();
+    let mut picker = Picker::from_query_stdio_with_options(QueryStdioOptions { timeout: TIMEOUT, ..Default::default() }).ok();
+    // Konsole draws iTerm2 inline images but doesn't announce it; ratatui-image falls back to
+    // half-blocks there. Use iTerm2 (not through tmux, which would need passthrough).
+    if let Some(p) = picker.as_mut()
+        && std::env::var_os("KONSOLE_VERSION").is_some()
+        && !p.tmux_detected()
+        && p.protocol_type() == ProtocolType::Halfblocks
+    {
+        p.set_protocol_type(ProtocolType::Iterm2);
+    }
+    // VS Code only draws images with a setting on, and then also answers with sixel: a guess the
+    // query didn't back up would draw nothing, so use half-blocks there.
+    if let Some(p) = picker.as_mut()
+        && std::env::var("TERM_PROGRAM").is_ok_and(|t| t == "vscode")
+        && p.protocol_type() == ProtocolType::Iterm2
+    {
+        p.set_protocol_type(ProtocolType::Halfblocks);
+    }
+    if t0.elapsed() >= TIMEOUT {
+        let mut out = std::io::stdout();
+        let _ = out.write_all(b"\x1b[5n");
+        let _ = out.flush();
+        std::thread::sleep(Duration::from_millis(100));
+    }
+    picker
 }
 
 async fn show_feed(src: &str) -> Result<(), String> {

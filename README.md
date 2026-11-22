@@ -4,8 +4,8 @@ A lean terminal podcast player. Open podcasts (any public RSS feed), played in-p
 no accounts, nothing running while paused. Built on the same principles as
 [trill](https://github.com/junaydirfan/trill).
 
-**Status:** Phase 2 of [PLAN.md](PLAN.md) in progress: library, queue, show notes and discovery
-are in; cover art and media keys come next.
+**Status:** Phases 1 and 2 of [PLAN.md](PLAN.md) are done. Next: chapters, synced transcripts,
+downloads, sleep timer.
 
 ## Get started
 
@@ -30,6 +30,10 @@ Overcast, Apple Podcasts…) to bring all your shows over.
 - **Resume anywhere:** your place is saved on pause, seek, switch and quit, and every 30 s.
 - **Speed without chipmunks:** 0.5–3×, pitch kept ([Sonic](https://github.com/waywardgeek/sonic)).
 - **Show notes:** `L` shows the highlighted episode's notes as clean text, with its links listed below.
+- **Cover art** of the playing episode under the library: real images in kitty, Ghostty, WezTerm,
+  foot, iTerm2 and Konsole, colour half-blocks everywhere else (`i` hides it).
+- **Desktop native (Linux):** media keys, the KDE/GNOME media widget, the lock screen, `playerctl`
+  and KDE Connect, all through MPRIS. Speed shows up as the playback rate, so the widget can change it too.
 - **trill's look:** the same layout, the help popup on `?`, colour themes on `t`, and the mouse (click to open,
   double-click to play, click the bar to seek, scroll the pane under the pointer).
 
@@ -48,7 +52,7 @@ Press `?` in hark for all of them.
 | `m` | mark played / unplayed | | `L` | show notes |
 | `/` | search · paste a feed URL / OPML | | `R` | refresh every show now |
 | `f` | follow the highlighted show | | `o` / `O` | Discover: next / previous genre |
-| `D` `D` | unsubscribe | | `t` | next colour theme |
+| `D` `D` | unsubscribe | | `t` / `i` | next colour theme / cover on-off |
 | `q` `Ctrl-C` | quit (your place is saved) | | | |
 
 In lists: `▶` playing, `◐` started (with the time left), `✓` played, `≡` queued.
@@ -87,7 +91,8 @@ Measured on an i9-14900HX with three shows (Planet Money, Lex Fridman, The Daily
 | Memory: idle / streaming | 11 MB / 16–18 MB |
 | CPU playing (incl. the once-a-second redraw) | ~2% of one core |
 | CPU paused | 0 |
-| Binary | 2.4 MB |
+| Memory with the cover drawn | ~15 MB |
+| Binary | 4.7 MB |
 
 How it stays light:
 - One async thread for the screen and network; input and audio each sleep on their own thread
