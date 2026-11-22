@@ -19,7 +19,7 @@ install -m 755 hark ~/.local/bin/
 hark
 ```
 
-Linux builds are tested daily on CachyOS; the macOS (Apple Silicon) and Windows builds compile in CI
+hark is developed and tested on Linux (CachyOS); the macOS (Apple Silicon) and Windows builds compile in CI
 but are less tested. Or build it yourself (Rust 1.88+; on Linux, `libasound2-dev` / `alsa-lib`):
 
 ```sh
