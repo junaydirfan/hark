@@ -2,10 +2,11 @@
 //!
 //! For now a developer CLI that exercises the two foundations; the TUI comes next.
 //!   hark feed <url|file>                        fetch + parse a feed, with timings
-//!   hark play <file> [speed] [start_s] [volume] play through the in-process engine
+//!   hark play <file|url> [speed] [start_s] [volume] play through the in-process engine
 
 mod engine;
 mod feed;
+mod stream;
 
 use std::time::{Duration, Instant};
 
@@ -17,7 +18,7 @@ async fn main() {
     let res = match args.first().map(String::as_str) {
         Some("feed") if args.len() > 1 => show_feed(&args[1]).await,
         Some("play") if args.len() > 1 => play(&args[1..]).await,
-        _ => Err("usage: hark feed <url|file> | hark play <file> [speed] [start_s] [volume]".into()),
+        _ => Err("usage: hark feed <url|file> | hark play <file|url> [speed] [start_s] [volume]".into()),
     };
     if let Err(e) = res {
         eprintln!("hark: {e}");
@@ -66,7 +67,7 @@ async fn play(a: &[String]) -> Result<(), String> {
     eng.send(Cmd::Volume(volume));
     eng.send(Cmd::Speed(speed));
     let t0 = Instant::now();
-    eng.send(Cmd::Load { path: a[0].clone().into(), at_s: start });
+    eng.send(Cmd::Load { src: a[0].clone(), at_s: start });
     let script = [(4.0, "seek +60"), (6.0, "pause"), (9.0, "resume"), (12.0, "end")];
     let mut step = 0;
     let mut cpu_mark = None;
