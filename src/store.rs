@@ -178,17 +178,20 @@ pub struct Prefs {
     /// 0..=100
     pub volume: u8,
     pub theme: usize,
+    /// Cover art in the sidebar (`i` toggles).
+    pub art: bool,
 }
 
 pub fn load_prefs() -> Prefs {
     let text = std::fs::read_to_string(data_dir().join("prefs")).unwrap_or_default();
     let get = |k: &str| text.lines().find_map(|l| l.strip_prefix(k)?.strip_prefix('=')?.trim().parse::<f32>().ok());
     let theme = text.lines().find_map(|l| l.strip_prefix("theme=")).map_or(0, |t| crate::theme::by_name(t.trim()));
-    Prefs { speed: get("speed").unwrap_or(1.0).clamp(0.5, 3.0), volume: get("volume").unwrap_or(100.0).clamp(0.0, 100.0) as u8, theme }
+    let art = !text.lines().any(|l| l.trim() == "art=off");
+    Prefs { speed: get("speed").unwrap_or(1.0).clamp(0.5, 3.0), volume: get("volume").unwrap_or(100.0).clamp(0.0, 100.0) as u8, theme, art }
 }
 
 pub fn save_prefs(p: &Prefs) -> std::io::Result<()> {
-    let text = format!("speed={}\nvolume={}\ntheme={}\n", p.speed, p.volume, crate::theme::name(p.theme));
+    let text = format!("speed={}\nvolume={}\ntheme={}\nart={}\n", p.speed, p.volume, crate::theme::name(p.theme), if p.art { "on" } else { "off" });
     write_atomic(&data_dir().join("prefs"), text.as_bytes())
 }
 

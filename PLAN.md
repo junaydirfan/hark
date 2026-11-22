@@ -94,9 +94,13 @@ author, image and `itunes:new-feed-url`. Items with no audio are skipped.
    Lessons: keep show notes out of memory until shown; copy parsed episodes onto the main thread
    (the parse thread's arena can then be trimmed); pin `M_MMAP_THRESHOLD`; close the audio output
    while paused (cpal's PulseAudio thread keeps waking otherwise).
-2. **Daily driver.** Inbox, In progress and Queue (auto-continue); directory search (Apple's
-   iTunes Search API needs no key and is contacted only when you search); show notes; art;
-   MPRIS + media keys; mouse; background refresh; OPML export.
+2. **Daily driver. (done, 2026-11-22, except OPML export and background refresh)** trill's look
+   (logo, Library sidebar, help, themes, mouse); Inbox (30 days), In progress, Queue with auto-continue
+   and play-next; show notes (`L`, on disk per feed, read one episode at a time); Discover (Apple's
+   charts by country and genre, `o`/`O`) and search; "For you" from your feeds' own categories (your
+   show list never leaves the machine); preview before following (`f`); cover art; MPRIS on Linux
+   with speed as the playback rate. Still to do: OPML export, an hourly refresh while open, macOS
+   Now Playing (needs AppKit on the main thread, as in trill), Windows media controls.
 3. **Best at it.** Chapters (Podcasting 2.0 JSON + ID3 CHAP); synced transcripts; downloads
    (resumable, keep newest N); per-show speed and intro/outro skip; sleep timer; loudness
    levelling.
