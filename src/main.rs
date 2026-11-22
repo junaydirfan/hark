@@ -10,6 +10,7 @@ mod feed;
 mod paths;
 mod store;
 mod stream;
+mod theme;
 mod ui;
 
 use std::time::{Duration, Instant};
@@ -72,6 +73,13 @@ async fn run() -> Result<(), String> {
         .map_err(|e| e.to_string())?;
     let mut app = app::App::new(Engine::start(eng_tx), msg_tx);
     let mut term = ratatui::init();
+    let _ = crossterm::execute!(std::io::stdout(), crossterm::event::EnableMouseCapture);
+    // ratatui's panic hook restores the terminal but not mouse reporting, which would leak into the shell
+    let hook = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |p| {
+        let _ = crossterm::execute!(std::io::stdout(), crossterm::event::DisableMouseCapture);
+        hook(p)
+    }));
     app.refresh(false);
     let mut dirty = true;
     while !app.quit {
@@ -83,6 +91,7 @@ async fn run() -> Result<(), String> {
             Some(ev) = key_rx.recv() => match ev {
                 crossterm::event::Event::Key(k) => { app.on_key(k); dirty = true; }
                 crossterm::event::Event::Resize(..) => dirty = true,
+                crossterm::event::Event::Mouse(m) => dirty |= app.on_mouse(m),
                 _ => {}
             },
             Some(ev) = eng_rx.recv() => dirty |= app.on_engine(ev),
@@ -91,6 +100,7 @@ async fn run() -> Result<(), String> {
         }
     }
     app.shutdown();
+    let _ = crossterm::execute!(std::io::stdout(), crossterm::event::DisableMouseCapture);
     ratatui::restore();
     Ok(())
 }

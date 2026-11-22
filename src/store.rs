@@ -124,6 +124,7 @@ pub fn load_feed(url: &str) -> Option<Cached> {
 
 pub fn forget_feed(url: &str) {
     let _ = std::fs::remove_file(feed_path(url));
+    let _ = std::fs::remove_file(notes_path(url));
 }
 
 /// Listening state of one episode.
@@ -132,6 +133,8 @@ pub struct Listen {
     /// Seconds in; 0 = not started.
     pub pos: f64,
     pub played: bool,
+    /// When it last changed (Unix seconds), for "In progress" order.
+    pub updated: i64,
 }
 
 fn state_path() -> PathBuf {
@@ -147,7 +150,8 @@ pub fn load_state() -> HashMap<String, Listen> {
             let guid = f.next()?.to_string();
             let pos = f.next()?.parse().ok()?;
             let played = f.next()? == "1";
-            Some((guid, Listen { pos, played }))
+            let updated = f.next().and_then(|u| u.parse().ok()).unwrap_or(0);
+            Some((guid, Listen { pos, played, updated }))
         })
         .collect()
 }
@@ -156,27 +160,85 @@ pub fn save_state(state: &HashMap<String, Listen>) -> std::io::Result<()> {
     let mut out = String::with_capacity(state.len() * 48);
     for (g, l) in state {
         if l.played || l.pos > 0.0 {
-            out.push_str(&format!("{}\t{:.1}\t{}\n", clean(g), l.pos, l.played as u8));
+            out.push_str(&format!("{}\t{:.1}\t{}\t{}\n", clean(g), l.pos, l.played as u8, l.updated));
         }
     }
     write_atomic(&state_path(), out.as_bytes())
 }
 
-/// Speed and volume, remembered between runs.
+/// Speed, volume and theme, remembered between runs.
 pub struct Prefs {
     pub speed: f32,
     /// 0..=100
     pub volume: u8,
+    pub theme: usize,
 }
 
 pub fn load_prefs() -> Prefs {
     let text = std::fs::read_to_string(data_dir().join("prefs")).unwrap_or_default();
     let get = |k: &str| text.lines().find_map(|l| l.strip_prefix(k)?.strip_prefix('=')?.trim().parse::<f32>().ok());
-    Prefs { speed: get("speed").unwrap_or(1.0).clamp(0.5, 3.0), volume: get("volume").unwrap_or(100.0).clamp(0.0, 100.0) as u8 }
+    let theme = text.lines().find_map(|l| l.strip_prefix("theme=")).map_or(0, |t| crate::theme::by_name(t.trim()));
+    Prefs { speed: get("speed").unwrap_or(1.0).clamp(0.5, 3.0), volume: get("volume").unwrap_or(100.0).clamp(0.0, 100.0) as u8, theme }
 }
 
 pub fn save_prefs(p: &Prefs) -> std::io::Result<()> {
-    write_atomic(&data_dir().join("prefs"), format!("speed={}\nvolume={}\n", p.speed, p.volume).as_bytes())
+    let text = format!("speed={}\nvolume={}\ntheme={}\n", p.speed, p.volume, crate::theme::name(p.theme));
+    write_atomic(&data_dir().join("prefs"), text.as_bytes())
+}
+
+/// The queue: (feed url, episode guid), in play order.
+pub fn load_queue() -> Vec<(String, String)> {
+    let text = std::fs::read_to_string(data_dir().join("queue.tsv")).unwrap_or_default();
+    text.lines().filter_map(|l| l.split_once('\t')).map(|(u, g)| (u.to_string(), g.to_string())).collect()
+}
+
+pub fn save_queue<'a>(q: impl Iterator<Item = (&'a str, &'a str)>) -> std::io::Result<()> {
+    let text: String = q.map(|(u, g)| format!("{}\t{}\n", clean(u), clean(g))).collect();
+    write_atomic(&data_dir().join("queue.tsv"), text.as_bytes())
+}
+
+fn notes_path(url: &str) -> PathBuf {
+    cache_dir().join("feeds").join(format!("{:016x}.notes", fnv(url)))
+}
+
+/// Show notes live in their own file per feed and are read one episode at a time, when shown:
+/// together they're most of a feed's size (6 MB for The Daily).
+pub fn save_notes(url: &str, eps: &[Episode]) -> std::io::Result<()> {
+    let mut out = String::new();
+    for e in eps.iter().filter(|e| !e.notes.is_empty()) {
+        out.push_str(&format!("{}\t{}\n", clean(&e.guid), escape_line(&e.notes)));
+    }
+    write_atomic(&notes_path(url), out.as_bytes())
+}
+
+pub fn has_notes(url: &str) -> bool {
+    notes_path(url).exists()
+}
+
+pub fn load_notes(url: &str, guid: &str) -> Option<String> {
+    let text = std::fs::read_to_string(notes_path(url)).ok()?;
+    let line = text.lines().find_map(|l| l.strip_prefix(guid)?.strip_prefix('\t'))?;
+    Some(unescape_line(line))
+}
+
+/// Multi-line text on one line: `\` → `\\`, newline → `\n`, tab → `\t`.
+fn escape_line(s: &str) -> String {
+    s.replace('\\', "\\\\").replace('\n', "\\n").replace('\t', "\\t").replace('\r', "")
+}
+
+fn unescape_line(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    let mut it = s.chars();
+    while let Some(c) = it.next() {
+        match (c, c == '\\').1.then(|| it.next()).flatten() {
+            Some('n') => out.push('\n'),
+            Some('t') => out.push('\t'),
+            Some(o) => out.push(o),
+            None if c != '\\' => out.push(c),
+            None => {}
+        }
+    }
+    out
 }
 
 #[cfg(test)]
@@ -194,6 +256,15 @@ mod tests {
           </outline></body></opml>"#;
         let subs = parse_opml(x);
         assert_eq!(subs, [Sub { url: "https://a.example/feed?x=1&y=2".into(), title: "A & B".into() }, Sub { url: "https://b.example/rss".into(), title: "no title attr".into() }]);
+    }
+
+    #[test]
+    fn notes_escape_round_trip() {
+        for s in ["plain", "two\nlines", "tab\there", "back\\slash\\n not a newline", "", "end\\"] {
+            let e = escape_line(s);
+            assert!(!e.contains('\n') && !e.contains('\t'), "{e:?}");
+            assert_eq!(unescape_line(&e), s);
+        }
     }
 
     #[test]

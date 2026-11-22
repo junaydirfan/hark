@@ -136,6 +136,107 @@ fn attrs(e: &BytesStart, path: &[String], show: &mut Show, ep: &mut Option<Episo
     }
 }
 
+/// Show notes are HTML (sometimes plain text): readable lines, plus the links they point to.
+pub fn notes_text(html: &str) -> (Vec<String>, Vec<String>) {
+    let mut text = String::new();
+    let mut links: Vec<String> = Vec::new();
+    let mut rest = html;
+    let mut skip_until: Option<&str> = None;
+    while let Some(lt) = rest.find('<') {
+        if skip_until.is_none() {
+            text.push_str(&rest[..lt]);
+        }
+        let Some(gt) = rest[lt..].find('>') else {
+            rest = &rest[lt + 1..];
+            continue;
+        };
+        let tag = &rest[lt + 1..lt + gt];
+        rest = &rest[lt + gt + 1..];
+        let name = tag.trim_start_matches('/').split(|c: char| c.is_whitespace() || c == '/').next().unwrap_or("").to_ascii_lowercase();
+        if let Some(end) = skip_until {
+            if tag.eq_ignore_ascii_case(end) {
+                skip_until = None;
+            }
+            continue;
+        }
+        match name.as_str() {
+            "script" | "style" if !tag.starts_with('/') => skip_until = Some(if name == "script" { "/script" } else { "/style" }),
+            "br" | "p" | "div" | "tr" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "ul" | "ol" | "blockquote" => text.push('\n'),
+            "li" if !tag.starts_with('/') => text.push_str("\n• "),
+            "a" => {
+                if let Some(h) = tag.split("href=").nth(1) {
+                    let h = h.trim_start_matches(['"', '\'']);
+                    let h = decode_entities(h.split(['"', '\'', ' ']).next().unwrap_or(""));
+                    if h.starts_with("http") && !links.contains(&h) {
+                        links.push(h);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+    if skip_until.is_none() {
+        text.push_str(rest);
+    }
+    let text = decode_entities(&text);
+    let mut lines: Vec<String> = Vec::new();
+    for l in text.lines() {
+        let l = l.split_whitespace().collect::<Vec<_>>().join(" ");
+        // one blank line between paragraphs at most
+        if !l.is_empty() || lines.last().is_some_and(|p| !p.is_empty()) {
+            lines.push(l);
+        }
+    }
+    while lines.last().is_some_and(String::is_empty) {
+        lines.pop();
+    }
+    (lines, links)
+}
+
+fn decode_entities(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    let mut rest = s;
+    while let Some(amp) = rest.find('&') {
+        out.push_str(&rest[..amp]);
+        rest = &rest[amp..];
+        let end = rest[..rest.len().min(12)].find(';');
+        let ent = end.map(|e| &rest[1..e]);
+        let ch = ent.and_then(|e| match e {
+            "amp" => Some('&'),
+            "lt" => Some('<'),
+            "gt" => Some('>'),
+            "quot" => Some('"'),
+            "apos" => Some('\''),
+            "nbsp" => Some(' '),
+            "rsquo" | "lsquo" => Some('\''),
+            "ldquo" | "rdquo" => Some('"'),
+            "mdash" => Some('—'),
+            "ndash" => Some('–'),
+            "hellip" => Some('…'),
+            _ => {
+                let n = e.strip_prefix('#')?;
+                let v = match n.strip_prefix(['x', 'X']) {
+                    Some(hex) => u32::from_str_radix(hex, 16).ok()?,
+                    None => n.parse().ok()?,
+                };
+                char::from_u32(v)
+            }
+        });
+        match (ch, end) {
+            (Some(c), Some(e)) => {
+                out.push(c);
+                rest = &rest[e + 1..];
+            }
+            _ => {
+                out.push('&');
+                rest = &rest[1..];
+            }
+        }
+    }
+    out.push_str(rest);
+    out
+}
+
 /// `itunes:duration`: "3725", "62:05", "1:02:05" (and the odd "3725.4") → seconds.
 pub fn duration(s: &str) -> u32 {
     s.split(':').try_fold(0u32, |acc, p| p.trim().split('.').next()?.parse::<u32>().ok().map(|n| acc * 60 + n)).unwrap_or(0)
@@ -255,6 +356,19 @@ mod tests {
         assert_eq!(e.transcript, Some(("https://ex/2.vtt".into(), "text/vtt".into())));
         let e = &s.episodes[1];
         assert_eq!((e.guid.as_str(), e.notes.as_str(), e.duration_s), ("https://ex/1.mp3", "only content", 0));
+    }
+
+    #[test]
+    fn notes_from_html() {
+        let html = r#"<p>Hi &amp; welcome&nbsp;to <b>Ep&#32;1</b>.</p><p>Topics:</p><ul><li>One</li><li>Two &#x2014; three</li></ul>
+<script>var x = "<p>nope</p>";</script><p>Links: <a href="https://ex.com/a?b=1&amp;c=2">here</a>, <a href='https://ex.com/z'>z</a></p><br/><br/>"#;
+        let (lines, links) = notes_text(html);
+        // paragraphs keep one blank line between them, never more
+        assert_eq!(lines, ["Hi & welcome to Ep 1.", "", "Topics:", "", "• One", "• Two — three", "", "Links: here, z"]);
+        assert_eq!(links, ["https://ex.com/a?b=1&c=2", "https://ex.com/z"]);
+        let (plain, none) = notes_text("Line one\n\n\n\nLine   two & more");
+        assert_eq!(plain, ["Line one", "", "Line two & more"]);
+        assert!(none.is_empty());
     }
 
     #[test]
