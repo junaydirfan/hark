@@ -9,7 +9,7 @@ use ratatui::{
 };
 
 use crate::{
-    app::{App, FIXED, Focus, Kind, fmt_date, fmt_s},
+    app::{App, FIXED, Focus, Item, Kind, fmt_date, fmt_s},
     theme::{accent, grad, on_accent},
 };
 
@@ -60,7 +60,8 @@ pub fn draw(f: &mut Frame, app: &mut App) {
         }
         None => side,
     };
-    let fixed = FIXED.iter().zip(app.counts).map(|(name, n)| {
+    let fixed = FIXED.iter().enumerate().map(|(i, name)| {
+        let n = app.counts.get(i).copied().unwrap_or(0);
         let count = if n > 0 { Span::raw(format!("  {n}")).dim() } else { Span::raw("") };
         ListItem::new(Line::from(vec![Span::raw(*name).bold(), count]))
     });
@@ -94,14 +95,14 @@ pub fn draw(f: &mut Frame, app: &mut App) {
     draw_now(f, app, now);
 
     if app.focus == Focus::Input {
-        let text = format!(" Add a feed URL or an OPML file: {}", app.input);
+        let text = format!(" Search podcasts, or paste a feed URL or an OPML file's path: {}", app.input);
         let x = bottom.x + text.chars().count() as u16;
         f.render_widget(Paragraph::new(text).fg(accent()), bottom);
         f.set_cursor_position((x.min(bottom.right().saturating_sub(1)), bottom.y));
     } else if !app.status.is_empty() {
         f.render_widget(Paragraph::new(format!(" {}", app.status)).dim(), bottom);
     } else {
-        f.render_widget(Paragraph::new(" ? keys · Enter play · Space pause · a queue · L notes · / add · q quit").dim(), bottom);
+        f.render_widget(Paragraph::new(" ? keys · Enter play · Space pause · a queue · L notes · / search · f follow · q quit").dim(), bottom);
     }
     if app.help_open {
         draw_help(f);
@@ -110,36 +111,33 @@ pub fn draw(f: &mut Frame, app: &mut App) {
 
 fn draw_table(f: &mut Frame, app: &mut App, area: Rect) {
     let focused = app.focus == Focus::Main;
-    if app.shows.is_empty() {
-        let msg = "\n No shows yet.\n\n Press /, then paste a podcast's feed URL,\n or the path to an OPML file exported from another podcast app.";
+    let title = app.view.title.clone();
+    if app.shows.is_empty() && matches!(app.view.kind, Kind::Inbox | Kind::InProgress | Kind::Queue) {
+        let msg = "\n No shows yet.\n\n Press / and search for a podcast, or browse Discover in the sidebar.\n You can also paste a feed URL, or the path to an OPML file exported from another podcast app.";
         f.render_widget(Paragraph::new(msg).block(block("Welcome", focused)), area);
         return;
     }
-    let title = app.view.title.clone();
     if app.view.rows.is_empty() {
         let msg = match app.view.kind {
             Kind::Inbox => "\n Nothing new in the last 30 days. Episodes from your shows land here as they come out.",
             Kind::InProgress => "\n Nothing in progress. Episodes you start and don't finish wait here.",
             Kind::Queue => "\n The queue is empty. Press a on an episode to add it, A to play it next.\n When an episode ends, the next one in the queue starts.",
+            Kind::Discover if app.cards_pending() => "\n Loading charts from Apple Podcasts…",
+            Kind::Discover => "\n Apple Podcasts sent nothing for this chart. o / O tries another genre.",
+            Kind::Search(_) if app.cards_pending() => "\n Searching…",
+            Kind::Search(_) => "\n No podcasts found. Try other words, or paste the show's feed URL.",
             Kind::Show(_) => "\n Loading…",
         };
         f.render_widget(Paragraph::new(msg).dim().block(block(&title, focused)), area);
         return;
     }
+    if matches!(app.view.rows.first(), Some(Item::Show(_))) {
+        return draw_cards(f, app, area, &title, focused);
+    }
     let many_shows = !matches!(app.view.kind, Kind::Show(_));
 
     // only the rows that fit: some shows have thousands of episodes
-    let n = app.view.rows.len();
-    let visible = area.height.saturating_sub(3).max(1) as usize;
-    let sel = app.view.state.selected().unwrap_or(0).min(n - 1);
-    let mut off = app.view.state.offset().min(n - 1);
-    if sel < off {
-        off = sel;
-    } else if sel >= off + visible {
-        off = sel + 1 - visible;
-    }
-    *app.view.state.offset_mut() = off;
-    let end = (off + visible).min(n);
+    let (off, end, sel) = window(&mut app.view.state, app.view.rows.len(), area);
     let playing = app.now.as_ref().map(|n| n.guid.as_str());
 
     let rows: Vec<Row> = app.view.rows[off..end]
@@ -193,6 +191,53 @@ fn draw_table(f: &mut Frame, app: &mut App, area: Rect) {
         .column_spacing(1);
     let mut window = TableState::default().with_selected(Some(sel - off));
     f.render_stateful_widget(table, area, &mut window);
+}
+
+/// The rows that fit, keeping the selection in view; returns (first, end, selected) indexes.
+fn window(state: &mut TableState, n: usize, area: Rect) -> (usize, usize, usize) {
+    let visible = area.height.saturating_sub(3).max(1) as usize;
+    let sel = state.selected().unwrap_or(0).min(n.saturating_sub(1));
+    let mut off = state.offset().min(n.saturating_sub(1));
+    if sel < off {
+        off = sel;
+    } else if sel >= off + visible {
+        off = sel + 1 - visible;
+    }
+    *state.offset_mut() = off;
+    (off, (off + visible).min(n), sel)
+}
+
+/// Discover and Search: shows, with ✓ on the ones you follow.
+fn draw_cards(f: &mut Frame, app: &mut App, area: Rect, title: &str, focused: bool) {
+    let (off, end, sel) = window(&mut app.view.state, app.view.rows.len(), area);
+    let rows: Vec<Row> = app.view.rows[off..end]
+        .iter()
+        .filter_map(|it| if let Item::Show(c) = it { Some(c) } else { None })
+        .map(|c| {
+            let followed = app.follows(c).is_some();
+            let tag = if c.tag == "for you" { Span::raw("for you").fg(accent()) } else { Span::raw(c.tag.as_str()).dim() };
+            let mut row = Row::new(vec![
+                Cell::from(if followed { "✓" } else { " " }).fg(accent()),
+                Cell::from(tag),
+                Cell::from(c.title.as_str()),
+                Cell::from(c.author.as_str()).dim(),
+                Cell::from(c.genre.as_str()).dim(),
+                Cell::from(Line::from(if c.episodes > 0 { c.episodes.to_string() } else { String::new() }).right_aligned()).dim(),
+            ]);
+            if followed {
+                row = row.style(Style::new().dim());
+            }
+            row
+        })
+        .collect();
+    let widths = [Constraint::Length(1), Constraint::Length(7), Constraint::Fill(3), Constraint::Fill(2), Constraint::Length(18), Constraint::Length(8)];
+    let table = Table::new(rows, widths)
+        .header(Row::new(vec!["", "", "Show", "By", "Genre", "Episodes"]).dim())
+        .block(block(title, focused))
+        .row_highlight_style(highlight(focused))
+        .column_spacing(1);
+    let mut w = TableState::default().with_selected(Some(sel - off));
+    f.render_stateful_widget(table, area, &mut w);
 }
 
 /// `L`: show notes in place of the table, scrolled with j/k.
@@ -289,7 +334,9 @@ const HELP: [(&str, &[(&str, &str)]); 4] = [
         ("m", "mark played / unplayed"),
     ]),
     ("Shows", &[
-        ("/", "add a feed URL or import OPML"),
+        ("/", "search · paste a feed URL / OPML"),
+        ("f", "follow the highlighted show"),
+        ("o O", "Discover: next / previous genre"),
         ("L", "show notes"),
         ("R", "refresh every show now"),
         ("D D", "unsubscribe"),

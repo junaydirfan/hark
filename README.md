@@ -4,8 +4,8 @@ A lean terminal podcast player. Open podcasts (any public RSS feed), played in-p
 no accounts, nothing running while paused. Built on the same principles as
 [trill](https://github.com/junaydirfan/trill).
 
-**Status:** Phase 2 of [PLAN.md](PLAN.md) in progress. Inbox, In progress, a queue that plays on,
-show notes, mouse and themes are in; search, top charts and recommendations come next.
+**Status:** Phase 2 of [PLAN.md](PLAN.md) in progress: library, queue, show notes and discovery
+are in; cover art and media keys come next.
 
 ## Get started
 
@@ -14,11 +14,16 @@ cargo build --release
 ./target/release/hark
 ```
 
-Press `/`, then paste a podcast's feed URL, or the path to an OPML file exported from another
-podcast app (AntennaPod, Pocket Casts, Overcast, Apple Podcasts…).
+Press `/` and search for a podcast, or open **Discover** in the sidebar. You can also paste a
+feed URL, or the path to an OPML file exported from another podcast app (AntennaPod, Pocket Casts,
+Overcast, Apple Podcasts…) to bring all your shows over.
 
 ## What's in it
 
+- **Search** (`/`) every podcast in the Apple Podcasts directory.
+- **Discover:** "For you", then the top charts for your country. `o` / `O` flips through genres
+  (Business, Comedy, True Crime, Technology…).
+- **Preview before you follow:** open any show, browse and play its episodes, then `f` to follow it.
 - **Inbox:** every unplayed episode from your shows in the last 30 days, newest first.
 - **In progress:** what you started and didn't finish, most recent first, with the time left.
 - **Queue:** `a` adds an episode, `A` plays it next. When an episode ends, the next one starts. It's saved between runs.
@@ -41,11 +46,22 @@ Press `?` in hark for all of them.
 | `w` | jump to the playing episode | | `+` / `-` | volume ±5% |
 | `a` / `A` | queue / play next | | `n` | next in the queue |
 | `m` | mark played / unplayed | | `L` | show notes |
-| `/` | add a feed URL or import OPML | | `R` | refresh every show now |
+| `/` | search · paste a feed URL / OPML | | `R` | refresh every show now |
+| `f` | follow the highlighted show | | `o` / `O` | Discover: next / previous genre |
 | `D` `D` | unsubscribe | | `t` | next colour theme |
 | `q` `Ctrl-C` | quit (your place is saved) | | | |
 
 In lists: `▶` playing, `◐` started (with the time left), `✓` played, `≡` queued.
+
+## Privacy
+
+hark has no account and sends no analytics. It talks to the servers of the shows you follow (for
+their feeds and audio), and to Apple's public podcast directory only for Discover and search:
+
+- **Search** sends what you type.
+- **Charts** send a genre and your country (taken from your locale, e.g. `en_CA` → Canada).
+- **"For you"** is built from the categories your own feeds declare. hark fetches the charts for
+  those genres and leaves out what you follow, so **your list of shows never leaves your machine**.
 
 ## Where things live
 

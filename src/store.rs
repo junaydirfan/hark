@@ -85,13 +85,14 @@ fn clean(s: &str) -> String {
 pub fn save_feed(url: &str, c: &Cached) -> std::io::Result<()> {
     let s = &c.show;
     let mut out = format!(
-        "{}\t{}\t{}\t{}\t{}\t{}\n",
+        "{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
         clean(&c.etag),
         clean(&c.last_modified),
         c.fetched,
         clean(&s.title),
         clean(&s.author),
-        clean(s.image.as_deref().unwrap_or(""))
+        clean(s.image.as_deref().unwrap_or("")),
+        clean(&s.categories.join("|"))
     );
     for e in &s.episodes {
         out.push_str(&format!("{}\t{}\t{}\t{}\t{}\t{}\n", clean(&e.guid), e.published, e.duration_s, clean(&e.url), clean(&e.mime), clean(&e.title)));
@@ -104,7 +105,8 @@ pub fn load_feed(url: &str) -> Option<Cached> {
     let mut lines = text.lines();
     let h: Vec<&str> = lines.next()?.split('\t').collect();
     let field = |i: usize| h.get(i).copied().unwrap_or("").to_string();
-    let mut show = Show { title: field(3), author: field(4), image: Some(field(5)).filter(|s| !s.is_empty()), ..Default::default() };
+    let categories = field(6).split('|').filter(|c| !c.is_empty()).map(str::to_string).collect();
+    let mut show = Show { title: field(3), author: field(4), image: Some(field(5)).filter(|s| !s.is_empty()), categories, ..Default::default() };
     for l in lines {
         let f: Vec<&str> = l.splitn(6, '\t').collect();
         if let [guid, published, dur, url, mime, title] = f[..] {
@@ -119,7 +121,11 @@ pub fn load_feed(url: &str) -> Option<Cached> {
             });
         }
     }
-    Some(Cached { show, etag: field(0), last_modified: field(1), fetched: field(2).parse().unwrap_or(0) })
+    // a cache from before categories were kept (6 fields): forget its validators so the next
+    // refresh fetches the whole feed once instead of getting "not modified"
+    let old = h.len() < 7;
+    let (etag, last_modified) = if old { (String::new(), String::new()) } else { (field(0), field(1)) };
+    Some(Cached { show, etag, last_modified, fetched: field(2).parse().unwrap_or(0) })
 }
 
 pub fn forget_feed(url: &str) {

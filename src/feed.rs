@@ -12,6 +12,8 @@ pub struct Show {
     pub image: Option<String>,
     /// `itunes:new-feed-url`: the show moved; subscribe there from now on.
     pub new_url: Option<String>,
+    /// Top-level `itunes:category` names ("Business", "Comedy"), for recommendations.
+    pub categories: Vec<String>,
     pub episodes: Vec<Episode>,
 }
 
@@ -122,6 +124,11 @@ fn attrs(e: &BytesStart, path: &[String], show: &mut Show, ep: &mut Option<Episo
         }
         ("itunes:image", Some(ep)) => ep.image = get("href"),
         ("itunes:image", None) if in_channel => show.image = get("href").or(show.image.take()),
+        ("itunes:category", None) if in_channel => {
+            if let Some(c) = get("text").filter(|c| !show.categories.contains(c)) {
+                show.categories.push(c);
+            }
+        }
         ("podcast:chapters", Some(ep)) => ep.chapters = get("url"),
         ("podcast:transcript", Some(ep)) => {
             if let (Some(url), Some(mime)) = (get("url"), get("type")) {
@@ -322,6 +329,8 @@ mod tests {
   <itunes:new-feed-url>https://new.example/feed</itunes:new-feed-url>
   <image><url>https://ex/cover-small.jpg</url><title>ignored</title></image>
   <itunes:image href="https://ex/cover.jpg"/>
+  <itunes:category text="Business"><itunes:category text="Investing"/></itunes:category>
+  <itunes:category text="Comedy"/>
   <item>
     <title><![CDATA[Ep 2: <Fun> & games]]></title>
     <guid isPermaLink="false">ep-2</guid>
@@ -347,6 +356,7 @@ mod tests {
         assert_eq!(s.author, "T&J");
         assert_eq!(s.image.as_deref(), Some("https://ex/cover.jpg"));
         assert_eq!(s.new_url.as_deref(), Some("https://new.example/feed"));
+        assert_eq!(s.categories, ["Business", "Comedy"], "top level only");
         assert_eq!(s.episodes.len(), 2);
         let e = &s.episodes[0];
         assert_eq!((e.title.as_str(), e.guid.as_str(), e.published, e.duration_s), ("Ep 2: <Fun> & games", "ep-2", 3600, 3601));

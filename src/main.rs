@@ -5,6 +5,7 @@
 //!   hark play <file|url> [speed] [start_s] [volume] play through the in-process engine
 
 mod app;
+mod discover;
 mod engine;
 mod feed;
 mod paths;
