@@ -288,19 +288,9 @@ impl Drop for NetReader {
     }
 }
 
-/// Where in-progress streams are cached: `$XDG_CACHE_HOME/hark/tmp` (or the platform's cache dir).
+/// Where in-progress streams are cached: `~/.cache/hark/tmp`.
 pub fn tmp_dir() -> PathBuf {
-    let base = std::env::var_os("XDG_CACHE_HOME").filter(|v| !v.is_empty()).map(PathBuf::from).or_else(|| {
-        let home = std::env::var_os(if cfg!(windows) { "LOCALAPPDATA" } else { "HOME" }).map(PathBuf::from)?;
-        Some(if cfg!(windows) {
-            home
-        } else if cfg!(target_os = "macos") {
-            home.join("Library/Caches")
-        } else {
-            home.join(".cache")
-        })
-    });
-    base.unwrap_or_else(std::env::temp_dir).join("hark").join("tmp")
+    crate::paths::cache_dir().join("tmp")
 }
 
 // shortcut: dev logging to stderr until hark has a TUI and a log file.

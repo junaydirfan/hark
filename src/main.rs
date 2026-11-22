@@ -1,29 +1,98 @@
 //! hark: a lean terminal podcast player.
 //!
-//! For now a developer CLI that exercises the two foundations; the TUI comes next.
-//!   hark feed <url|file>                        fetch + parse a feed, with timings
+//! `hark` opens the player. Two developer commands exercise the foundations on their own:
+//!   hark feed <url|file>                            fetch + parse a feed, with timings
 //!   hark play <file|url> [speed] [start_s] [volume] play through the in-process engine
 
+mod app;
 mod engine;
 mod feed;
+mod paths;
+mod store;
 mod stream;
+mod ui;
 
 use std::time::{Duration, Instant};
 
 use engine::{Cmd, Engine, Event};
 
-#[tokio::main(flavor = "current_thread")]
-async fn main() {
+/// Hands freed heap pages back to the OS (glibc only): a 20 MB feed would otherwise stay in RSS.
+pub fn trim_heap() {
+    // SAFETY: malloc_trim only releases free heap memory.
+    #[cfg(target_os = "linux")]
+    unsafe {
+        libc::malloc_trim(0);
+    }
+}
+
+fn main() {
+    // Every helper thread gets its own malloc arena that is never handed back; two is plenty.
+    // SAFETY: called before any other threads exist.
+    #[cfg(target_os = "linux")]
+    unsafe {
+        libc::mallopt(libc::M_ARENA_MAX, 2);
+        // Keep big buffers (a 20 MB feed body) in their own mappings, returned the moment they're
+        // freed. Without a fixed threshold glibc raises it after the first one and they fragment the heap.
+        libc::mallopt(libc::M_MMAP_THRESHOLD, 256 * 1024);
+    }
+    let rt = tokio::runtime::Builder::new_current_thread().enable_all().build().expect("tokio runtime");
+    rt.block_on(async_main());
+}
+
+async fn async_main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let res = match args.first().map(String::as_str) {
         Some("feed") if args.len() > 1 => show_feed(&args[1]).await,
         Some("play") if args.len() > 1 => play(&args[1..]).await,
-        _ => Err("usage: hark feed <url|file> | hark play <file|url> [speed] [start_s] [volume]".into()),
+        None => run().await,
+        _ => Err("usage: hark | hark feed <url|file> | hark play <file|url> [speed] [start_s] [volume]".into()),
     };
     if let Err(e) = res {
         eprintln!("hark: {e}");
         std::process::exit(1);
     }
+}
+
+/// The player: one async thread for the screen and the network, input on its own thread,
+/// audio on its own thread. Redraws only when something changed.
+async fn run() -> Result<(), String> {
+    let (eng_tx, mut eng_rx) = tokio::sync::mpsc::unbounded_channel();
+    let (msg_tx, mut msg_rx) = tokio::sync::mpsc::unbounded_channel();
+    let (key_tx, mut key_rx) = tokio::sync::mpsc::unbounded_channel();
+    // sleeps in read() until there's input, so it costs nothing while idle
+    std::thread::Builder::new()
+        .name("input".into())
+        .spawn(move || {
+            while let Ok(ev) = crossterm::event::read() {
+                if key_tx.send(ev).is_err() {
+                    break;
+                }
+            }
+        })
+        .map_err(|e| e.to_string())?;
+    let mut app = app::App::new(Engine::start(eng_tx), msg_tx);
+    let mut term = ratatui::init();
+    app.refresh(false);
+    let mut dirty = true;
+    while !app.quit {
+        if dirty {
+            let _ = term.draw(|f| ui::draw(f, &mut app));
+            dirty = false;
+        }
+        tokio::select! {
+            Some(ev) = key_rx.recv() => match ev {
+                crossterm::event::Event::Key(k) => { app.on_key(k); dirty = true; }
+                crossterm::event::Event::Resize(..) => dirty = true,
+                _ => {}
+            },
+            Some(ev) = eng_rx.recv() => dirty |= app.on_engine(ev),
+            Some(m) = msg_rx.recv() => { app.on_msg(m); dirty = true; }
+            else => break,
+        }
+    }
+    app.shutdown();
+    ratatui::restore();
+    Ok(())
 }
 
 async fn show_feed(src: &str) -> Result<(), String> {
