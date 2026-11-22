@@ -7,7 +7,7 @@ use std::{
     hash::{Hash, Hasher},
     sync::{
         Arc, Condvar, Mutex,
-        atomic::{AtomicU64, Ordering},
+        atomic::{AtomicU32, AtomicU64, Ordering},
     },
     time::Duration,
 };
@@ -54,6 +54,9 @@ struct Shared {
     ring: Mutex<VecDeque<f32>>,
     inbox: Mutex<VecDeque<Cmd>>,
     wake: Condvar,
+    /// f32 bits. Applied in the output callback, not while decoding, so a change is heard at once
+    /// instead of after the half second already queued.
+    volume: AtomicU32,
 }
 
 pub struct Engine {
@@ -62,7 +65,7 @@ pub struct Engine {
 
 impl Engine {
     pub fn start(events: UnboundedSender<Event>) -> Engine {
-        let shared = Arc::new(Shared { ring: Mutex::new(VecDeque::new()), inbox: Mutex::new(VecDeque::new()), wake: Condvar::new() });
+        let shared = Arc::new(Shared { ring: Mutex::new(VecDeque::new()), inbox: Mutex::new(VecDeque::new()), wake: Condvar::new(), volume: AtomicU32::new(1f32.to_bits()) });
         // stream caches left by an exit or crash mid-download (a running download deletes its own)
         let _ = std::fs::remove_dir_all(stream::tmp_dir());
         let s = shared.clone();
@@ -110,7 +113,6 @@ struct Player {
     sonic: Option<SonicStream>,
     paused: bool,
     speed: f32,
-    volume: f32,
     last_sec: i64,
     buf: Vec<f32>,
     client: reqwest::Client,
@@ -121,7 +123,7 @@ struct Player {
 
 impl Player {
     fn new(shared: Arc<Shared>, events: UnboundedSender<Event>, client: reqwest::Client, rt: tokio::runtime::Handle) -> Self {
-        Player { shared, events, stream: None, fmt: None, track: None, sonic: None, paused: false, speed: 1.0, volume: 1.0, last_sec: -1, buf: Vec::new(), client, rt, pending: None, buffering: false }
+        Player { shared, events, stream: None, fmt: None, track: None, sonic: None, paused: false, speed: 1.0, last_sec: -1, buf: Vec::new(), client, rt, pending: None, buffering: false }
     }
 
     fn emit(&self, e: Event) {
@@ -179,12 +181,7 @@ impl Player {
                     s.set_speed(self.speed);
                 }
             }
-            Cmd::Volume(v) => {
-                self.volume = v.clamp(0.0, 1.0);
-                if let Some(s) = &mut self.sonic {
-                    s.set_volume(self.volume);
-                }
-            }
+            Cmd::Volume(v) => self.shared.volume.store(v.clamp(0.0, 1.0).to_bits(), Ordering::Relaxed),
         }
     }
 
@@ -246,6 +243,7 @@ impl Player {
         self.emit(Event::Loaded { duration_s });
         self.paused = false;
         self.seek(at_s);
+        self.fill(); // queue audio before the output starts, so its first request isn't silence
         if let Some(s) = &self.stream {
             s.play().map_err(|e| e.to_string())?;
         }
@@ -260,37 +258,58 @@ impl Player {
         #[cfg(not(target_os = "linux"))]
         let host = cpal::default_host();
         let device = host.default_output_device().ok_or("no audio output device")?;
-        let config = cpal::StreamConfig { channels, sample_rate: rate, buffer_size: cpal::BufferSize::Default };
+        // PulseAudio and PipeWire default to a 2 s buffer, which delays the start, pauses, seeks and
+        // volume by up to 2 s; ask for 50 ms periods (~100 ms in flight). CoreAudio and WASAPI
+        // default to a few ms already.
+        let sizes = if cfg!(target_os = "linux") { vec![cpal::BufferSize::Fixed(rate / 20), cpal::BufferSize::Default] } else { vec![cpal::BufferSize::Default] };
+        let mut err = String::new();
+        for buffer_size in sizes {
+            let config = cpal::StreamConfig { channels, sample_rate: rate, buffer_size };
+            match device.build_output_stream(config, self.output_callback(rate, channels), self.error_callback(), None) {
+                Ok(s) => return Ok(s),
+                Err(e) => err = e.to_string(),
+            }
+        }
+        Err(format!("can't open audio output: {err}"))
+    }
+
+    fn output_callback(&self, rate: u32, channels: u16) -> impl FnMut(&mut [f32], &cpal::OutputCallbackInfo) + Send + 'static {
         let shared = self.shared.clone();
         let low = (rate as f64 * channels as f64 * AHEAD_S / 2.0) as usize;
+        let mut gain = f32::from_bits(shared.volume.load(Ordering::Relaxed));
+        move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
+            let mut r = shared.ring.lock().unwrap();
+            let n = data.len().min(r.len());
+            for (d, s) in data.iter_mut().zip(r.drain(..n)) {
+                *d = s;
+            }
+            if r.len() < low {
+                shared.wake.notify_one();
+            }
+            drop(r);
+            data[n..].fill(0.0);
+            // ramp to the new volume across this buffer, so a change doesn't click
+            let target = f32::from_bits(shared.volume.load(Ordering::Relaxed));
+            let step = (target - gain) / data.len().max(1) as f32;
+            for d in data.iter_mut() {
+                gain += step;
+                *d *= gain;
+            }
+            gain = target;
+        }
+    }
+
+    fn error_callback(&self) -> impl FnMut(cpal::Error) + Send + 'static {
         let events = self.events.clone();
-        device
-            .build_output_stream(
-                config,
-                move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
-                    let mut r = shared.ring.lock().unwrap();
-                    let n = data.len().min(r.len());
-                    for (d, s) in data.iter_mut().zip(r.drain(..n)) {
-                        *d = s;
-                    }
-                    data[n..].fill(0.0);
-                    if r.len() < low {
-                        shared.wake.notify_one();
-                    }
-                },
-                move |e| {
-                    let _ = events.send(Event::Error(format!("audio output: {e}")));
-                },
-                None,
-            )
-            .map_err(|e| format!("can't open audio output: {e}"))
+        move |e| {
+            let _ = events.send(Event::Error(format!("audio output: {e}")));
+        }
     }
 
     fn new_sonic(&mut self) {
         let Some((rate, ch)) = &self.fmt else { return };
         self.sonic = SonicStream::new(*rate, *ch as u32).ok().map(|mut s| {
             s.set_speed(self.speed);
-            s.set_volume(self.volume);
             s
         });
     }
