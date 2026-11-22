@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <a href="#install"><strong>Install</strong></a> &nbsp;·&nbsp;
+  <a href="#install"><strong>Install</strong></a> (<a href="#linux">Linux</a> · <a href="#macos">macOS</a> · <a href="#windows">Windows</a>) &nbsp;·&nbsp;
   <a href="#features"><strong>Features</strong></a> &nbsp;·&nbsp;
   <a href="#your-place-never-lost"><strong>Your place</strong></a> &nbsp;·&nbsp;
   <a href="#numbers"><strong>Numbers</strong></a> &nbsp;·&nbsp;
@@ -109,23 +109,95 @@ Measured on an i9-14900HX, memory as PSS.
 
 ## Install
 
-Download the file for your system from the [latest release](https://github.com/junaydirfan/hark/releases/latest), unpack it, and put `hark` on your `PATH`:
+| | Download | Runs on |
+|---|---|---|
+| **Linux** | [`hark-linux-x86_64.tar.gz`](https://github.com/junaydirfan/hark/releases/latest/download/hark-linux-x86_64.tar.gz) | x86_64 with glibc 2.39+: Ubuntu 24.04+, Debian 13+, Fedora 40+, Arch, CachyOS, Manjaro |
+| **macOS** | [`hark-macos-arm64.tar.gz`](https://github.com/junaydirfan/hark/releases/latest/download/hark-macos-arm64.tar.gz) | Apple Silicon (M1 and later) |
+| **Windows** | [`hark-windows-x86_64.zip`](https://github.com/junaydirfan/hark/releases/latest/download/hark-windows-x86_64.zip) | Windows 10 and 11, x64 |
+
+Anything else (Intel Macs, ARM Linux, an older distro) can [build from source](#build-from-source) in a minute or two.
+hark is developed and tested on Linux. The macOS and Windows builds are made and tested by CI on
+every release, but have seen less real listening; if something's off there, please [open an issue](https://github.com/junaydirfan/hark/issues).
+
+### Linux
 
 ```sh
-# Linux x86_64
 curl -L https://github.com/junaydirfan/hark/releases/latest/download/hark-linux-x86_64.tar.gz | tar xz
-install -m 755 hark ~/.local/bin/
-hark
+mkdir -p ~/.local/bin && install -m 755 hark ~/.local/bin/ && rm hark
+hark --version
 ```
 
-hark is developed and tested on Linux (CachyOS). The macOS (Apple Silicon) and Windows builds compile in CI but are less tested.
+If your shell says `hark: command not found`, `~/.local/bin` isn't on your `PATH` yet. Add it once and open a new terminal:
 
-Or build it yourself (Rust 1.88+; on Linux also `alsa-lib`, called `libasound2-dev` on Debian and Ubuntu):
+```sh
+fish_add_path ~/.local/bin                                     # fish (CachyOS's default)
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc       # bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc        # zsh
+```
+
+It needs only what every Linux desktop already has: PipeWire or PulseAudio for sound, and the OpenSSL 3 and
+ALSA libraries.
+Media keys, the KDE and GNOME media widgets and the lock screen work out of the box.
+
+### macOS
+
+In Terminal (or Ghostty, iTerm2, kitty, WezTerm):
+
+```sh
+curl -L https://github.com/junaydirfan/hark/releases/latest/download/hark-macos-arm64.tar.gz | tar xz
+sudo mkdir -p /usr/local/bin && sudo mv hark /usr/local/bin/
+hark --version
+```
+
+hark isn't signed by Apple. Downloaded with `curl` as above, it just runs. If you downloaded it in a browser
+instead and macOS says it *can't be opened because Apple cannot check it*, clear the download flag once:
+
+```sh
+xattr -d com.apple.quarantine /usr/local/bin/hark
+```
+
+Cover art shows as a real picture in Ghostty, iTerm2, kitty and WezTerm, and as colour blocks in Terminal.app.
+Media keys and Control Center aren't wired up on macOS yet.
+
+### Windows
+
+In PowerShell (Windows Terminal is best; it comes with Windows 11):
+
+```powershell
+$dir = "$env:LOCALAPPDATA\Programs\hark"
+Invoke-WebRequest https://github.com/junaydirfan/hark/releases/latest/download/hark-windows-x86_64.zip -OutFile "$env:TEMP\hark.zip"
+Expand-Archive "$env:TEMP\hark.zip" -DestinationPath $dir -Force
+# put hark on your PATH (once); new terminals pick it up
+$path = [Environment]::GetEnvironmentVariable("Path", "User")
+if ($path -notlike "*$dir*") { [Environment]::SetEnvironmentVariable("Path", "$path;$dir", "User") }
+```
+
+Open a **new** terminal and run `hark`. hark isn't signed by Microsoft, so if you downloaded the zip in a browser,
+Windows may stop it with *Windows protected your PC*; choose **More info → Run anyway**, or run
+`Unblock-File "$env:LOCALAPPDATA\Programs\hark\hark.exe"` once. Media keys aren't wired up on Windows yet.
+
+### Updating and removing
+
+To update, run the same commands again: they replace the old `hark` and keep your shows, your place and your queue.
+
+To remove hark, delete the program and its two folders:
+
+| | Program | Your shows, place, queue | Caches (safe to delete any time) |
+|---|---|---|---|
+| Linux | `~/.local/bin/hark` | `~/.local/share/hark` | `~/.cache/hark` |
+| macOS | `/usr/local/bin/hark` | `~/Library/Application Support/hark` | `~/Library/Caches/hark` |
+| Windows | `%LOCALAPPDATA%\Programs\hark` | `%APPDATA%\hark` | `%LOCALAPPDATA%\hark` |
+
+### Build from source
+
+You need [Rust](https://rustup.rs) 1.88 or newer. On Linux, also the ALSA and OpenSSL headers:
+`sudo pacman -S alsa-lib openssl` (Arch, CachyOS), `sudo apt install libasound2-dev libssl-dev pkg-config`
+(Debian, Ubuntu) or `sudo dnf install alsa-lib-devel openssl-devel` (Fedora).
 
 ```sh
 git clone https://github.com/junaydirfan/hark && cd hark
 cargo build --release
-./target/release/hark
+./target/release/hark          # or: cargo install --path .
 ```
 
 ## Get started
