@@ -179,7 +179,13 @@ Windows may stop it with *Windows protected your PC*; choose **More info → Run
 
 ### Updating and removing
 
-To update, run the same commands again: they replace the old `hark` and keep your shows, your place and your queue.
+To update, quit hark and run:
+
+```sh
+hark --update
+```
+
+It downloads the latest release for your system, checks that it runs, and puts it in place of the old `hark`; your shows, your place and your queue stay. hark also says on its bottom line when a new version is out. If it can't replace the file (say `/usr/local/bin` on macOS, which needs `sudo`), or you're on 0.1.2 or older (no `--update` yet), run the install commands again: they do the same.
 
 To remove hark, delete the program and its two folders:
 
@@ -257,10 +263,11 @@ In lists: `▶` playing, `◔ ◑ ◕` started (with the time left), `✓` playe
 
 ## Privacy
 
-hark has no account and sends no analytics. It talks to the servers of the shows you follow (for their feeds and audio), and to Apple's public podcast directory only for Discover and search:
+hark has no account and sends no analytics. It talks to the servers of the shows you follow (for their feeds and audio), to Apple's public podcast directory only for Discover and search, and to GitHub for updates:
 
 - **Search** sends what you type.
 - **Charts** send a genre and your country, taken from your locale (e.g. `en_CA` → Canada).
+- **Updates:** once a day hark asks GitHub for the number of the latest release. Nothing about you or your shows is sent.
 - ***For you*** is built from the categories your own feeds declare. hark fetches the charts for those genres and leaves out what you follow, so **your list of shows never leaves your machine**.
 
 ## Where things live
@@ -271,7 +278,7 @@ hark has no account and sends no analytics. It talks to the servers of the shows
 | `~/.local/share/hark/state.tsv` | where you are in each episode you've started, and what you've finished |
 | `~/.local/share/hark/queue.tsv` | the queue |
 | `~/.local/share/hark/prefs` | speed, volume, theme, cover on/off |
-| `~/.cache/hark/` | feed caches, show notes, and the episode streaming right now; safe to delete |
+| `~/.cache/hark/` | feed caches, show notes, the episode streaming right now, and the latest release seen; safe to delete |
 
 On macOS these live under `~/Library/Application Support/hark` and `~/Library/Caches/hark`, and on Windows under `%APPDATA%\hark` and `%LOCALAPPDATA%\hark`. Every file is written to a temporary file first and then renamed into place, so a crash never leaves half a file behind.
 

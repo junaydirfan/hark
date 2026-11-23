@@ -111,6 +111,8 @@ pub fn draw(f: &mut Frame, app: &mut App) {
         f.set_cursor_position((x.min(bottom.right().saturating_sub(1)), bottom.y));
     } else if !app.status.is_empty() {
         f.render_widget(Paragraph::new(format!(" {}", app.status)).dim(), bottom);
+    } else if let Some(tag) = &app.update {
+        f.render_widget(Paragraph::new(format!(" hark {tag} is out: quit and run hark --update · ? keys")).fg(accent()), bottom);
     } else {
         f.render_widget(Paragraph::new(" ? keys · Enter play · Space pause · a queue · L notes · / search · f follow · q quit").dim(), bottom);
     }

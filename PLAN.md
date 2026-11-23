@@ -19,7 +19,7 @@ Out of scope: Spotify/Audible exclusives and video podcasts (no public feed).
 | MPRIS / macOS Now Playing | Port trill's `mpris.rs` |
 
 Also worth reusing from trill: mouse handling, the config parser, the album-art picker, the
-update checker and the CI workflow (already copied).
+update checker and the CI workflow (both copied).
 
 ## Audio engine: in-process, not mpv (measured 2026-11-22)
 
