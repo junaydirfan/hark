@@ -187,7 +187,7 @@ To update, quit hark and run:
 hark --update
 ```
 
-It downloads the latest release for your system, checks that it runs, and puts it in place of the old `hark`; your shows, your place and your queue stay. hark also says on its bottom line when a new version is out. If it can't replace the file (say `/usr/local/bin` on macOS, which needs `sudo`), or you're on 0.1.2 or older (no `--update` yet), run the install commands again: they do the same.
+It downloads the latest release for your system, checks that it runs, and puts it in place of the old `hark`; your shows, your place and your queue stay. hark also says on its bottom line when a new version is out. If hark lives where only an admin can write (like `/usr/local/bin` on macOS), it asks for your password through `sudo`. On a Mac with 0.1.3 or 0.1.4, run `sudo hark --update` once. On 0.1.2 or older (no `--update` yet), run the install commands again: they do the same.
 
 To remove hark, delete the program and its two folders:
 
