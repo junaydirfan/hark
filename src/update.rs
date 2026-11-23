@@ -95,7 +95,9 @@ pub async fn run() -> Result<(), String> {
         if String::from_utf8_lossy(&out.stdout).trim() != want {
             return Err(format!("the downloaded hark doesn't say it's {tag}; left the old one in place"));
         }
-        swap(&new).map_err(|e| {
+        // /usr/local/bin and the like belong to root: ask sudo rather than give up
+        let swapped = swap(&new).or_else(|e| if e.kind() == std::io::ErrorKind::PermissionDenied { sudo_swap(&new) } else { Err(e) });
+        swapped.map_err(|e| {
             format!("couldn't replace hark: {e}\nIf a package manager installed it, update it there; otherwise see the README's Updating section.")
         })
     });
@@ -147,6 +149,22 @@ fn swap(new: &Path) -> std::io::Result<PathBuf> {
         return Err(e);
     }
     Ok(exe)
+}
+
+/// [`swap`] as root, for a hark in a folder only an admin can write to. Still a copy next to
+/// it, then a rename: macOS kills a signed binary that was overwritten in place.
+#[cfg(unix)]
+fn sudo_swap(new: &Path) -> std::io::Result<PathBuf> {
+    let exe = std::env::current_exe()?.canonicalize()?;
+    println!("Only an admin can change {}; asking sudo…", exe.display());
+    let script = r#"cp "$1" "$2.hark-update" && chmod 755 "$2.hark-update" && mv -f "$2.hark-update" "$2" || { rm -f "$2.hark-update"; exit 1; }"#;
+    let ok = Command::new("sudo").args(["sh", "-c", script, "sh"]).arg(new).arg(&exe).status()?.success();
+    if ok { Ok(exe) } else { Err(std::io::Error::other("sudo didn't replace it")) }
+}
+
+#[cfg(not(unix))]
+fn sudo_swap(_new: &Path) -> std::io::Result<PathBuf> {
+    Err(std::io::ErrorKind::PermissionDenied.into())
 }
 
 #[cfg(test)]
