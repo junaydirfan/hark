@@ -39,6 +39,20 @@ fn main() {
         // freed. Without a fixed threshold glibc raises it after the first one and they fragment the heap.
         libc::mallopt(libc::M_MMAP_THRESHOLD, 256 * 1024);
     }
+    // macOS hands media keys only to an app whose main thread runs AppKit's event loop, so there
+    // the player runs on a second thread. Only for the player: the other commands don't need it.
+    #[cfg(target_os = "macos")]
+    if std::env::args().len() == 1 && mpris::prepare() {
+        std::thread::Builder::new().name("hark".into()).stack_size(8 << 20).spawn(|| {
+            go();
+            std::process::exit(0)
+        }).expect("thread");
+        mpris::run_main();
+    }
+    go();
+}
+
+fn go() {
     let rt = tokio::runtime::Builder::new_current_thread().enable_all().build().expect("tokio runtime");
     // LocalSet: the MPRIS server is single-threaded (!Send), like the rest of the app
     tokio::task::LocalSet::new().block_on(&rt, async_main());

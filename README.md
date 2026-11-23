@@ -47,6 +47,7 @@ hark is a podcast player for the terminal that does one thing and does it cheapl
 - **Show notes:** `L` shows an episode's notes as clean text, with its links listed underneath.
 - **Cover art** of what's playing, under the library: real images in kitty, Ghostty, WezTerm, foot, iTerm2 and Konsole, and colour half-blocks everywhere else.
 - **Desktop native (Linux):** media keys, the KDE and GNOME media widgets, the lock screen, `playerctl` and KDE Connect, through MPRIS. Speed is the playback rate there, so the widget can change it too.
+- **Desktop native (macOS):** media keys, Control Center and the lock screen, through Now Playing, with the episode's cover.
 - **Bring your shows:** paste a feed URL, or the path to an OPML file exported from AntennaPod, Pocket Casts, Overcast, Apple Podcasts or any other app. Your shows are kept as OPML too, so you can take them anywhere.
 - **trill's look:** the same layout, `?` for every key, colour themes on `t`, and the mouse (click to open, double-click to play, click the bar to seek, scroll the pane under the pointer).
 </details>
@@ -158,7 +159,8 @@ xattr -d com.apple.quarantine /usr/local/bin/hark
 ```
 
 Cover art shows as a real picture in Ghostty, iTerm2, kitty and WezTerm, and as colour blocks in Terminal.app.
-Media keys and Control Center aren't wired up on macOS yet.
+Media keys, Control Center and the lock screen work through Now Playing (not over SSH). If the media keys
+still go to Music or a browser tab, start playing in hark once: macOS sends them to whatever played last.
 
 ### Windows
 

@@ -23,6 +23,13 @@ cpal = { version = "0.18", features = ["pulseaudio"] }
 libc = "0.2" # malloc_trim / mallopt: hand freed heap back after big feeds
 mpris-server = { version = "0.11", default-features = false, features = ["tokio"] }
 
+# macOS: Now Playing (media keys, Control Center) through AppKit and MediaPlayer.
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+block2 = "0.6"
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSString", "NSDictionary", "NSValue", "NSObject", "NSObjCRuntime", "NSData", "NSGeometry", "objc2-core-foundation"] }
+objc2-media-player = { version = "0.3", default-features = false, features = ["std", "block2", "MPRemoteCommandCenter", "MPRemoteCommand", "MPRemoteCommandEvent", "MPNowPlayingInfoCenter", "MPMediaItem"] }
+
 [profile.release]
 opt-level = 3
 lto = "fat"
