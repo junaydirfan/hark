@@ -186,7 +186,7 @@ pub struct App {
     last_click: Option<(Instant, usize)>,
     engine: Engine,
     tx: UnboundedSender<Msg>,
-    client: reqwest::Client,
+    pub client: reqwest::Client,
     fetches: Arc<Semaphore>,
     confirm_remove: Option<(String, Instant)>,
 }
