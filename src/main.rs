@@ -1,7 +1,7 @@
 //! hark: a lean terminal podcast player.
 //!
 //! `hark` opens the player. Two developer commands exercise the foundations on their own:
-//!   hark feed <url|file>                            fetch + parse a feed, with timings
+//!   hark feed <url|file> [newest|oldest|longest|shortest]  fetch + parse a feed, with timings
 //!   hark play <file|url> [speed] [start_s] [volume] play through the in-process engine
 
 mod app;
@@ -46,14 +46,14 @@ fn main() {
 async fn async_main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let res = match args.first().map(String::as_str) {
-        Some("feed") if args.len() > 1 => show_feed(&args[1]).await,
+        Some("feed") if args.len() > 1 => show_feed(&args[1], args.get(2)).await,
         Some("play") if args.len() > 1 => play(&args[1..]).await,
         Some("--version" | "-V") => {
             println!("hark {}", env!("CARGO_PKG_VERSION"));
             Ok(())
         }
         None => run().await,
-        _ => Err("usage: hark | hark feed <url|file> | hark play <file|url> [speed] [start_s] [volume]".into()),
+        _ => Err("usage: hark | hark feed <url|file> [newest|oldest|longest|shortest] | hark play <file|url> [speed] [start_s] [volume]".into()),
     };
     if let Err(e) = res {
         eprintln!("hark: {e}");
@@ -200,7 +200,11 @@ fn query_terminal_images() -> Option<ratatui_image::picker::Picker> {
     picker
 }
 
-async fn show_feed(src: &str) -> Result<(), String> {
+async fn show_feed(src: &str, by: Option<&String>) -> Result<(), String> {
+    let by = match by {
+        Some(s) => Some(feed::Sort::parse(s).ok_or(format!("unknown sort '{s}': newest, oldest, longest or shortest"))?),
+        None => None,
+    };
     let t0 = Instant::now();
     let bytes = if src.starts_with("http://") || src.starts_with("https://") {
         let resp = reqwest::Client::new().get(src).send().await.map_err(|e| e.to_string())?;
@@ -213,8 +217,11 @@ async fn show_feed(src: &str) -> Result<(), String> {
     };
     let fetched = t0.elapsed();
     let t1 = Instant::now();
-    let show = feed::parse(&bytes)?;
+    let mut show = feed::parse(&bytes)?;
     let parsed = t1.elapsed();
+    if let Some(by) = by {
+        feed::sort(&mut show.episodes, by);
+    }
     let with = |f: fn(&feed::Episode) -> bool| show.episodes.iter().filter(|e| f(e)).count();
     println!("{} — {}", show.title, show.author);
     println!(
