@@ -39,6 +39,7 @@ hark is a podcast player for the terminal that does one thing and does it cheapl
 - **Search** (`/`) every show in the Apple Podcasts directory, with its genre, its size and when its latest episode came out, so a dead show looks dead.
 - **Discover:** *For you*, then the top charts for your country. `o` / `O` flips through 19 genres, from Business to True Crime.
 - **Preview, then follow:** open any show, browse and play its episodes, and `f` to follow it when you like it.
+- **Sort a show** (`s`): newest, oldest, longest or shortest first.
 - **Inbox:** every unplayed episode from your shows in the last 30 days, newest first.
 - **In progress:** what you started and didn't finish, most recent first, each with ◔ ◑ ◕ and the time left.
 - **A queue that plays on:** `a` adds an episode, `A` plays it next, and when an episode ends the next one starts. It's kept between runs.

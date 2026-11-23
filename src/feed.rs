@@ -17,6 +17,61 @@ pub struct Show {
     pub episodes: Vec<Episode>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
+pub enum Sort {
+    #[default]
+    Newest,
+    Oldest,
+    Longest,
+    Shortest,
+}
+
+impl Sort {
+    pub fn parse(s: &str) -> Option<Sort> {
+        Some(match s {
+            "newest" => Sort::Newest,
+            "oldest" => Sort::Oldest,
+            "longest" => Sort::Longest,
+            "shortest" => Sort::Shortest,
+            _ => return None,
+        })
+    }
+
+    pub fn next(self) -> Sort {
+        match self {
+            Sort::Newest => Sort::Oldest,
+            Sort::Oldest => Sort::Longest,
+            Sort::Longest => Sort::Shortest,
+            Sort::Shortest => Sort::Newest,
+        }
+    }
+
+    pub fn name(self) -> &'static str {
+        match self {
+            Sort::Newest => "newest first",
+            Sort::Oldest => "oldest first",
+            Sort::Longest => "longest first",
+            Sort::Shortest => "shortest first",
+        }
+    }
+
+    /// Sort key; unknown dates/durations (0) always go last.
+    pub fn key(self, e: &Episode) -> (bool, i64) {
+        let d = e.duration_s as i64;
+        match self {
+            Sort::Newest => (e.published == 0, -e.published),
+            Sort::Oldest => (e.published == 0, e.published),
+            Sort::Longest => (d == 0, -d),
+            Sort::Shortest => (d == 0, d),
+        }
+    }
+}
+
+/// Stable, so ties keep feed order.
+pub fn sort(eps: &mut [Episode], by: Sort) {
+    eps.sort_by_key(|e| by.key(e));
+}
+
 #[derive(Debug, Default, Clone)]
 pub struct Episode {
     /// The feed's guid, or the audio url when there is none.
@@ -309,6 +364,21 @@ mod tests {
         assert_eq!(rfc2822("Sat, 29 Feb 2020 12:00:00 +0530"), Some(1582957800));
         assert_eq!(rfc2822("29 February 20 12:00:00 Z"), rfc2822("Sat, 29 Feb 2020 12:00:00 +0000"), "2-digit year, long month");
         assert_eq!(rfc2822("garbage"), None);
+    }
+
+    #[test]
+    fn sorts_unknowns_last() {
+        let ep = |published, duration_s| Episode { published, duration_s, ..Default::default() };
+        let mut eps = vec![ep(0, 0), ep(20, 300), ep(10, 100), ep(30, 0)];
+        let order = |eps: &[Episode]| eps.iter().map(|e| e.published).collect::<Vec<_>>();
+        sort(&mut eps, Sort::Newest);
+        assert_eq!(order(&eps), [30, 20, 10, 0]);
+        sort(&mut eps, Sort::Oldest);
+        assert_eq!(order(&eps), [10, 20, 30, 0]);
+        sort(&mut eps, Sort::Longest);
+        assert_eq!(order(&eps), [20, 10, 30, 0]);
+        sort(&mut eps, Sort::Shortest);
+        assert_eq!(order(&eps), [10, 20, 30, 0]);
     }
 
     #[test]

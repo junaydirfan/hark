@@ -160,6 +160,8 @@ pub struct App {
     pub notes: Option<Notes>,
     pub help_open: bool,
     pub quit: bool,
+    /// Order of a show's episode list (session only).
+    pub sort: feed::Sort,
     /// Shows opened from Discover or Search, not followed.
     previews: Vec<ShowView>,
     /// Directory results this session, by key; and the keys being fetched.
@@ -191,7 +193,7 @@ fn unix_now() -> i64 {
 
 /// Newest episode first (feeds usually are; not all of them).
 fn sort_episodes(show: &mut Show) {
-    show.episodes.sort_by_key(|e| std::cmp::Reverse(e.published));
+    feed::sort(&mut show.episodes, feed::Sort::Newest);
 }
 
 impl App {
@@ -233,6 +235,7 @@ impl App {
             notes: None,
             help_open: false,
             quit: false,
+            sort: feed::Sort::Newest,
             previews: Vec::new(),
             cards: HashMap::new(),
             cards_loading: Vec::new(),
@@ -337,7 +340,13 @@ impl App {
                 keys.iter().flat_map(|k| self.cards.get(k).into_iter().flatten()).cloned().map(Item::Show).collect()
             }
             Kind::Search(q) => self.cards.get(&format!("search:{q}")).into_iter().flatten().cloned().map(Item::Show).collect(),
-            Kind::Show(u) => self.show(u).map_or(Vec::new(), |s| (0..s.show.episodes.len()).map(|i| Item::Ep { show: u.clone(), i }).collect()),
+            Kind::Show(u) => self.show(u).map_or(Vec::new(), |s| {
+                let mut idx: Vec<usize> = (0..s.show.episodes.len()).collect();
+                if self.sort != feed::Sort::Newest {
+                    idx.sort_by_key(|&i| self.sort.key(&s.show.episodes[i]));
+                }
+                idx.into_iter().map(|i| Item::Ep { show: u.clone(), i }).collect()
+            }),
         }
     }
 
@@ -381,7 +390,7 @@ impl App {
                     if !s.show.categories.is_empty() {
                         t.push_str(&format!(" · {}", s.show.categories.join(", ")));
                     }
-                    t.push_str(&format!(" · {n} episodes"));
+                    t.push_str(&format!(" · {n} episodes, {} (s)", self.sort.name()));
                     if !self.is_followed(u) {
                         t.push_str(" · not followed: f to follow");
                     }
@@ -484,6 +493,15 @@ impl App {
     }
 
     /// `o` / `O` in Discover: the next / previous genre.
+    fn cycle_sort(&mut self) {
+        if !matches!(self.view.kind, Kind::Show(_)) {
+            return;
+        }
+        self.sort = self.sort.next();
+        self.view.state.select(Some(0));
+        self.rebuild();
+    }
+
     fn cycle_genre(&mut self, delta: isize) {
         if self.view.kind != Kind::Discover {
             return;
@@ -1275,6 +1293,7 @@ impl App {
             }
             KeyCode::Char('R') => self.refresh(true),
             KeyCode::Char('f') => self.follow(),
+            KeyCode::Char('s') => self.cycle_sort(),
             KeyCode::Char('o') => self.cycle_genre(1),
             KeyCode::Char('O') => self.cycle_genre(-1),
             KeyCode::Char('D') => self.unsubscribe(),
