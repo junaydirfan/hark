@@ -1,6 +1,6 @@
 //! hark: a lean terminal podcast player.
 //!
-//! `hark` opens the player. Two developer commands exercise the foundations on their own:
+//! `hark` opens the player; `hark --update` installs the latest release. Two developer commands exercise the foundations on their own:
 //!   hark feed <url|file> [newest|oldest|longest|shortest]  fetch + parse a feed, with timings
 //!   hark play <file|url> [speed] [start_s] [volume] play through the in-process engine
 
@@ -14,6 +14,7 @@ mod store;
 mod stream;
 mod theme;
 mod ui;
+mod update;
 
 use std::time::{Duration, Instant};
 
@@ -52,8 +53,9 @@ async fn async_main() {
             println!("hark {}", env!("CARGO_PKG_VERSION"));
             Ok(())
         }
+        Some("--update") => update::run().await,
         None => run().await,
-        _ => Err("usage: hark | hark feed <url|file> [newest|oldest|longest|shortest] | hark play <file|url> [speed] [start_s] [volume]".into()),
+        _ => Err("usage: hark | hark --update | hark feed <url|file> [newest|oldest|longest|shortest] | hark play <file|url> [speed] [start_s] [volume]".into()),
     };
     if let Err(e) = res {
         eprintln!("hark: {e}");
@@ -92,6 +94,7 @@ async fn run() -> Result<(), String> {
         hook(p)
     }));
     app.refresh(false);
+    app.check_update();
     let quit_signal = quit_signal();
     tokio::pin!(quit_signal);
     let mut dirty = true;

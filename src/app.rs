@@ -64,6 +64,8 @@ pub enum Msg {
     Preview { url: String, res: Result<Option<Cached>, String> },
     /// Directory results for a cache key ("top:0", "foryou", "search:<q>").
     Cards { key: String, res: Result<Vec<Card>, String> },
+    /// A newer hark release is out (its tag).
+    Update(String),
     /// A cover, encoded for the terminal at `size` cells.
     Art { url: String, size: (u16, u16), res: Result<Protocol, String> },
 }
@@ -160,6 +162,8 @@ pub struct App {
     pub notes: Option<Notes>,
     pub help_open: bool,
     pub quit: bool,
+    /// A newer release's tag, for the bottom line.
+    pub update: Option<String>,
     /// Order of a show's episode list (session only).
     pub sort: feed::Sort,
     /// Shows opened from Discover or Search, not followed.
@@ -235,6 +239,7 @@ impl App {
             notes: None,
             help_open: false,
             quit: false,
+            update: None,
             sort: feed::Sort::Newest,
             previews: Vec::new(),
             cards: HashMap::new(),
@@ -634,10 +639,24 @@ impl App {
         });
     }
 
+    /// Look for a newer hark release (GitHub, at most once a day) for the bottom line.
+    pub fn check_update(&self) {
+        let tx = self.tx.clone();
+        tokio::spawn(async move {
+            if let Some(tag) = crate::update::check().await {
+                let _ = tx.send(Msg::Update(tag));
+            }
+        });
+    }
+
     pub fn on_msg(&mut self, msg: Msg) {
         let (url, res, adding) = match msg {
             Msg::Feed { url, res, adding } => (url, res, adding),
             Msg::Preview { url, res } => return self.on_preview(url, res),
+            Msg::Update(tag) => {
+                self.update = Some(tag);
+                return;
+            }
             Msg::Art { url, size, res } => {
                 if let Some(a) = self.art.as_mut().filter(|a| a.url == url) {
                     a.busy = false;
