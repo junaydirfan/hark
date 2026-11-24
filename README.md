@@ -78,7 +78,7 @@ hark also keeps the length the player actually measures. Feeds' own durations ar
   <img src="assets/readme/screen-discover.svg" width="880" alt="hark's Discover: a strip of genres, then shows For you picked from the genres of the shows you follow, each with its author, genre, number of episodes and when its latest episode came out.">
 </p>
 
-*For you* is made from the categories your own feeds declare (`itunes:category`): hark fetches the charts for your top genres, takes them in turns, and leaves out what you already follow. **Your list of shows never leaves your machine;** see [Privacy](#privacy).
+*For you* is made from the categories your own feeds declare (`itunes:category`, down to subgenres like *Tech News* or *Entrepreneurship*), weighted by what you actually listen to: a show you've spent hours with counts far more than one you just follow. hark asks for the charts of your top four genres at once, scores each show by how much its charts matter to you and how high it sits in them (a show in several of your charts rises), sinks shows that have gone quiet, and keeps any one genre from crowding out the rest. The Genre column says why each show is there. Press `x` on a suggestion you don't want and it never comes back; `M` on any show lists more from its maker. Charts are kept for 12 hours, so Discover usually opens without asking Apple anything. The Inbox uses the same listening signal, gently: new episodes of the shows you listen to most move up by as much as three days. **Your list of shows never leaves your machine;** see [Privacy](#privacy).
 
 <p align="center">
   <img src="assets/readme/screen-notes.svg" width="880" alt="hark showing an episode's show notes as clean text: paragraphs and bulleted lists of guests and sources.">
@@ -240,6 +240,8 @@ From then on, new episodes land in the **Inbox**, and whatever you start waits i
 | `/` | search · paste a feed URL / OPML | | `R` | refresh every show now |
 | `f` | follow the highlighted show | | `o` / `O` | Discover: next / previous genre |
 | `D` `D` | unsubscribe | | `t` / `i` | next colour theme / cover on-off |
+| `s` | sort a show's episodes | | `x` | For you: not interested |
+| `M` | more from this show's maker | | | |
 | `q` `Ctrl-C` | quit (your place is saved) | | `?` | every key |
 
 In lists: `▶` playing, `◔ ◑ ◕` started (with the time left), `✓` played, `≡` queued, `[E]` explicit.
@@ -270,7 +272,8 @@ In lists: `▶` playing, `◔ ◑ ◕` started (with the time left), `✓` playe
 hark has no account and sends no analytics. It talks to the servers of the shows you follow (for their feeds and audio), to Apple's public podcast directory only for Discover and search, and to GitHub for updates:
 
 - **Search** sends what you type.
-- **Charts** send a genre and your country, taken from your locale (e.g. `en_CA` → Canada).
+- **Charts** send a genre and your country, taken from your locale (e.g. `en_CA` → Canada). For you asks for up to four genre charts; which genres you like is all Apple could learn, never which shows.
+- **More from this maker** (`M`) is a search for the show's author, sent only when you press it.
 - **Updates:** once a day hark asks GitHub for the number of the latest release. Nothing about you or your shows is sent.
 - ***For you*** is built from the categories your own feeds declare. hark fetches the charts for those genres and leaves out what you follow, so **your list of shows never leaves your machine**.
 
@@ -282,8 +285,9 @@ hark has no account and sends no analytics. It talks to the servers of the shows
 | `~/.local/share/hark/state.tsv` | where you are in each episode you've started, and what you've finished |
 | `~/.local/share/hark/queue.tsv` | the queue |
 | `~/.local/share/hark/show-prefs.tsv` | each show's episode order |
+| `~/.local/share/hark/not-interested.txt` | shows you hid from For you (delete a line to undo) |
 | `~/.local/share/hark/prefs` | speed, volume, theme, cover on/off |
-| `~/.cache/hark/` | feed caches, show notes, the episode streaming right now, and the latest release seen; safe to delete |
+| `~/.cache/hark/` | feed caches, show notes, the charts (12 h), the episode streaming right now, and the latest release seen; safe to delete |
 
 On macOS these live under `~/Library/Application Support/hark` and `~/Library/Caches/hark`, and on Windows under `%APPDATA%\hark` and `%LOCALAPPDATA%\hark`. Every file is written to a temporary file first and then renamed into place, so a crash never leaves half a file behind.
 
