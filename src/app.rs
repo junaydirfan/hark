@@ -134,6 +134,15 @@ pub struct Now {
     paused_at: Option<Instant>,
 }
 
+/// The sleep timer (`z`).
+#[derive(Clone, Copy, PartialEq)]
+pub enum Sleep {
+    /// Pause after this many minutes, at this moment (the volume fades over the last 10 s).
+    Minutes(u64, Instant),
+    /// Stop when this episode ends instead of going on with the queue.
+    EndOfEpisode,
+}
+
 /// `L`: an episode's show notes in place of the table.
 pub struct Notes {
     pub title: String,
@@ -170,6 +179,9 @@ pub struct App {
     pub update: Option<String>,
     /// Per-show settings (episode order), by feed url.
     show_prefs: HashMap<String, store::ShowPrefs>,
+    /// The speed playing now: the show's own (`e`) or your usual one (`prefs.speed`).
+    pub speed: f32,
+    pub sleep: Option<Sleep>,
     /// Feeds you said no to (`x`): never in For you.
     hidden: std::collections::HashSet<String>,
     /// Shows opened from Discover or Search, not followed.
@@ -209,6 +221,7 @@ fn sort_episodes(show: &mut Show) {
 impl App {
     pub fn new(engine: Engine, tx: UnboundedSender<Msg>, img_picker: Option<Picker>) -> App {
         let prefs = store::load_prefs();
+        let speed = prefs.speed;
         engine.send(Cmd::Speed(prefs.speed));
         engine.send(Cmd::Volume(prefs.volume as f32 / 100.0));
         crate::theme::set(prefs.theme);
@@ -248,6 +261,8 @@ impl App {
             update: None,
             show_prefs: store::load_show_prefs(),
             hidden: store::load_hidden(),
+            speed,
+            sleep: None,
             previews: Vec::new(),
             cards: HashMap::new(),
             cards_loading: Vec::new(),
@@ -941,9 +956,21 @@ impl App {
         let l = self.state.get(&guid).copied().unwrap_or_default();
         let dur = if l.dur > 0.0 { l.dur } else { dur };
         let back = rewind_for(unix_now() - l.updated);
-        let at = if l.played || l.pos <= 0.0 || finished(l.pos, dur) { 0.0 } else { (l.pos - back).max(0.0) };
+        let mut at = if l.played || l.pos <= 0.0 || finished(l.pos, dur) { 0.0 } else { (l.pos - back).max(0.0) };
+        let sp = self.show_prefs.get(&*show_url).copied().unwrap_or_default();
+        let intro = sp.intro as f64;
+        let skipped = intro > 0.0 && at < intro && (dur <= 0.0 || intro < dur);
+        if skipped {
+            at = intro;
+        }
+        let speed = sp.speed.unwrap_or(self.prefs.speed);
+        if speed != self.speed {
+            self.speed = speed;
+            self.engine.send(Cmd::Speed(speed));
+        }
         self.engine.send(Cmd::Load { src: url, at_s: at });
         self.status = match (at > 0.0, back > 0.0) {
+            _ if skipped => format!("Skipped the intro ({}).", fmt_s(at)),
             (false, _) => String::new(),
             (true, false) => format!("Resuming at {}.", fmt_s(at)),
             (true, true) => format!("Resuming at {} ({back:.0} s back, for context).", fmt_s(at)),
@@ -985,6 +1012,11 @@ impl App {
         let Some(n) = &mut self.now else { return };
         n.playing = !n.playing;
         if n.playing {
+            // a timer that ran out while paused is done; the fade's volume comes back
+            if matches!(self.sleep, Some(Sleep::Minutes(_, t)) if t <= Instant::now()) {
+                self.sleep = None;
+            }
+            self.engine.send(Cmd::Volume(self.prefs.volume as f32 / 100.0));
             // back from a long pause: a few seconds of context, as when reopening an episode
             let back = n.paused_at.take().map_or(0.0, |t| rewind_for(t.elapsed().as_secs() as i64));
             if back > 0.0 {
@@ -1016,10 +1048,112 @@ impl App {
         self.set_speed_to(self.prefs.speed + delta);
     }
 
+    /// `[` `]`, the media widget: the playing show's own speed when it has one, else your usual.
     fn set_speed_to(&mut self, x: f32) {
-        self.prefs.speed = (x * 10.0).round().clamp(5.0, 30.0) / 10.0;
-        self.engine.send(Cmd::Speed(self.prefs.speed));
-        let _ = store::save_prefs(&self.prefs);
+        self.speed = (x * 10.0).round().clamp(5.0, 30.0) / 10.0;
+        self.engine.send(Cmd::Speed(self.speed));
+        let own = self.now.as_ref().and_then(|n| self.show_prefs.get_mut(&*n.show_url)).filter(|p| p.speed.is_some());
+        match own {
+            Some(p) => {
+                p.speed = Some(self.speed);
+                self.save_show_prefs();
+            }
+            None => {
+                self.prefs.speed = self.speed;
+                let _ = store::save_prefs(&self.prefs);
+            }
+        }
+    }
+
+    fn save_show_prefs(&self) {
+        let _ = store::save_show_prefs(self.show_prefs.iter().map(|(u, p)| (u.as_str(), p)));
+    }
+
+    /// `e`: keep the playing show at the current speed (again: back to your usual one).
+    fn toggle_show_speed(&mut self) {
+        let Some((url, show)) = self.now.as_ref().map(|n| (n.show_url.to_string(), n.show.clone())) else {
+            self.status = "Play an episode first: e keeps its show at its own speed.".into();
+            return;
+        };
+        let p = self.show_prefs.entry(url).or_default();
+        if p.speed.take().is_some() {
+            self.speed = self.prefs.speed;
+            self.engine.send(Cmd::Speed(self.speed));
+            self.status = format!("{show} plays at your usual {:.1}× again.", self.speed);
+        } else {
+            p.speed = Some(self.speed);
+            self.status = format!("{show} keeps {:.1}×; [ ] now change it for this show only (e again: your usual {:.1}×).", self.speed, self.prefs.speed);
+        }
+        self.save_show_prefs();
+    }
+
+    /// `I`: the playing show's intro ends here; every episode starts here from now on. At the
+    /// very start: intros play again.
+    fn mark_intro(&mut self) {
+        let Some((url, show, pos)) = self.now.as_ref().map(|n| (n.show_url.to_string(), n.show.clone(), n.pos)) else {
+            self.status = "Play an episode, and press I where its intro ends.".into();
+            return;
+        };
+        if pos > 600.0 {
+            self.status = "That's over 10 minutes in; press I where the intro ends.".into();
+            return;
+        }
+        let p = self.show_prefs.entry(url).or_default();
+        if pos < 3.0 {
+            p.intro = 0.0;
+            self.status = format!("{show}: intros play again.");
+        } else {
+            p.intro = pos as f32;
+            self.status = format!("{show}: episodes start at {}, after the intro (I in the first seconds: off).", fmt_s(pos));
+        }
+        self.save_show_prefs();
+    }
+
+    /// `E`: the playing show's outro starts here; episodes end this much early from now on. Far
+    /// from the end: outros play again.
+    fn mark_outro(&mut self) {
+        let Some((url, show, left)) = self.now.as_ref().map(|n| (n.show_url.to_string(), n.show.clone(), n.duration - n.pos)) else {
+            self.status = "Play an episode, and press E where its outro starts.".into();
+            return;
+        };
+        if left <= 0.0 || self.now.as_ref().is_some_and(|n| n.duration <= 0.0) {
+            self.status = "This episode's length isn't known yet; try again in a moment.".into();
+            return;
+        }
+        let p = self.show_prefs.entry(url).or_default();
+        if left > 900.0 {
+            p.outro = 0.0;
+            self.status = format!("{show}: outros play again (E is for the last 15 minutes).");
+        } else {
+            p.outro = left as f32;
+            self.status = format!("{show}: episodes end {} early, before the outro (E far from the end: off).", fmt_s(left));
+        }
+        self.save_show_prefs();
+    }
+
+    /// `z`: off → 15 → 30 → 45 → 60 minutes → the end of this episode → off.
+    fn cycle_sleep(&mut self) {
+        let mins = |m: u64| Some(Sleep::Minutes(m, Instant::now() + Duration::from_secs(m * 60)));
+        self.sleep = match self.sleep {
+            None => mins(15),
+            Some(Sleep::Minutes(m, _)) if m < 60 => mins(m + 15),
+            Some(Sleep::Minutes(..)) => Some(Sleep::EndOfEpisode),
+            Some(Sleep::EndOfEpisode) => None,
+        };
+        self.engine.send(Cmd::Volume(self.prefs.volume as f32 / 100.0));
+        self.status = match self.sleep {
+            Some(Sleep::Minutes(m, _)) => format!("Sleep timer: pausing in {m} minutes (z: longer)."),
+            Some(Sleep::EndOfEpisode) => "Sleep timer: stopping when this episode ends.".into(),
+            None => "Sleep timer off.".into(),
+        };
+    }
+
+    /// What the now-playing line shows for the sleep timer.
+    pub fn sleep_label(&self) -> Option<String> {
+        match self.sleep? {
+            Sleep::Minutes(_, t) => Some(format!("☾ {}", fmt_s(t.saturating_duration_since(Instant::now()).as_secs_f64()))),
+            Sleep::EndOfEpisode => Some("☾ end of episode".into()),
+        }
     }
 
     fn set_volume(&mut self, delta: i16) {
@@ -1143,28 +1277,55 @@ impl App {
             }
             Event::Position(p) => {
                 n.pos = p;
+                let outro = self.show_prefs.get(&*n.show_url).map_or(0.0, |s| s.outro as f64);
+                if outro > 0.0 && n.duration > 0.0 && p >= n.duration - outro {
+                    // the rest is the outro: stop it and carry on as if it ended
+                    self.engine.send(Cmd::Pause(true));
+                    self.episode_ended();
+                    return true;
+                }
                 if (p - n.saved_at).abs() >= SAVE_EVERY_S {
                     self.remember();
                 }
+                if let Some(Sleep::Minutes(_, t)) = self.sleep {
+                    let left = t.saturating_duration_since(Instant::now()).as_secs_f64();
+                    let vol = self.prefs.volume as f32 / 100.0;
+                    if left <= 0.0 {
+                        self.sleep = None;
+                        self.toggle_pause();
+                        self.engine.send(Cmd::Volume(vol));
+                        self.status = "Sleep timer: paused. Your place is saved.".into();
+                    } else if left < 10.0 {
+                        self.engine.send(Cmd::Volume(vol * left as f32 / 10.0));
+                    }
+                }
             }
             Event::Buffering(b) => n.buffering = b,
-            Event::Ended => {
-                n.playing = false;
-                n.pos = n.duration;
-                let title = n.title.clone();
-                self.state.insert(n.guid.clone(), Listen { pos: 0.0, played: true, updated: unix_now(), dur: n.duration });
-                self.save_state();
-                if !self.play_next() {
-                    self.status = format!("Finished {title}. The queue is empty.");
-                }
-                self.rebuild();
-            }
+            Event::Ended => self.episode_ended(),
             Event::Error(e) => {
                 n.playing = false;
                 self.status = e;
             }
         }
         true
+    }
+
+    /// The playing episode is over (it ended, or its outro began): mark it played, then the
+    /// next in the queue, unless the sleep timer says stop.
+    fn episode_ended(&mut self) {
+        let Some(n) = &mut self.now else { return };
+        n.playing = false;
+        n.pos = n.duration;
+        let title = n.title.clone();
+        self.state.insert(n.guid.clone(), Listen { pos: 0.0, played: true, updated: unix_now(), dur: n.duration });
+        self.save_state();
+        if self.sleep == Some(Sleep::EndOfEpisode) {
+            self.sleep = None;
+            self.status = format!("Finished {title}. Sleep timer: stopped here.");
+        } else if !self.play_next() {
+            self.status = format!("Finished {title}. The queue is empty.");
+        }
+        self.rebuild();
     }
 
     /// Media keys, the desktop's media widget, playerctl.
@@ -1372,6 +1533,10 @@ impl App {
             KeyCode::Char('s') => self.cycle_sort(),
             KeyCode::Char('o') => self.cycle_genre(1),
             KeyCode::Char('x') => self.hide_card(),
+            KeyCode::Char('e') => self.toggle_show_speed(),
+            KeyCode::Char('I') => self.mark_intro(),
+            KeyCode::Char('E') => self.mark_outro(),
+            KeyCode::Char('z') => self.cycle_sleep(),
             KeyCode::Char('M') => self.more_from_author(),
             KeyCode::Char('O') => self.cycle_genre(-1),
             KeyCode::Char('D') => self.unsubscribe(),

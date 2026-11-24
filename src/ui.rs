@@ -328,17 +328,20 @@ fn now_flags(app: &App) -> Line<'static> {
     if app.now.as_ref().is_some_and(|n| n.buffering) {
         s.push(Span::styled("buffering…  ", Style::new().fg(accent())));
     }
+    if let Some(z) = app.sleep_label() {
+        s.push(Span::styled(format!("{z}  "), Style::new().fg(accent())));
+    }
     // what's left in real time at your speed: what a podcast listener plans around
     if let Some(n) = app.now.as_ref().filter(|n| n.duration > 0.0) {
-        s.push(Span::styled(format!("{} left  ", fmt_s((n.duration - n.pos).max(0.0) / app.prefs.speed as f64)), info));
+        s.push(Span::styled(format!("{} left  ", fmt_s((n.duration - n.pos).max(0.0) / app.speed as f64)), info));
     }
     if !app.queue.is_empty() {
         s.push(Span::styled(format!("queue {}  ", app.queue.len()), info));
     }
     s.push(Span::styled(format!("vol {}%  ", app.prefs.volume), info));
-    let lit = (app.prefs.speed - 1.0).abs() > 0.01;
+    let lit = (app.speed - 1.0).abs() > 0.01;
     let style = if lit { Style::new().fg(Color::Black).bg(accent()).bold() } else { Style::new().fg(Color::DarkGray) };
-    s.push(Span::styled(format!(" {:.1}× ", app.prefs.speed), style));
+    s.push(Span::styled(format!(" {:.1}× ", app.speed), style));
     Line::from(s)
 }
 
@@ -396,6 +399,9 @@ const HELP: [(&str, &[(&str, &str)]); 4] = [
         ("← →  , .", "back 15 s / forward 30 s"),
         ("p", "back to the start"),
         ("[ ]", "speed −/+ 0.1× (pitch stays)"),
+        ("e", "this show keeps this speed"),
+        ("I E", "skip this show's intro / outro"),
+        ("z", "sleep timer"),
         ("+ -", "volume ±5%"),
     ]),
     ("Queue", &[

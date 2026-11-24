@@ -268,6 +268,12 @@ fn unescape_line(s: &str) -> String {
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct ShowPrefs {
     pub sort: crate::feed::Sort,
+    /// Its own speed (`e`); None = your usual one.
+    pub speed: Option<f32>,
+    /// Seconds of intro to skip at the start of every episode (`I`); 0 = none.
+    pub intro: f32,
+    /// Seconds of outro to skip at the end (`E`); 0 = none.
+    pub outro: f32,
 }
 
 fn parse_show_prefs(text: &str) -> HashMap<String, ShowPrefs> {
@@ -277,8 +283,12 @@ fn parse_show_prefs(text: &str) -> HashMap<String, ShowPrefs> {
             let url = f.next().filter(|u| !u.is_empty())?;
             let mut p = ShowPrefs::default();
             for (k, v) in f.filter_map(|kv| kv.split_once('=')) {
-                if k == "sort" {
-                    p.sort = crate::feed::Sort::parse(v).unwrap_or_default();
+                match k {
+                    "sort" => p.sort = crate::feed::Sort::parse(v).unwrap_or_default(),
+                    "speed" => p.speed = v.parse::<f32>().ok().map(|s| s.clamp(0.5, 3.0)),
+                    "intro" => p.intro = v.parse::<f32>().unwrap_or(0.0).max(0.0),
+                    "outro" => p.outro = v.parse::<f32>().unwrap_or(0.0).max(0.0),
+                    _ => {}
                 }
             }
             Some((url.to_string(), p))
@@ -292,7 +302,20 @@ pub fn load_show_prefs() -> HashMap<String, ShowPrefs> {
 
 /// Only shows with something other than the defaults get a line.
 pub fn save_show_prefs<'a>(prefs: impl Iterator<Item = (&'a str, &'a ShowPrefs)>) -> std::io::Result<()> {
-    let text: String = prefs.filter(|(_, p)| **p != ShowPrefs::default()).map(|(u, p)| format!("{}\tsort={}\n", clean(u), p.sort.id())).collect();
+    let line = |u: &str, p: &ShowPrefs| {
+        let mut l = format!("{}\tsort={}", clean(u), p.sort.id());
+        if let Some(s) = p.speed {
+            l.push_str(&format!("\tspeed={s}"));
+        }
+        if p.intro > 0.0 {
+            l.push_str(&format!("\tintro={:.0}", p.intro));
+        }
+        if p.outro > 0.0 {
+            l.push_str(&format!("\toutro={:.0}", p.outro));
+        }
+        l + "\n"
+    };
+    let text: String = prefs.filter(|(_, p)| **p != ShowPrefs::default()).map(|(u, p)| line(u, p)).collect();
     write_atomic(&data_dir().join("show-prefs.tsv"), text.as_bytes())
 }
 
@@ -332,8 +355,8 @@ mod tests {
 
     #[test]
     fn show_prefs_round_trip() {
-        let p = parse_show_prefs("https://a/feed\tsort=oldest\nhttps://b/feed\tsort=bogus\tfuture=1\n\n");
-        assert_eq!(p["https://a/feed"].sort, crate::feed::Sort::Oldest);
+        let p = parse_show_prefs("https://a/feed\tsort=oldest\tspeed=1.3\tintro=65\toutro=40\nhttps://b/feed\tsort=bogus\tfuture=1\n\n");
+        assert_eq!(p["https://a/feed"], ShowPrefs { sort: crate::feed::Sort::Oldest, speed: Some(1.3), intro: 65.0, outro: 40.0 });
         assert_eq!(p["https://b/feed"].sort, crate::feed::Sort::Newest, "unknown values fall back");
         assert_eq!(p.len(), 2);
     }
