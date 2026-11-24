@@ -98,6 +98,8 @@ Measured on an i9-14900HX, memory as PSS.
 | | |
 |---|---|
 | The whole app, idle, 8 shows (3,514 episodes) | 10.6 MB |
+| The whole app, idle, 15 shows (16,900 episodes) | 16.6 MB from cache, 24.5 MB after refreshing every feed |
+| First frame on screen | ~26 ms (from the disk cache) |
 | Playing, with the cover drawn | 15–18 MB |
 | The player alone, streaming an episode | 8.1 MB |
 | mpv playing the same episode, scripts, config and caches stripped down | 61 MB |
@@ -108,7 +110,7 @@ Measured on an i9-14900HX, memory as PSS.
 | From a link to playing (through the show's tracking redirects) | ~0.6 s |
 | Start a stream at 22:00 (a range request) | ~0.6 s, ~20 ms buffering |
 | Refresh a feed that hasn't changed | 0 bytes of body (HTTP 304) |
-| The binary | 4.7 MB, nothing else to install |
+| The binary | 5.1 MB, nothing else to install |
 </details>
 
 ## Install

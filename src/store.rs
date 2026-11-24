@@ -6,7 +6,7 @@ use std::{collections::HashMap, path::PathBuf};
 use quick_xml::{Reader, events::Event};
 
 use crate::{
-    feed::{Episode, Show},
+    feed::{Episode, Extra, Show},
     paths::{cache_dir, data_dir, fnv, write_atomic},
 };
 
@@ -96,7 +96,8 @@ pub fn save_feed(url: &str, c: &Cached) -> std::io::Result<()> {
         clean(&s.subcategories.join("|"))
     );
     for e in &s.episodes {
-        out.push_str(&format!("{}\t{}\t{}\t{}\t{}\t{}\n", clean(&e.guid), e.published, e.duration_s, clean(&e.url), clean(&e.mime), clean(&e.title)));
+        // the 5th field (the file type) is no longer used; kept empty so the layout stays the same
+        out.push_str(&format!("{}\t{}\t{}\t{}\t\t{}\n", clean(&e.guid), e.published, e.duration_s, clean(&e.url), clean(&e.title)));
     }
     write_atomic(&feed_path(url), out.as_bytes())
 }
@@ -110,16 +111,8 @@ pub fn load_feed(url: &str) -> Option<Cached> {
     let mut show = Show { title: field(3), author: field(4), image: Some(field(5)).filter(|s| !s.is_empty()), categories: list(6), subcategories: list(7), ..Default::default() };
     for l in lines {
         let f: Vec<&str> = l.splitn(6, '\t').collect();
-        if let [guid, published, dur, url, mime, title] = f[..] {
-            show.episodes.push(Episode {
-                guid: guid.into(),
-                published: published.parse().unwrap_or(0),
-                duration_s: dur.parse().unwrap_or(0),
-                url: url.into(),
-                mime: mime.into(),
-                title: title.into(),
-                ..Default::default()
-            });
+        if let [guid, published, dur, url, _, title] = f[..] {
+            show.episodes.push(Episode { guid: guid.into(), published: published.parse().unwrap_or(0), duration_s: dur.parse().unwrap_or(0), url: url.into(), title: title.into() });
         }
     }
     // a cache from before (sub)categories were kept (6 or 7 fields): forget its validators so
@@ -215,12 +208,16 @@ fn notes_path(url: &str) -> PathBuf {
     cache_dir().join("feeds").join(format!("{:016x}.notes", fnv(url)))
 }
 
-/// Show notes live in their own file per feed and are read one episode at a time, when shown:
-/// together they're most of a feed's size (6 MB for The Daily).
-pub fn save_notes(url: &str, eps: &[Episode]) -> std::io::Result<()> {
+/// Show notes (with each episode's chapters and transcript links) live in their own file per
+/// feed and are read one episode at a time, when needed: together they're most of a feed's
+/// size (6 MB for The Daily). A line: guid, notes, chapters url, transcript url, its type,
+/// the episode's own cover.
+pub fn save_notes(url: &str, eps: &[Episode], extras: &[Extra]) -> std::io::Result<()> {
     let mut out = String::new();
-    for e in eps.iter().filter(|e| !e.notes.is_empty()) {
-        out.push_str(&format!("{}\t{}\n", clean(&e.guid), escape_line(&e.notes)));
+    for (e, x) in eps.iter().zip(extras).filter(|(_, x)| **x != Extra::default()) {
+        let (tr, tr_type) = x.transcript.as_ref().map_or(("", ""), |(u, m)| (u.as_str(), m.as_str()));
+        let f = |o: &Option<String>| clean(o.as_deref().unwrap_or(""));
+        out.push_str(&format!("{}\t{}\t{}\t{}\t{}\t{}\n", clean(&e.guid), escape_line(&x.notes), f(&x.chapters), clean(tr), clean(tr_type), f(&x.image)));
     }
     write_atomic(&notes_path(url), out.as_bytes())
 }
@@ -230,9 +227,21 @@ pub fn has_notes(url: &str) -> bool {
 }
 
 pub fn load_notes(url: &str, guid: &str) -> Option<String> {
+    Some(load_extra(url, guid)?.notes).filter(|n| !n.is_empty())
+}
+
+/// One episode's notes, chapters, transcript and cover, from the notes file.
+pub fn load_extra(url: &str, guid: &str) -> Option<Extra> {
     let text = std::fs::read_to_string(notes_path(url)).ok()?;
-    let line = text.lines().find_map(|l| l.strip_prefix(guid)?.strip_prefix('\t'))?;
-    Some(unescape_line(line))
+    Some(extra_of(text.lines().find_map(|l| l.strip_prefix(guid)?.strip_prefix('\t'))?))
+}
+
+/// A notes line after its guid → its `Extra`. Notes are escaped, so tabs only separate fields
+/// (older files have just the notes).
+fn extra_of(line: &str) -> Extra {
+    let f: Vec<&str> = line.split('\t').collect();
+    let at = |i: usize| f.get(i).filter(|v| !v.is_empty()).map(|v| v.to_string());
+    Extra { notes: f.first().map(|n| unescape_line(n)).unwrap_or_default(), chapters: at(1), transcript: at(2).map(|u| (u, at(3).unwrap_or_default())), image: at(4) }
 }
 
 /// Multi-line text on one line: `\` → `\\`, newline → `\n`, tab → `\t`.
@@ -310,6 +319,16 @@ pub fn export() -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn notes_lines_old_and_new() {
+        assert_eq!(extra_of("line one\\nline\\ttwo"), Extra { notes: "line one\nline\ttwo".into(), ..Default::default() }, "older files: just the notes");
+        let x = extra_of("hi\thttps://c.json\thttps://t.vtt\ttext/vtt\thttps://cover.jpg");
+        assert_eq!((x.notes.as_str(), x.chapters.as_deref(), x.image.as_deref()), ("hi", Some("https://c.json"), Some("https://cover.jpg")));
+        assert_eq!(x.transcript, Some(("https://t.vtt".into(), "text/vtt".into())));
+        let x = extra_of("\thttps://c.json\t\t\thttps://cover.jpg");
+        assert_eq!((x.notes.as_str(), x.chapters.as_deref(), x.transcript, x.image.as_deref()), ("", Some("https://c.json"), None, Some("https://cover.jpg")), "empty fields keep their place");
+    }
 
     #[test]
     fn show_prefs_round_trip() {

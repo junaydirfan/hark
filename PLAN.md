@@ -127,6 +127,19 @@ last episode within 30 / 90 / older days), and picks greedily with each genre da
 pick. `x` hides a show for good; `M` searches the maker. The Inbox lifts a show you listen to
 by up to 3 days. All signals are local; Apple sees only chart genres.
 
+## Memory (2026-11-24)
+
+15 shows / 16,900 episodes, measured as PSS: 20.0 → 16.6 MB from cache, 33.0 → 24.5 MB after
+refreshing every feed, refresh peak 66 → 58 MB. An episode in memory is 64 bytes (was 240):
+guid, title, url as `Box<str>`, date, length. Notes, chapters, transcript and the episode's own
+cover (only when it isn't the show's) live in the per-feed notes file, read one episode at a
+time; the file type and size are dropped. What's left after a full refresh: ~2 MB of glibc
+fragmentation and ~2 MB in use by OpenSSL's root store once anything went online.
+
+Startup: a terminal that doesn't answer the image query cost 0.5 s every launch (tmux among
+them). It's remembered for a week (`~/.cache/hark/terminal`, keyed by TERM/TERM_PROGRAM/version)
+and half-blocks are used straight away: first frame 537 → 26 ms.
+
 ## Targets
 
 Launch to list < 30 ms (from cache) · own RAM < 15 MB with 50 shows / 10k episodes · idle CPU 0 ·
