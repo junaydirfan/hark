@@ -33,7 +33,7 @@ Same NPR episode (128 kbps MP3), silent, i9-14900HX:
 | Load to playing | ~0.65 s (streaming) | 10 ms (local file) |
 | Extra install on macOS/Windows | mpv | none |
 
-- symphonia decodes (MP3 now; add `isomp4` + `aac` for M4A feeds).
+- symphonia decodes MP3 and M4A/AAC (`isomp4` + `aac`, +0.35 MB).
 - libsonic (a port of Sonic, the speech-speed algorithm) changes the speed without changing the pitch.
 - cpal plays; on Linux through PulseAudio/PipeWire directly.
 - The audio thread sleeps until the output drops below 0.25 s queued, then decodes back up to
@@ -100,8 +100,8 @@ author, image and `itunes:new-feed-url`. Items with no audio are skipped.
    and play-next; show notes (`L`, on disk per feed, read one episode at a time); Discover (Apple's
    charts by country and genre, `o`/`O`) and search; "For you" from your feeds' own categories (your
    show list never leaves the machine); preview before following (`f`); cover art; MPRIS on Linux
-   with speed as the playback rate. Still to do: OPML export, an hourly refresh while open, macOS
-   Now Playing (needs AppKit on the main thread, as in trill), Windows media controls.
+   with speed as the playback rate. OPML export (`hark --export`), the hourly refresh
+   while open and macOS Now Playing followed on 2026-11-23. Still to do: Windows media controls.
 3. **Best at it.** Chapters (Podcasting 2.0 JSON + ID3 CHAP); synced transcripts; downloads
    (resumable, keep newest N); per-show speed and intro/outro skip; sleep timer; loudness
    levelling.

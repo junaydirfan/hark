@@ -254,9 +254,57 @@ fn unescape_line(s: &str) -> String {
     out
 }
 
+/// Settings for one show, by feed url (`show-prefs.tsv`: url, then `key=value` fields).
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct ShowPrefs {
+    pub sort: crate::feed::Sort,
+}
+
+fn parse_show_prefs(text: &str) -> HashMap<String, ShowPrefs> {
+    text.lines()
+        .filter_map(|l| {
+            let mut f = l.split('\t');
+            let url = f.next().filter(|u| !u.is_empty())?;
+            let mut p = ShowPrefs::default();
+            for (k, v) in f.filter_map(|kv| kv.split_once('=')) {
+                if k == "sort" {
+                    p.sort = crate::feed::Sort::parse(v).unwrap_or_default();
+                }
+            }
+            Some((url.to_string(), p))
+        })
+        .collect()
+}
+
+pub fn load_show_prefs() -> HashMap<String, ShowPrefs> {
+    parse_show_prefs(&std::fs::read_to_string(data_dir().join("show-prefs.tsv")).unwrap_or_default())
+}
+
+/// Only shows with something other than the defaults get a line.
+pub fn save_show_prefs<'a>(prefs: impl Iterator<Item = (&'a str, &'a ShowPrefs)>) -> std::io::Result<()> {
+    let text: String = prefs.filter(|(_, p)| **p != ShowPrefs::default()).map(|(u, p)| format!("{}\tsort={}\n", clean(u), p.sort.id())).collect();
+    write_atomic(&data_dir().join("show-prefs.tsv"), text.as_bytes())
+}
+
+/// `hark --export`: your shows as OPML on stdout, for any other podcast app.
+pub fn export() -> Result<(), String> {
+    use std::io::Write;
+    let path = subs_path();
+    let opml = std::fs::read(&path).map_err(|e| format!("{}: {e} (no shows followed yet?)", path.display()))?;
+    std::io::stdout().write_all(&opml).map_err(|e| e.to_string())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn show_prefs_round_trip() {
+        let p = parse_show_prefs("https://a/feed\tsort=oldest\nhttps://b/feed\tsort=bogus\tfuture=1\n\n");
+        assert_eq!(p["https://a/feed"].sort, crate::feed::Sort::Oldest);
+        assert_eq!(p["https://b/feed"].sort, crate::feed::Sort::Newest, "unknown values fall back");
+        assert_eq!(p.len(), 2);
+    }
 
     #[test]
     fn opml_from_other_apps() {

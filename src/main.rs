@@ -1,6 +1,7 @@
 //! hark: a lean terminal podcast player.
 //!
-//! `hark` opens the player; `hark --update` installs the latest release. Two developer commands exercise the foundations on their own:
+//! `hark` opens the player; `hark --update` installs the latest release; `hark --export` prints
+//! your shows as OPML. Two developer commands exercise the foundations on their own:
 //!   hark feed <url|file> [newest|oldest|longest|shortest]  fetch + parse a feed, with timings
 //!   hark play <file|url> [speed] [start_s] [volume] play through the in-process engine
 
@@ -68,8 +69,9 @@ async fn async_main() {
             Ok(())
         }
         Some("--update") => update::run().await,
+        Some("--export") => store::export(),
         None => run().await,
-        _ => Err("usage: hark | hark --update | hark feed <url|file> [newest|oldest|longest|shortest] | hark play <file|url> [speed] [start_s] [volume]".into()),
+        _ => Err("usage: hark | hark --update | hark --export > shows.opml | hark feed <url|file> [newest|oldest|longest|shortest] | hark play <file|url> [speed] [start_s] [volume]".into()),
     };
     if let Err(e) = res {
         eprintln!("hark: {e}");
@@ -111,6 +113,9 @@ async fn run() -> Result<(), String> {
     app.check_update();
     let quit_signal = quit_signal();
     tokio::pin!(quit_signal);
+    // feeds refresh once they're an hour old; checking every 15 min also catches up after sleep
+    let mut refresh_tick = tokio::time::interval_at(tokio::time::Instant::now() + Duration::from_secs(900), Duration::from_secs(900));
+    refresh_tick.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Delay);
     let mut dirty = true;
     while !app.quit {
         if dirty {
@@ -132,6 +137,7 @@ async fn run() -> Result<(), String> {
             Some(ev) = eng_rx.recv() => dirty |= app.on_engine(ev),
             Some(m) = msg_rx.recv() => { app.on_msg(m); dirty = true; }
             Some(r) = remote_rx.recv() => { app.on_remote(r); dirty = true; }
+            _ = refresh_tick.tick() => { app.refresh(false); dirty = true; }
             // the terminal closed, the session is ending, or someone asked us to stop: save first
             _ = &mut quit_signal => app.quit = true,
             else => break,
