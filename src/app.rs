@@ -27,7 +27,7 @@ use crate::{
 pub type Url = Rc<str>;
 
 /// Sidebar entries above the shows.
-pub const FIXED: [&str; 4] = ["Inbox", "In progress", "Queue", "Discover"];
+pub const FIXED: [&str; 5] = ["Inbox", "In progress", "Queue", "Downloads", "Discover"];
 /// Shows looked at but not followed are kept this many at a time.
 const PREVIEWS: usize = 8;
 /// Feeds are refreshed at launch when older than this, and on `R`.
@@ -68,6 +68,9 @@ pub enum Msg {
     Preview { url: String, res: Result<Option<Cached>, String> },
     /// Directory results for a cache key ("top:0", "foryou", "search:<q>").
     Cards { key: String, res: Result<Vec<Card>, String> },
+    /// A download moved on (percent), or finished.
+    DlProgress { guid: String, pct: u8 },
+    DlDone { guid: String, show: String, file: String, res: Result<(), String> },
     /// An episode's chapters file arrived (Podcasting 2.0 JSON).
     Chapters { guid: String, list: Vec<(f64, String)> },
     /// A newer hark release is out (its tag).
@@ -101,6 +104,7 @@ pub enum Kind {
     Inbox,
     InProgress,
     Queue,
+    Downloads,
     Discover,
     Search(String),
     Show(Url),
@@ -182,8 +186,8 @@ pub struct App {
     pub now: Option<Now>,
     pub prefs: Prefs,
     pub queue: VecDeque<(Url, String)>,
-    /// Inbox, In progress, Queue sizes for the sidebar.
-    pub counts: [usize; 3],
+    /// Inbox, In progress, Queue, Downloads sizes for the sidebar.
+    pub counts: [usize; 4],
     pub notes: Option<Notes>,
     pub help_open: bool,
     pub quit: bool,
@@ -191,6 +195,10 @@ pub struct App {
     pub update: Option<String>,
     /// Per-show settings (episode order), by feed url.
     show_prefs: HashMap<String, store::ShowPrefs>,
+    /// Downloaded episodes: guid → (feed url, file name); and the ones on their way (percent).
+    downloads: HashMap<String, (String, String)>,
+    pub downloading: HashMap<String, u8>,
+    dl_gate: Arc<Semaphore>,
     /// The speed playing now: the show's own (`e`) or your usual one (`prefs.speed`).
     pub speed: f32,
     pub sleep: Option<Sleep>,
@@ -266,7 +274,7 @@ impl App {
             now: None,
             prefs,
             queue,
-            counts: [0; 3],
+            counts: [0; 4],
             notes: None,
             help_open: false,
             quit: false,
@@ -275,6 +283,9 @@ impl App {
             hidden: store::load_hidden(),
             speed,
             sleep: None,
+            downloads: store::load_downloads(),
+            downloading: HashMap::new(),
+            dl_gate: Arc::new(Semaphore::new(2)),
             previews: Vec::new(),
             cards: HashMap::new(),
             cards_loading: Vec::new(),
@@ -375,6 +386,11 @@ impl App {
                 v.into_iter().map(|(_, it)| it).collect()
             }
             Kind::Queue => self.queue.iter().filter_map(|(u, g)| self.locate(u, g)).collect(),
+            Kind::Downloads => {
+                let mut v: Vec<(i64, Item)> = self.downloads.iter().filter_map(|(g, (u, _))| self.locate(u, g)).filter_map(|it| Some((self.episode(&it)?.1.published, it))).collect();
+                v.sort_by_key(|(p, _)| std::cmp::Reverse(*p));
+                v.into_iter().map(|(_, it)| it).collect()
+            }
             Kind::Discover => {
                 let top = format!("top:{}", self.genre);
                 let keys = if self.genre == 0 { vec!["foryou".to_string(), top] } else { vec![top] };
@@ -413,6 +429,7 @@ impl App {
             Kind::Inbox => format!("Inbox · {n} new in the last {INBOX_DAYS} days"),
             Kind::InProgress => format!("In progress · {n}"),
             Kind::Queue => format!("Queue · {n}"),
+            Kind::Downloads => format!("Downloads · {n} · d deletes one · played ones delete themselves"),
             Kind::Discover => {
                 let what = match self.genre_name() {
                     Some(g) => format!("top {g} podcasts"),
@@ -451,7 +468,7 @@ impl App {
         let sel = keep.and_then(|(u, g)| self.view.rows.iter().position(|it| self.key_of(it).is_some_and(|(a, b)| a == u && b == g)));
         let cur = self.view.state.selected().unwrap_or(0);
         self.view.state.select(Some(sel.unwrap_or(cur).min(n.saturating_sub(1))));
-        self.counts = [self.rows_for(&Kind::Inbox).len(), self.rows_for(&Kind::InProgress).len(), self.queue.len()];
+        self.counts = [self.rows_for(&Kind::Inbox).len(), self.rows_for(&Kind::InProgress).len(), self.queue.len(), self.downloads.len()];
     }
 
     fn open(&mut self, kind: Kind) {
@@ -667,7 +684,8 @@ impl App {
             0 => Kind::Inbox,
             1 => Kind::InProgress,
             2 => Kind::Queue,
-            3 => Kind::Discover,
+            3 => Kind::Downloads,
+            4 => Kind::Discover,
             _ => match self.shows.get(i - FIXED.len()) {
                 Some(s) => Kind::Show(s.url.clone()),
                 None => return,
@@ -736,6 +754,24 @@ impl App {
         let (url, res, adding) = match msg {
             Msg::Feed { url, res, adding } => (url, res, adding),
             Msg::Preview { url, res } => return self.on_preview(url, res),
+            Msg::DlProgress { guid, pct } => {
+                self.downloading.insert(guid, pct);
+                return;
+            }
+            Msg::DlDone { guid, show, file, res } => {
+                self.downloading.remove(&guid);
+                let title = self.locate(&show, &guid).and_then(|it| self.episode(&it).map(|(_, e)| e.title.to_string())).unwrap_or_default();
+                match res {
+                    Ok(()) => {
+                        self.downloads.insert(guid, (show, file));
+                        let _ = store::save_downloads(&self.downloads);
+                        self.status = format!("Downloaded {title}.");
+                    }
+                    Err(e) => self.status = format!("Couldn't download {title}: {e}"),
+                }
+                self.rebuild();
+                return;
+            }
             Msg::Chapters { guid, list } => {
                 // the feed's own chapters beat ones embedded in the file: they're usually richer
                 if let Some(n) = self.now.as_mut().filter(|n| n.guid == guid && !list.is_empty()) {
@@ -824,6 +860,7 @@ impl App {
                     self.save_subs();
                 }
                 self.sort_shows_keeping(adding.then_some(key.as_str()));
+                self.auto_download(&key);
                 crate::trim_heap();
             }
         }
@@ -996,7 +1033,9 @@ impl App {
             self.speed = speed;
             self.engine.send(Cmd::Speed(speed));
         }
-        self.engine.send(Cmd::Load { src: url, at_s: at });
+        let local = self.downloads.get(&guid).map(|(_, f)| crate::download::dir().join(f)).filter(|p| p.exists());
+        let src = local.map_or(url, |p| p.to_string_lossy().into_owned());
+        self.engine.send(Cmd::Load { src, at_s: at });
         self.status = match (at > 0.0, back > 0.0) {
             _ if skipped => format!("Skipped the intro ({}).", fmt_s(at)),
             (false, _) => String::new(),
@@ -1157,6 +1196,94 @@ impl App {
             self.status = format!("{show}: episodes end {} early, before the outro (E far from the end: off).", fmt_s(left));
         }
         self.save_show_prefs();
+    }
+
+    /// `d`: download the highlighted episode for offline listening; again: delete the download.
+    fn toggle_download(&mut self) {
+        let Some(it) = self.selected_item().cloned() else { return };
+        let Some((s, e)) = self.episode(&it) else {
+            self.status = "d downloads an episode; highlight one.".into();
+            return;
+        };
+        let (show, guid, url, title) = (s.sub.url.clone(), e.guid.to_string(), e.url.to_string(), e.title.to_string());
+        if let Some(p) = self.downloading.get(&guid) {
+            self.status = format!("Already downloading {title} ({p}%).");
+        } else if self.downloads.contains_key(&guid) {
+            self.delete_download(&guid);
+            self.status = format!("Deleted the download of {title}.");
+            self.rebuild();
+        } else {
+            self.start_download(show, guid, url);
+            self.status = format!("Downloading {title}…");
+        }
+    }
+
+    fn start_download(&mut self, show: String, guid: String, url: String) {
+        let file = crate::download::file_name(&guid, &url);
+        self.downloading.insert(guid.clone(), 0);
+        let (client, tx, gate) = (self.client.clone(), self.tx.clone(), self.dl_gate.clone());
+        tokio::spawn(async move {
+            let _permit = gate.acquire().await;
+            let dest = crate::download::dir().join(&file);
+            let last = std::sync::atomic::AtomicU8::new(0);
+            let res = crate::download::fetch(&client, &url, &dest, |done, total| {
+                let pct = (done * 100).checked_div(total).map_or(0, |p| p.min(100) as u8);
+                if last.swap(pct, std::sync::atomic::Ordering::Relaxed) != pct {
+                    let _ = tx.send(Msg::DlProgress { guid: guid.clone(), pct });
+                }
+            })
+            .await;
+            let _ = tx.send(Msg::DlDone { guid, show, file, res });
+        });
+    }
+
+    pub fn is_downloaded(&self, guid: &str) -> bool {
+        self.downloads.contains_key(guid)
+    }
+
+    fn delete_download(&mut self, guid: &str) {
+        if let Some((_, f)) = self.downloads.remove(guid) {
+            let _ = std::fs::remove_file(crate::download::dir().join(f));
+            let _ = store::save_downloads(&self.downloads);
+        }
+    }
+
+    /// A show with `K` set: its newest unplayed episodes, downloaded.
+    pub fn auto_download(&mut self, url: &str) {
+        let keep = self.show_prefs.get(url).map_or(0, |p| p.keep) as usize;
+        let Some(s) = self.shows.iter().find(|s| s.sub.url == url) else { return };
+        let want: Vec<(String, String)> = s
+            .show
+            .episodes
+            .iter()
+            .filter(|e| !self.state.get(&*e.guid).is_some_and(|l| l.played))
+            .take(keep)
+            .filter(|e| !self.downloads.contains_key(&*e.guid) && !self.downloading.contains_key(&*e.guid))
+            .map(|e| (e.guid.to_string(), e.url.to_string()))
+            .collect();
+        for (guid, ep_url) in want {
+            self.start_download(url.to_string(), guid, ep_url);
+        }
+    }
+
+    /// `K` in a show: keep its newest 1 / 3 / 5 episodes downloaded, or none.
+    fn cycle_keep(&mut self) {
+        let Kind::Show(u) = &self.view.kind else {
+            self.status = "Open a show, then K keeps its newest episodes downloaded.".into();
+            return;
+        };
+        let (u, title) = (u.to_string(), self.show(u).map(|s| s.show.title.clone()).unwrap_or_default());
+        let p = self.show_prefs.entry(u.clone()).or_default();
+        p.keep = match p.keep {
+            0 => 1,
+            1 => 3,
+            3 => 5,
+            _ => 0,
+        };
+        let keep = p.keep;
+        self.save_show_prefs();
+        self.status = if keep == 0 { format!("{title}: no automatic downloads.") } else { format!("{title}: keeping the newest {keep} unplayed downloaded (K: more, then off).") };
+        self.auto_download(&u);
     }
 
     /// `c` / `C`: the next chapter / back to the start of this one (or the one before, near
@@ -1370,8 +1497,12 @@ impl App {
         n.playing = false;
         n.pos = n.duration;
         let title = n.title.clone();
-        self.state.insert(n.guid.clone(), Listen { pos: 0.0, played: true, updated: unix_now(), dur: n.duration });
+        let guid = n.guid.clone();
+        self.state.insert(guid.clone(), Listen { pos: 0.0, played: true, updated: unix_now(), dur: n.duration });
         self.save_state();
+        // a played download has done its job (the engine has the file open already; deleting it
+        // is fine on unix, and on Windows the next play of something else frees it)
+        self.delete_download(&guid);
         if self.sleep == Some(Sleep::EndOfEpisode) {
             self.sleep = None;
             self.status = format!("Finished {title}. Sleep timer: stopped here.");
@@ -1591,6 +1722,8 @@ impl App {
             KeyCode::Char('E') => self.mark_outro(),
             KeyCode::Char('z') => self.cycle_sleep(),
             KeyCode::Char('c') => self.chapter_jump(1),
+            KeyCode::Char('d') => self.toggle_download(),
+            KeyCode::Char('K') => self.cycle_keep(),
             KeyCode::Char('C') => self.chapter_jump(-1),
             KeyCode::Char('M') => self.more_from_author(),
             KeyCode::Char('O') => self.cycle_genre(-1),

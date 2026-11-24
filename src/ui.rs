@@ -149,6 +149,7 @@ fn draw_table(f: &mut Frame, app: &mut App, area: Rect) {
         let msg = match app.view.kind {
             Kind::Inbox => "\n Nothing new in the last 30 days. Episodes from your shows land here as they come out.",
             Kind::InProgress => "\n Nothing in progress. Episodes you start and don't finish wait here.",
+            Kind::Downloads => "\n No downloads. Press d on an episode to keep it for offline listening, or K in a show\n to keep its newest episodes downloaded. Played ones delete themselves.",
             Kind::Queue => "\n The queue is empty. Press a on an episode to add it, A to play it next.\n When an episode ends, the next one in the queue starts.",
             Kind::Discover if app.cards_pending() => "\n Loading charts from Apple Podcasts…",
             Kind::Discover => "\n Apple Podcasts sent nothing for this chart. o / O tries another genre.",
@@ -189,6 +190,11 @@ fn draw_table(f: &mut Frame, app: &mut App, area: Rect) {
             let mut title = vec![Span::raw(&*e.title)];
             if queued {
                 title.insert(0, Span::raw("≡ ").fg(accent()));
+            }
+            if let Some(p) = app.downloading.get(&*e.guid) {
+                title.insert(0, Span::raw(format!("⤓{p}% ")).dim());
+            } else if app.is_downloaded(&e.guid) {
+                title.insert(0, Span::raw("⤓ ").fg(accent()));
             }
             let mut cells = vec![Cell::from(mark).fg(accent()), Cell::from(Line::from(title))];
             if many_shows {
@@ -400,10 +406,9 @@ const HELP: [(&str, &[(&str, &str)]); 4] = [
         ("← →  , .", "back 15 s / forward 30 s"),
         ("p", "back to the start"),
         ("[ ]", "speed −/+ 0.1× (pitch stays)"),
-        ("e", "this show keeps this speed"),
-        ("I E", "skip this show's intro / outro"),
-        ("z", "sleep timer"),
-        ("c C", "next chapter / back one"),
+        ("e I E", "own speed · skip intro / outro"),
+        ("z  c C", "sleep timer · chapter next / back"),
+        ("d  K", "download · keep a show's newest"),
         ("+ -", "volume ±5%"),
     ]),
     ("Queue", &[
@@ -416,8 +421,7 @@ const HELP: [(&str, &[(&str, &str)]); 4] = [
         ("/", "search · paste a feed URL / OPML"),
         ("f", "follow the highlighted show"),
         ("o O", "Discover: next / previous genre"),
-        ("x", "For you: not interested"),
-        ("M", "more from this show's maker"),
+        ("x  M", "skip in For you · more by maker"),
         ("s", "sort a show: date / length"),
         ("L", "show notes"),
         ("R", "refresh every show now"),
