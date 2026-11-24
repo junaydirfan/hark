@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1082 755" width="1082" height="755" role="img" aria-label="hark&#x27;s Discover: a strip of genres, then shows For you picked from the genres of the shows you follow, each with its author, genre, number of episodes and when its latest episode came out.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1082 755" width="1082" height="755" role="img" aria-label="hark&#x27;s Discover: a strip of genres, then For you: shows from the charts of the genres you listen to, each with its maker, the genre it was picked for, its number of episodes and when its latest episode came out.">
 <style>
-@font-face{font-family:hm;font-weight:400;src:url(data:font/woff2;base64,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)}
+@font-face{font-family:hm;font-weight:400;src:url(data:font/woff2;base64,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)}
 @font-face{font-family:hm;font-weight:500;src:url(data:font/woff2;base64,d09GMgABAAAAAAJkAA4AAAAABFwAAAISAAJN0wAAAAAAAAAAAAAAAAAAAAAAAAAAGhYbIBwqBmAATBEICoJQgiQBNgIkAwwLDAAEIAVUByAbMQMgHoPjbgtiMp5/MS9XAvpBx0P9fr+z++43QaKmP4TEkBmSNfPkJVijJkr2UsWMWst6do8nyOWJ+ABRngo5QIUyEh3L5BFt5CPkv3/ZutN/l5OcPJU87BxYHkmCWRpEYWRxJGFAgUDgNnyEXkFp0NECAl1ACqEIgbYpM2K5e3ASAgX+AQi0jcxLpCzuWuN3IgNE45Ji8gWXfGDEgNXYjyOURyuQtNgMT1pZAjzilLf68/eE6icKQUCOmFdgTh2JCpMqgUnFItqaUjplZuP9B7X6f9uWDUtnNQS42QDUQBtNnIF7ABRQSSFEYdlsmhabQrmxHK0tRhHLnVp4RqLPKSVR0cJNjuj5c7r4FNkmou0n04vPCREtPMDNQ8ql2Ojs7T0bfbTRJ0g1GDpDxRLRtAiUVdCOqH6492r/lcdeUF+YHChswIdwSqscGjIqJnfyDe7y66GW0+6aVhocqpmIxsBopxsKxlv6G6v6Ngra8wuWIH7SHcIchsHGlnGNSezWaRrOKqub2hsVUDzpVgzL790HvKM87+YH40f2kdZKAoNNrVMKs6pUV+Lz1NW3NckACOT641e8rD+q+Mavgnj2Dni/M0bitHnuZ+Nu5m9RA+oSBA91uQMwWQbhkyLFkGojpmBHUItTOM2Ch0MVoVgoSREiDBlJfUMphlD9cuc0vGwcXJxcxhmYBNhpeLHAf8oRDAAA)}
-@font-face{font-family:hm;font-weight:600;src:url(data:font/woff2;base64,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)}
+@font-face{font-family:hm;font-weight:600;src:url(data:font/woff2;base64,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)}
 text{font-family:hm,hf,ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace}
 </style>
 
@@ -103,6 +103,7 @@ text{font-family:hm,hf,ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans M
 <path d="M274.75 79.0V95.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="278.50" y="91.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="780.00" lengthAdjust="spacingAndGlyphs">          Show                             By                     Genre              Episodes Latest    </text>
 <path d="M1062.25 79.0V95.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
+<rect x="278.50" y="95.50" width="780.30" height="16.80" fill="#ffb03b"/>
 <text x="61.00" y="107.50" font-size="12.5" font-weight="600" fill="#ffac3d" text-anchor="start" xml:space="preserve" textLength="7.50" lengthAdjust="spacingAndGlyphs">/</text>
 <text x="76.00" y="107.50" font-size="12.5" font-weight="600" fill="#ffa541" text-anchor="start" xml:space="preserve" textLength="7.50" lengthAdjust="spacingAndGlyphs">/</text>
 <text x="91.00" y="107.50" font-size="12.5" font-weight="600" fill="#ff9f45" text-anchor="start" xml:space="preserve" textLength="7.50" lengthAdjust="spacingAndGlyphs">/</text>
@@ -116,12 +117,11 @@ text{font-family:hm,hf,ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans M
 <text x="203.50" y="107.50" font-size="12.5" font-weight="600" fill="#ff6c64" text-anchor="start" xml:space="preserve" textLength="7.50" lengthAdjust="spacingAndGlyphs">,</text>
 <text x="211.00" y="107.50" font-size="12.5" font-weight="600" fill="#ff6966" text-anchor="start" xml:space="preserve" textLength="7.50" lengthAdjust="spacingAndGlyphs">&lt;</text>
 <path d="M274.75 95.5V112.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<text x="293.50" y="107.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="107.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> All-In with Chamath, Jason, Sack </text>
-<text x="601.00" y="107.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">All-In Podcast, LLC   </text>
-<text x="766.00" y="107.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Technology         </text>
-<text x="916.00" y="107.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     447</text>
-<text x="983.50" y="107.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    4d ago</text>
+<text x="278.50" y="107.50" font-size="12.5" font-weight="400" fill="#1e1e1e" text-anchor="start" xml:space="preserve" textLength="322.50" lengthAdjust="spacingAndGlyphs">  for you The Binge: Free Shelley Jensen   </text>
+<text x="601.00" y="107.50" font-size="12.5" font-weight="400" fill="#83602b" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Sony Music Entertainme</text>
+<text x="766.00" y="107.50" font-size="12.5" font-weight="400" fill="#1e1e1e" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
+<text x="916.00" y="107.50" font-size="12.5" font-weight="400" fill="#83602b" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     182</text>
+<text x="983.50" y="107.50" font-size="12.5" font-weight="400" fill="#83602b" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 95.5V112.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="53.50" y="124.00" font-size="12.5" font-weight="600" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="7.50" lengthAdjust="spacingAndGlyphs">/</text>
 <text x="61.00" y="124.00" font-size="12.5" font-weight="600" fill="#ffac3d" text-anchor="start" xml:space="preserve" textLength="7.50" lengthAdjust="spacingAndGlyphs">_</text>
@@ -145,13 +145,12 @@ text{font-family:hm,hf,ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans M
 <text x="218.50" y="124.00" font-size="12.5" font-weight="600" fill="#ff6568" text-anchor="start" xml:space="preserve" textLength="7.50" lengthAdjust="spacingAndGlyphs">|</text>
 <path d="M274.75 112.0V128.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="124.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="124.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Diary Of A CEO with Steven B </text>
-<text x="601.00" y="124.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">DOAC                  </text>
-<text x="766.00" y="124.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Business           </text>
-<text x="916.00" y="124.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     918</text>
-<text x="983.50" y="124.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    3d ago</text>
+<text x="346.00" y="124.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Au Parloir                       </text>
+<text x="601.00" y="124.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Cédric Bergeron       </text>
+<text x="766.00" y="124.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Documentary        </text>
+<text x="916.00" y="124.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     165</text>
+<text x="983.50" y="124.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    8d ago</text>
 <path d="M1062.25 112.0V128.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="278.50" y="128.50" width="780.30" height="16.80" fill="#ffb03b"/>
 <path d="M23.5 136.75H22.75Q19.75 136.75 19.75 139.75V145.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <text x="23.50" y="140.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="67.50" lengthAdjust="spacingAndGlyphs"> Library </text>
 <path d="M91.0 136.75H98.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
@@ -179,23 +178,24 @@ text{font-family:hm,hf,ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans M
 <path d="M256.0 136.75H263.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M263.5 136.75H264.25Q267.25 136.75 267.25 139.75V145.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 128.5V145.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<text x="278.50" y="140.50" font-size="12.5" font-weight="400" fill="#1e1e1e" text-anchor="start" xml:space="preserve" textLength="322.50" lengthAdjust="spacingAndGlyphs">  for you Stuff You Should Know            </text>
-<text x="601.00" y="140.50" font-size="12.5" font-weight="400" fill="#83602b" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">iHeartPodcasts        </text>
-<text x="766.00" y="140.50" font-size="12.5" font-weight="400" fill="#1e1e1e" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
-<text x="916.00" y="140.50" font-size="12.5" font-weight="400" fill="#83602b" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    2035</text>
-<text x="983.50" y="140.50" font-size="12.5" font-weight="400" fill="#83602b" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs"> yesterday</text>
+<text x="293.50" y="140.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
+<text x="346.00" y="140.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> This American Life               </text>
+<text x="601.00" y="140.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">This American Life    </text>
+<text x="766.00" y="140.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
+<text x="916.00" y="140.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     518</text>
+<text x="983.50" y="140.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs"> yesterday</text>
 <path d="M1062.25 128.5V145.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 145.0V161.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <text x="23.50" y="157.00" font-size="12.5" font-weight="600" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="37.50" lengthAdjust="spacingAndGlyphs">Inbox</text>
-<text x="61.00" y="157.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="30.00" lengthAdjust="spacingAndGlyphs">  50</text>
+<text x="61.00" y="157.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="30.00" lengthAdjust="spacingAndGlyphs">  63</text>
 <path d="M267.25 145.0V161.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 145.0V161.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="157.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="157.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Prof G Markets                   </text>
-<text x="601.00" y="157.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Vox Media Podcast Netw</text>
-<text x="766.00" y="157.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Investing          </text>
-<text x="916.00" y="157.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     463</text>
-<text x="983.50" y="157.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs"> yesterday</text>
+<text x="346.00" y="157.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Why Files: Operation Podcast </text>
+<text x="601.00" y="157.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">The Why Files: Operati</text>
+<text x="766.00" y="157.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Documentary        </text>
+<text x="916.00" y="157.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     322</text>
+<text x="983.50" y="157.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 145.0V161.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 161.5V178.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <text x="23.50" y="173.50" font-size="12.5" font-weight="600" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="82.50" lengthAdjust="spacingAndGlyphs">In progress</text>
@@ -203,11 +203,11 @@ text{font-family:hm,hf,ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans M
 <path d="M267.25 161.5V178.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 161.5V178.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="173.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="173.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Ezra Klein Show              </text>
-<text x="601.00" y="173.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">New York Times Opinion</text>
+<text x="346.00" y="173.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> If Books Could Kill              </text>
+<text x="601.00" y="173.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Michael Hobbes &amp; Peter</text>
 <text x="766.00" y="173.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
-<text x="916.00" y="173.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     550</text>
-<text x="983.50" y="173.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    2d ago</text>
+<text x="916.00" y="173.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     131</text>
+<text x="983.50" y="173.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 161.5V178.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 178.0V194.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <text x="23.50" y="190.00" font-size="12.5" font-weight="600" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="37.50" lengthAdjust="spacingAndGlyphs">Queue</text>
@@ -215,144 +215,147 @@ text{font-family:hm,hf,ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans M
 <path d="M267.25 178.0V194.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 178.0V194.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="190.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="190.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Prof G Pod with Scott Gallow </text>
-<text x="601.00" y="190.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Vox Media Podcast Netw</text>
-<text x="766.00" y="190.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Entrepreneurship   </text>
-<text x="916.00" y="190.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    1259</text>
-<text x="983.50" y="190.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs"> yesterday</text>
+<text x="346.00" y="190.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> All-In with Chamath, Jason, Sack </text>
+<text x="601.00" y="190.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">All-In Podcast, LLC   </text>
+<text x="766.00" y="190.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Technology         </text>
+<text x="916.00" y="190.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     447</text>
+<text x="983.50" y="190.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    6d ago</text>
 <path d="M1062.25 178.0V194.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="23.50" y="194.50" width="240.30" height="16.80" fill="#d4d4d4"/>
 <path d="M19.75 194.5V211.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
-<text x="23.50" y="206.50" font-size="12.5" font-weight="600" fill="#101012" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">Discover</text>
+<text x="23.50" y="206.50" font-size="12.5" font-weight="600" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="67.50" lengthAdjust="spacingAndGlyphs">Downloads</text>
+<text x="91.00" y="206.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="22.50" lengthAdjust="spacingAndGlyphs">  1</text>
 <path d="M267.25 194.5V211.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 194.5V211.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="206.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="206.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Under the Influence with Terry O </text>
-<text x="601.00" y="206.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Apostrophe Podcast Net</text>
-<text x="766.00" y="206.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
-<text x="916.00" y="206.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     467</text>
+<text x="346.00" y="206.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Otherworld                       </text>
+<text x="601.00" y="206.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Otherworld            </text>
+<text x="766.00" y="206.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Documentary        </text>
+<text x="916.00" y="206.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     277</text>
 <text x="983.50" y="206.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 194.5V211.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
+<rect x="23.50" y="211.00" width="240.30" height="16.80" fill="#d4d4d4"/>
 <path d="M19.75 211.0V227.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
-<path d="M23.5 219.25H31.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
-<text x="31.00" y="223.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs"> Shows </text>
-<path d="M83.5 219.25H91.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
+<text x="23.50" y="223.00" font-size="12.5" font-weight="600" fill="#101012" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">Discover</text>
 <path d="M267.25 211.0V227.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 211.0V227.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="223.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="223.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Machine Gods                     </text>
-<text x="601.00" y="223.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">NPR                   </text>
-<text x="766.00" y="223.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Technology         </text>
-<text x="916.00" y="223.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">      12</text>
-<text x="983.50" y="223.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    2d ago</text>
+<text x="346.00" y="223.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Twenty Thousand Hertz            </text>
+<text x="601.00" y="223.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Dallas Taylor         </text>
+<text x="766.00" y="223.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Design             </text>
+<text x="916.00" y="223.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     264</text>
+<text x="983.50" y="223.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    7d ago</text>
 <path d="M1062.25 211.0V227.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 227.5V244.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
-<text x="23.50" y="239.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">The Daily                       </text>
+<path d="M23.5 235.75H31.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
+<text x="31.00" y="239.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs"> Shows </text>
+<path d="M83.5 235.75H91.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M267.25 227.5V244.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 227.5V244.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="239.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="239.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Ideas                            </text>
-<text x="601.00" y="239.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">CBC                   </text>
+<text x="346.00" y="239.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Ezra Klein Show              </text>
+<text x="601.00" y="239.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">New York Times Opinion</text>
 <text x="766.00" y="239.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
-<text x="916.00" y="239.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     243</text>
-<text x="983.50" y="239.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    2d ago</text>
+<text x="916.00" y="239.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     550</text>
+<text x="983.50" y="239.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    3d ago</text>
 <path d="M1062.25 227.5V244.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 244.0V260.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
-<text x="23.50" y="256.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Planet Money                    </text>
+<text x="23.50" y="256.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Hidden Brain                    </text>
 <path d="M267.25 244.0V260.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 244.0V260.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="256.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="256.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Lex Fridman Podcast              </text>
-<text x="601.00" y="256.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Lex Fridman           </text>
+<text x="346.00" y="256.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Search Engine                    </text>
+<text x="601.00" y="256.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">PJ Vogt               </text>
 <text x="766.00" y="256.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Technology         </text>
-<text x="916.00" y="256.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     505</text>
-<text x="983.50" y="256.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">   11d ago</text>
+<text x="916.00" y="256.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     167</text>
+<text x="983.50" y="256.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    3d ago</text>
 <path d="M1062.25 244.0V260.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 260.5V277.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
-<text x="23.50" y="272.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Radiolab                        </text>
+<text x="23.50" y="272.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Huberman Lab                    </text>
 <path d="M267.25 260.5V277.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 260.5V277.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="272.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="272.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Ramsey Show                  </text>
-<text x="601.00" y="272.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Ramsey Network        </text>
-<text x="766.00" y="272.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Investing          </text>
-<text x="916.00" y="272.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     180</text>
-<text x="983.50" y="272.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    3d ago</text>
+<text x="346.00" y="272.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Design Matters with Debbie Millm </text>
+<text x="601.00" y="272.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Design Matters Media  </text>
+<text x="766.00" y="272.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Design             </text>
+<text x="916.00" y="272.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     701</text>
+<text x="983.50" y="272.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 260.5V277.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 277.0V293.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
-<text x="23.50" y="289.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Hard Fork                       </text>
+<text x="23.50" y="289.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Stuff You Should Know           </text>
 <path d="M267.25 277.0V293.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 277.0V293.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="289.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="289.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Acquired                         </text>
-<text x="601.00" y="289.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Ben Gilbert and David </text>
-<text x="766.00" y="289.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Technology         </text>
-<text x="916.00" y="289.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     218</text>
-<text x="983.50" y="289.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">   2mo ago</text>
+<text x="346.00" y="289.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> This Is Actually Happening       </text>
+<text x="601.00" y="289.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Audible Original      </text>
+<text x="766.00" y="289.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Documentary        </text>
+<text x="916.00" y="289.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     540</text>
+<text x="983.50" y="289.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 277.0V293.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 293.5V310.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
-<text x="23.50" y="305.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Freakonomics Radio              </text>
+<text x="23.50" y="305.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Planet Money                    </text>
 <path d="M267.25 293.5V310.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 293.5V310.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="305.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="305.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Loonie Hour                  </text>
-<text x="601.00" y="305.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Steve Saretsky        </text>
-<text x="766.00" y="305.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Investing          </text>
-<text x="916.00" y="305.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     269</text>
-<text x="983.50" y="305.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    8d ago</text>
+<text x="346.00" y="305.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Viall Files                  </text>
+<text x="601.00" y="305.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Nick Viall            </text>
+<text x="766.00" y="305.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
+<text x="916.00" y="305.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    1363</text>
+<text x="983.50" y="305.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 293.5V310.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 310.0V326.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
-<text x="23.50" y="322.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Search Engine                   </text>
+<text x="23.50" y="322.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Accidental Tech Podcast         </text>
 <path d="M267.25 310.0V326.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 310.0V326.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="322.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="322.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Heavyweight                      </text>
-<text x="601.00" y="322.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Pushkin Industries    </text>
-<text x="766.00" y="322.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Personal Journals  </text>
-<text x="916.00" y="322.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     140</text>
-<text x="983.50" y="322.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    3d ago</text>
+<text x="346.00" y="322.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Documentary Podcast          </text>
+<text x="601.00" y="322.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">BBC World Service     </text>
+<text x="766.00" y="322.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Documentary        </text>
+<text x="916.00" y="322.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    2000</text>
+<text x="983.50" y="322.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs"> yesterday</text>
 <path d="M1062.25 310.0V326.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 326.5V343.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
-<text x="23.50" y="338.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">99% Invisible                   </text>
+<text x="23.50" y="338.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Radiolab                        </text>
 <path d="M267.25 326.5V343.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 326.5V343.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="338.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="338.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Vergecast                    </text>
-<text x="601.00" y="338.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">The Verge             </text>
-<text x="766.00" y="338.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Technology         </text>
-<text x="916.00" y="338.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    1122</text>
-<text x="983.50" y="338.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    2d ago</text>
+<text x="346.00" y="338.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Business of Home Podcast         </text>
+<text x="601.00" y="338.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Business of Home, Denn</text>
+<text x="766.00" y="338.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Design             </text>
+<text x="916.00" y="338.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     600</text>
+<text x="983.50" y="338.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    4d ago</text>
 <path d="M1062.25 326.5V343.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 343.0V359.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
-<text x="23.50" y="355.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Huberman Lab                    </text>
+<text x="23.50" y="355.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Freakonomics Radio              </text>
 <path d="M267.25 343.0V359.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 343.0V359.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="355.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="355.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Financial Audit                  </text>
-<text x="601.00" y="355.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Caleb Hammer          </text>
-<text x="766.00" y="355.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Investing          </text>
-<text x="916.00" y="355.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     441</text>
-<text x="983.50" y="355.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs"> yesterday</text>
+<text x="346.00" y="355.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Hard Fork                        </text>
+<text x="601.00" y="355.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">The New York Times    </text>
+<text x="766.00" y="355.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Technology         </text>
+<text x="916.00" y="355.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     227</text>
+<text x="983.50" y="355.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 343.0V359.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 359.5V376.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
+<text x="23.50" y="371.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">99% Invisible                   </text>
 <path d="M267.25 359.5V376.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 359.5V376.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="371.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="371.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> This American Life               </text>
-<text x="601.00" y="371.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">This American Life    </text>
+<text x="346.00" y="371.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Shawn Ryan Show              </text>
+<text x="601.00" y="371.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Shawn Ryan            </text>
 <text x="766.00" y="371.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
-<text x="916.00" y="371.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     518</text>
-<text x="983.50" y="371.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    6d ago</text>
+<text x="916.00" y="371.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     421</text>
+<text x="983.50" y="371.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 359.5V376.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 376.0V392.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
+<text x="23.50" y="388.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="240.00" lengthAdjust="spacingAndGlyphs">Science Vs                      </text>
 <path d="M267.25 376.0V392.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 376.0V392.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="388.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="388.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Waveform: The MKBHD Podcast      </text>
-<text x="601.00" y="388.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">MKBHD                 </text>
-<text x="766.00" y="388.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Technology         </text>
-<text x="916.00" y="388.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     386</text>
-<text x="983.50" y="388.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    2d ago</text>
+<text x="346.00" y="388.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Telepathy Tapes              </text>
+<text x="601.00" y="388.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Ky Dickens            </text>
+<text x="766.00" y="388.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Documentary        </text>
+<text x="916.00" y="388.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     108</text>
+<text x="983.50" y="388.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    5d ago</text>
 <path d="M1062.25 376.0V392.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M19.75 392.5V397.75Q19.75 400.75 22.75 400.75H23.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M23.5 400.75H31.0" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
@@ -390,815 +393,379 @@ text{font-family:hm,hf,ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans M
 <path d="M267.25 392.5V397.75Q267.25 400.75 264.25 400.75H263.5" fill="none" stroke="#7c7c7d" stroke-width="1.1"/>
 <path d="M274.75 392.5V409.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="404.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="404.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Odd Lots                         </text>
-<text x="601.00" y="404.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Bloomberg             </text>
-<text x="766.00" y="404.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Investing          </text>
-<text x="916.00" y="404.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    1318</text>
-<text x="983.50" y="404.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs"> yesterday</text>
+<text x="346.00" y="404.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Dear Alice | Interior Design     </text>
+<text x="601.00" y="404.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Alice Lane            </text>
+<text x="766.00" y="404.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Design             </text>
+<text x="916.00" y="404.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     403</text>
+<text x="983.50" y="404.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    4d ago</text>
 <path d="M1062.25 392.5V409.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="409.00" width="255.30" height="16.80" fill="#fe3501"/>
-<rect x="16.00" y="417.25" width="7.80" height="8.55" fill="#fe3602"/>
-<rect x="263.50" y="417.25" width="7.80" height="8.55" fill="#fe3602"/>
+<rect x="16.00" y="409.00" width="255.30" height="16.80" fill="#000000"/>
 <path d="M274.75 409.0V425.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="421.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="421.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Behind the Bastards              </text>
-<text x="601.00" y="421.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Cool Zone Media and iH</text>
-<text x="766.00" y="421.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
-<text x="916.00" y="421.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    1238</text>
-<text x="983.50" y="421.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs"> yesterday</text>
+<text x="346.00" y="421.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Lex Fridman Podcast              </text>
+<text x="601.00" y="421.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Lex Fridman           </text>
+<text x="766.00" y="421.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Technology         </text>
+<text x="916.00" y="421.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     505</text>
+<text x="983.50" y="421.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">   13d ago</text>
 <path d="M1062.25 409.0V425.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="425.50" width="7.80" height="16.80" fill="#fe5536"/>
-<rect x="23.50" y="425.50" width="7.80" height="16.80" fill="#fe3704"/>
-<rect x="31.00" y="425.50" width="225.30" height="16.80" fill="#fe3501"/>
-<rect x="256.00" y="425.50" width="7.80" height="16.80" fill="#fe3704"/>
-<rect x="263.50" y="425.50" width="7.80" height="16.80" fill="#fe5637"/>
-<rect x="16.00" y="433.75" width="7.80" height="8.55" fill="#ff8c8c"/>
-<rect x="23.50" y="433.75" width="7.80" height="8.55" fill="#fe522e"/>
-<rect x="31.00" y="433.75" width="7.80" height="8.55" fill="#fe3602"/>
-<rect x="248.50" y="433.75" width="7.80" height="8.55" fill="#fe3602"/>
-<rect x="256.00" y="433.75" width="7.80" height="8.55" fill="#fe532f"/>
-<rect x="263.50" y="433.75" width="7.80" height="8.55" fill="#fe8d8c"/>
+<rect x="16.00" y="425.50" width="255.30" height="16.80" fill="#000000"/>
 <path d="M274.75 425.5V442.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="437.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="437.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> TED Radio Hour                   </text>
-<text x="601.00" y="437.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">NPR                   </text>
-<text x="766.00" y="437.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Technology         </text>
-<text x="916.00" y="437.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     393</text>
-<text x="983.50" y="437.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    2d ago</text>
+<text x="346.00" y="437.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Under the Influence with Terry O </text>
+<text x="601.00" y="437.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Apostrophe Podcast Net</text>
+<text x="766.00" y="437.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
+<text x="916.00" y="437.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     467</text>
+<text x="983.50" y="437.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 425.5V442.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="442.00" width="7.80" height="16.80" fill="#ff959a"/>
-<rect x="23.50" y="442.00" width="7.80" height="16.80" fill="#fe7f71"/>
-<rect x="31.00" y="442.00" width="7.80" height="16.80" fill="#fe4518"/>
-<rect x="38.50" y="442.00" width="15.30" height="16.80" fill="#fe3501"/>
-<rect x="53.50" y="442.00" width="7.80" height="16.80" fill="#fe3502"/>
-<rect x="61.00" y="442.00" width="7.80" height="16.80" fill="#fd451b"/>
-<rect x="68.50" y="442.00" width="7.80" height="16.80" fill="#fe3806"/>
-<rect x="76.00" y="442.00" width="135.30" height="16.80" fill="#fe3501"/>
-<rect x="211.00" y="442.00" width="7.80" height="16.80" fill="#fe3806"/>
-<rect x="218.50" y="442.00" width="7.80" height="16.80" fill="#fd451b"/>
-<rect x="226.00" y="442.00" width="22.80" height="16.80" fill="#fe3501"/>
-<rect x="248.50" y="442.00" width="7.80" height="16.80" fill="#fe4519"/>
-<rect x="256.00" y="442.00" width="7.80" height="16.80" fill="#fe7f71"/>
-<rect x="263.50" y="442.00" width="7.80" height="16.80" fill="#ff969a"/>
-<rect x="23.50" y="450.25" width="7.80" height="8.55" fill="#ff8a81"/>
-<rect x="31.00" y="450.25" width="7.80" height="8.55" fill="#fe694b"/>
-<rect x="38.50" y="450.25" width="7.80" height="8.55" fill="#fe3a08"/>
-<rect x="53.50" y="450.25" width="7.80" height="8.55" fill="#fe3602"/>
-<rect x="61.00" y="450.25" width="7.80" height="8.55" fill="#fe6d5c"/>
-<rect x="68.50" y="450.25" width="7.80" height="8.55" fill="#fe5f44"/>
-<rect x="76.00" y="450.25" width="7.80" height="8.55" fill="#fe3704"/>
-<rect x="203.50" y="450.25" width="7.80" height="8.55" fill="#fe3704"/>
-<rect x="211.00" y="450.25" width="7.80" height="8.55" fill="#fe6045"/>
-<rect x="218.50" y="450.25" width="7.80" height="8.55" fill="#fe6c5a"/>
-<rect x="226.00" y="450.25" width="7.80" height="8.55" fill="#fe3602"/>
-<rect x="241.00" y="450.25" width="7.80" height="8.55" fill="#fe3a08"/>
-<rect x="248.50" y="450.25" width="7.80" height="8.55" fill="#fe6a4c"/>
-<rect x="256.00" y="450.25" width="7.80" height="8.55" fill="#ff8a81"/>
+<rect x="16.00" y="442.00" width="255.30" height="16.80" fill="#000000"/>
 <path d="M274.75 442.0V458.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="454.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="454.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Canadian Investor            </text>
-<text x="601.00" y="454.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Braden Dennis &amp; Simon </text>
-<text x="766.00" y="454.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Investing          </text>
-<text x="916.00" y="454.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     675</text>
+<text x="346.00" y="454.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> World of Secrets                 </text>
+<text x="601.00" y="454.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">BBC                   </text>
+<text x="766.00" y="454.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Documentary        </text>
+<text x="916.00" y="454.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     110</text>
 <text x="983.50" y="454.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 442.0V458.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="458.50" width="7.80" height="16.80" fill="#ff959a"/>
-<rect x="23.50" y="458.50" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="31.00" y="458.50" width="7.80" height="16.80" fill="#ff7b62"/>
-<rect x="38.50" y="458.50" width="7.80" height="16.80" fill="#fe5125"/>
-<rect x="46.00" y="458.50" width="15.30" height="16.80" fill="#fe3602"/>
-<rect x="61.00" y="458.50" width="7.80" height="16.80" fill="#fe7264"/>
-<rect x="68.50" y="458.50" width="7.80" height="16.80" fill="#fe8b87"/>
-<rect x="76.00" y="458.50" width="7.80" height="16.80" fill="#fe522c"/>
-<rect x="83.50" y="458.50" width="7.80" height="16.80" fill="#fe3602"/>
-<rect x="91.00" y="458.50" width="7.80" height="16.80" fill="#fe3501"/>
-<rect x="98.50" y="458.50" width="7.80" height="16.80" fill="#fe3603"/>
-<rect x="106.00" y="458.50" width="7.80" height="16.80" fill="#fe3a0a"/>
-<rect x="113.50" y="458.50" width="60.30" height="16.80" fill="#fe3501"/>
-<rect x="173.50" y="458.50" width="7.80" height="16.80" fill="#fe3b0b"/>
-<rect x="181.00" y="458.50" width="7.80" height="16.80" fill="#fe3603"/>
-<rect x="188.50" y="458.50" width="7.80" height="16.80" fill="#fe3501"/>
-<rect x="196.00" y="458.50" width="7.80" height="16.80" fill="#fe3602"/>
-<rect x="203.50" y="458.50" width="7.80" height="16.80" fill="#fe522d"/>
-<rect x="211.00" y="458.50" width="7.80" height="16.80" fill="#ff8b88"/>
-<rect x="218.50" y="458.50" width="7.80" height="16.80" fill="#fe7263"/>
-<rect x="226.00" y="458.50" width="15.30" height="16.80" fill="#fe3602"/>
-<rect x="241.00" y="458.50" width="7.80" height="16.80" fill="#fe5226"/>
-<rect x="248.50" y="458.50" width="7.80" height="16.80" fill="#ff7b62"/>
-<rect x="256.00" y="458.50" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="263.50" y="458.50" width="7.80" height="16.80" fill="#ff969a"/>
-<rect x="31.00" y="466.75" width="7.80" height="8.55" fill="#ff7c64"/>
-<rect x="38.50" y="466.75" width="7.80" height="8.55" fill="#fe673f"/>
-<rect x="46.00" y="466.75" width="7.80" height="8.55" fill="#fe3d0a"/>
-<rect x="68.50" y="466.75" width="7.80" height="8.55" fill="#ff9190"/>
-<rect x="76.00" y="466.75" width="7.80" height="8.55" fill="#fe7862"/>
-<rect x="83.50" y="466.75" width="7.80" height="8.55" fill="#fe4314"/>
-<rect x="98.50" y="466.75" width="7.80" height="8.55" fill="#fe3b0b"/>
-<rect x="106.00" y="466.75" width="7.80" height="8.55" fill="#fe6b58"/>
-<rect x="113.50" y="466.75" width="7.80" height="8.55" fill="#fe4317"/>
-<rect x="166.00" y="466.75" width="7.80" height="8.55" fill="#fe4419"/>
-<rect x="173.50" y="466.75" width="7.80" height="8.55" fill="#fe6c59"/>
-<rect x="181.00" y="466.75" width="7.80" height="8.55" fill="#fe3b0a"/>
-<rect x="196.00" y="466.75" width="7.80" height="8.55" fill="#fe4314"/>
-<rect x="203.50" y="466.75" width="7.80" height="8.55" fill="#fe7863"/>
-<rect x="211.00" y="466.75" width="7.80" height="8.55" fill="#ff9190"/>
-<rect x="233.50" y="466.75" width="7.80" height="8.55" fill="#fe3e0b"/>
-<rect x="241.00" y="466.75" width="7.80" height="8.55" fill="#fe6840"/>
-<rect x="248.50" y="466.75" width="7.80" height="8.55" fill="#ff7c64"/>
+<rect x="16.00" y="458.50" width="255.30" height="16.80" fill="#000000"/>
 <path d="M274.75 458.5V475.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="470.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="470.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Roz &amp; Mocha                      </text>
-<text x="601.00" y="470.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Frequency Podcast Netw</text>
-<text x="766.00" y="470.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
-<text x="916.00" y="470.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    1707</text>
-<text x="983.50" y="470.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
+<text x="346.00" y="470.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Creative Pep Talk                </text>
+<text x="601.00" y="470.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Andy J. Pizza         </text>
+<text x="766.00" y="470.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Design             </text>
+<text x="916.00" y="470.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     586</text>
+<text x="983.50" y="470.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    5d ago</text>
 <path d="M1062.25 458.5V475.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="475.00" width="7.80" height="16.80" fill="#ff959a"/>
-<rect x="23.50" y="475.00" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="31.00" y="475.00" width="7.80" height="16.80" fill="#ff7c64"/>
-<rect x="38.50" y="475.00" width="7.80" height="16.80" fill="#ff6e46"/>
-<rect x="46.00" y="475.00" width="7.80" height="16.80" fill="#fe4e1b"/>
-<rect x="53.50" y="475.00" width="7.80" height="16.80" fill="#fe3603"/>
-<rect x="61.00" y="475.00" width="7.80" height="16.80" fill="#fe7264"/>
-<rect x="68.50" y="475.00" width="7.80" height="16.80" fill="#ff9190"/>
-<rect x="76.00" y="475.00" width="7.80" height="16.80" fill="#ff816f"/>
-<rect x="83.50" y="475.00" width="7.80" height="16.80" fill="#fe6039"/>
-<rect x="91.00" y="475.00" width="7.80" height="16.80" fill="#fe3805"/>
-<rect x="98.50" y="475.00" width="7.80" height="16.80" fill="#fe3c0c"/>
-<rect x="106.00" y="475.00" width="7.80" height="16.80" fill="#fe837e"/>
-<rect x="113.50" y="475.00" width="7.80" height="16.80" fill="#fe7461"/>
-<rect x="121.00" y="475.00" width="7.80" height="16.80" fill="#fe3d0d"/>
-<rect x="128.50" y="475.00" width="30.30" height="16.80" fill="#fe3501"/>
-<rect x="158.50" y="475.00" width="7.80" height="16.80" fill="#fe3e0e"/>
-<rect x="166.00" y="475.00" width="7.80" height="16.80" fill="#fe7563"/>
-<rect x="173.50" y="475.00" width="7.80" height="16.80" fill="#fe827d"/>
-<rect x="181.00" y="475.00" width="7.80" height="16.80" fill="#fe3b0b"/>
-<rect x="188.50" y="475.00" width="7.80" height="16.80" fill="#fe3805"/>
-<rect x="196.00" y="475.00" width="7.80" height="16.80" fill="#fe6039"/>
-<rect x="203.50" y="475.00" width="7.80" height="16.80" fill="#ff816f"/>
-<rect x="211.00" y="475.00" width="7.80" height="16.80" fill="#ff9190"/>
-<rect x="218.50" y="475.00" width="7.80" height="16.80" fill="#fe7263"/>
-<rect x="226.00" y="475.00" width="7.80" height="16.80" fill="#fe3603"/>
-<rect x="233.50" y="475.00" width="7.80" height="16.80" fill="#fe4e1c"/>
-<rect x="241.00" y="475.00" width="7.80" height="16.80" fill="#fe6e46"/>
-<rect x="248.50" y="475.00" width="7.80" height="16.80" fill="#ff7c64"/>
-<rect x="256.00" y="475.00" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="263.50" y="475.00" width="7.80" height="16.80" fill="#ff969a"/>
-<rect x="46.00" y="483.25" width="7.80" height="8.55" fill="#ff5b27"/>
-<rect x="53.50" y="483.25" width="7.80" height="8.55" fill="#fe3b06"/>
-<rect x="76.00" y="483.25" width="7.80" height="8.55" fill="#ff826f"/>
-<rect x="83.50" y="483.25" width="7.80" height="8.55" fill="#ff6f4b"/>
-<rect x="91.00" y="483.25" width="7.80" height="8.55" fill="#fe4715"/>
-<rect x="113.50" y="483.25" width="7.80" height="8.55" fill="#ff897f"/>
-<rect x="121.00" y="483.25" width="7.80" height="8.55" fill="#fe5e3a"/>
-<rect x="128.50" y="483.25" width="7.80" height="8.55" fill="#fe3704"/>
-<rect x="151.00" y="483.25" width="7.80" height="8.55" fill="#fe3804"/>
-<rect x="158.50" y="483.25" width="7.80" height="8.55" fill="#fe5f3b"/>
-<rect x="166.00" y="483.25" width="7.80" height="8.55" fill="#ff8980"/>
-<rect x="173.50" y="483.25" width="7.80" height="8.55" fill="#fe837d"/>
-<rect x="188.50" y="483.25" width="7.80" height="8.55" fill="#fe4715"/>
-<rect x="196.00" y="483.25" width="7.80" height="8.55" fill="#ff6f4a"/>
-<rect x="226.00" y="483.25" width="7.80" height="8.55" fill="#fe3b06"/>
-<rect x="233.50" y="483.25" width="7.80" height="8.55" fill="#ff5b27"/>
-<rect x="241.00" y="483.25" width="7.80" height="8.55" fill="#fe6e47"/>
+<rect x="16.00" y="475.00" width="255.30" height="16.80" fill="#000000"/>
 <path d="M274.75 475.0V491.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="487.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="487.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Better Offline                   </text>
-<text x="601.00" y="487.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Cool Zone Media and iH</text>
+<text x="346.00" y="487.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Machine Gods                     </text>
+<text x="601.00" y="487.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">NPR                   </text>
 <text x="766.00" y="487.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Technology         </text>
-<text x="916.00" y="487.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     291</text>
-<text x="983.50" y="487.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    2d ago</text>
+<text x="916.00" y="487.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">      12</text>
+<text x="983.50" y="487.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    3d ago</text>
 <path d="M1062.25 475.0V491.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="491.50" width="7.80" height="16.80" fill="#ff959a"/>
-<rect x="23.50" y="491.50" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="31.00" y="491.50" width="7.80" height="16.80" fill="#ff7c64"/>
-<rect x="38.50" y="491.50" width="7.80" height="16.80" fill="#ff6e46"/>
-<rect x="46.00" y="491.50" width="7.80" height="16.80" fill="#ff5f2a"/>
-<rect x="53.50" y="491.50" width="7.80" height="16.80" fill="#fe430c"/>
-<rect x="61.00" y="491.50" width="7.80" height="16.80" fill="#fe7264"/>
-<rect x="68.50" y="491.50" width="7.80" height="16.80" fill="#ff9190"/>
-<rect x="76.00" y="491.50" width="7.80" height="16.80" fill="#ff826f"/>
-<rect x="83.50" y="491.50" width="7.80" height="16.80" fill="#ff714d"/>
-<rect x="91.00" y="491.50" width="7.80" height="16.80" fill="#fe5825"/>
-<rect x="98.50" y="491.50" width="7.80" height="16.80" fill="#fe3e0e"/>
-<rect x="106.00" y="491.50" width="7.80" height="16.80" fill="#fe837e"/>
-<rect x="113.50" y="491.50" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="121.00" y="491.50" width="7.80" height="16.80" fill="#fe7456"/>
-<rect x="128.50" y="491.50" width="7.80" height="16.80" fill="#fe4716"/>
-<rect x="136.00" y="491.50" width="15.30" height="16.80" fill="#fe3501"/>
-<rect x="151.00" y="491.50" width="7.80" height="16.80" fill="#fe4817"/>
-<rect x="158.50" y="491.50" width="7.80" height="16.80" fill="#ff7456"/>
-<rect x="166.00" y="491.50" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="173.50" y="491.50" width="7.80" height="16.80" fill="#fe837d"/>
-<rect x="181.00" y="491.50" width="7.80" height="16.80" fill="#fe3e0e"/>
-<rect x="188.50" y="491.50" width="7.80" height="16.80" fill="#fe5825"/>
-<rect x="196.00" y="491.50" width="7.80" height="16.80" fill="#ff714c"/>
-<rect x="203.50" y="491.50" width="7.80" height="16.80" fill="#ff816f"/>
-<rect x="211.00" y="491.50" width="7.80" height="16.80" fill="#ff9190"/>
-<rect x="218.50" y="491.50" width="7.80" height="16.80" fill="#fe7263"/>
-<rect x="226.00" y="491.50" width="7.80" height="16.80" fill="#fe430c"/>
-<rect x="233.50" y="491.50" width="7.80" height="16.80" fill="#ff5f2a"/>
-<rect x="241.00" y="491.50" width="7.80" height="16.80" fill="#fe6e47"/>
-<rect x="248.50" y="491.50" width="7.80" height="16.80" fill="#ff7c64"/>
-<rect x="256.00" y="491.50" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="263.50" y="491.50" width="7.80" height="16.80" fill="#ff969a"/>
-<rect x="46.00" y="499.75" width="7.80" height="8.55" fill="#ff602b"/>
-<rect x="53.50" y="499.75" width="7.80" height="8.55" fill="#fe4b11"/>
-<rect x="61.00" y="499.75" width="7.80" height="8.55" fill="#fe7365"/>
-<rect x="91.00" y="499.75" width="7.80" height="8.55" fill="#ff5f2b"/>
-<rect x="98.50" y="499.75" width="7.80" height="8.55" fill="#fe4513"/>
-<rect x="121.00" y="499.75" width="7.80" height="8.55" fill="#fe7759"/>
-<rect x="128.50" y="499.75" width="7.80" height="8.55" fill="#fe5a2a"/>
-<rect x="136.00" y="499.75" width="7.80" height="8.55" fill="#fe3804"/>
-<rect x="143.50" y="499.75" width="7.80" height="8.55" fill="#fe3804"/>
-<rect x="151.00" y="499.75" width="7.80" height="8.55" fill="#fe5b2a"/>
-<rect x="158.50" y="499.75" width="7.80" height="8.55" fill="#ff7758"/>
-<rect x="181.00" y="499.75" width="7.80" height="8.55" fill="#fe4513"/>
-<rect x="188.50" y="499.75" width="7.80" height="8.55" fill="#ff5f2b"/>
-<rect x="226.00" y="499.75" width="7.80" height="8.55" fill="#fe4c11"/>
-<rect x="233.50" y="499.75" width="7.80" height="8.55" fill="#ff602a"/>
+<rect x="16.00" y="491.50" width="255.30" height="16.80" fill="#000000"/>
 <path d="M274.75 491.5V508.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="503.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="503.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Michael Campbell's Money Talks   </text>
-<text x="601.00" y="503.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">HPC Inc.              </text>
-<text x="766.00" y="503.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Business           </text>
-<text x="916.00" y="503.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     105</text>
+<text x="346.00" y="503.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Modern Wisdom                    </text>
+<text x="601.00" y="503.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Chris Williamson      </text>
+<text x="766.00" y="503.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
+<text x="916.00" y="503.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    1176</text>
 <text x="983.50" y="503.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    2d ago</text>
 <path d="M1062.25 491.5V508.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="508.00" width="7.80" height="16.80" fill="#fda2a5"/>
-<rect x="23.50" y="508.00" width="7.80" height="16.80" fill="#fd9890"/>
-<rect x="31.00" y="508.00" width="7.80" height="16.80" fill="#fd8a74"/>
-<rect x="38.50" y="508.00" width="7.80" height="16.80" fill="#fe724c"/>
-<rect x="46.00" y="508.00" width="7.80" height="16.80" fill="#ff602b"/>
-<rect x="53.50" y="508.00" width="7.80" height="16.80" fill="#fe5013"/>
-<rect x="61.00" y="508.00" width="7.80" height="16.80" fill="#fe7565"/>
-<rect x="68.50" y="508.00" width="7.80" height="16.80" fill="#ff9190"/>
-<rect x="76.00" y="508.00" width="7.80" height="16.80" fill="#ff826f"/>
-<rect x="83.50" y="508.00" width="7.80" height="16.80" fill="#ff714d"/>
-<rect x="91.00" y="508.00" width="7.80" height="16.80" fill="#ff602c"/>
-<rect x="98.50" y="508.00" width="7.80" height="16.80" fill="#fe4e18"/>
-<rect x="106.00" y="508.00" width="7.80" height="16.80" fill="#fe847e"/>
-<rect x="113.50" y="508.00" width="7.80" height="16.80" fill="#fe8f87"/>
-<rect x="121.00" y="508.00" width="7.80" height="16.80" fill="#fd8064"/>
-<rect x="128.50" y="508.00" width="7.80" height="16.80" fill="#fd6f42"/>
-<rect x="136.00" y="508.00" width="7.80" height="16.80" fill="#fd4f1f"/>
-<rect x="143.50" y="508.00" width="7.80" height="16.80" fill="#fe410a"/>
-<rect x="151.00" y="508.00" width="7.80" height="16.80" fill="#ff6231"/>
-<rect x="158.50" y="508.00" width="7.80" height="16.80" fill="#ff7758"/>
-<rect x="166.00" y="508.00" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="173.50" y="508.00" width="7.80" height="16.80" fill="#fe837d"/>
-<rect x="181.00" y="508.00" width="7.80" height="16.80" fill="#fe531f"/>
-<rect x="188.50" y="508.00" width="7.80" height="16.80" fill="#fe6e3f"/>
-<rect x="196.00" y="508.00" width="7.80" height="16.80" fill="#ff714d"/>
-<rect x="203.50" y="508.00" width="7.80" height="16.80" fill="#ff816f"/>
-<rect x="211.00" y="508.00" width="7.80" height="16.80" fill="#ff9190"/>
-<rect x="218.50" y="508.00" width="7.80" height="16.80" fill="#fe7464"/>
-<rect x="226.00" y="508.00" width="7.80" height="16.80" fill="#fe5013"/>
-<rect x="233.50" y="508.00" width="7.80" height="16.80" fill="#fe6b3a"/>
-<rect x="241.00" y="508.00" width="7.80" height="16.80" fill="#fe7550"/>
-<rect x="248.50" y="508.00" width="7.80" height="16.80" fill="#ff7c64"/>
-<rect x="256.00" y="508.00" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="263.50" y="508.00" width="7.80" height="16.80" fill="#ff969a"/>
-<rect x="16.00" y="516.25" width="7.80" height="8.55" fill="#f5dfde"/>
-<rect x="23.50" y="516.25" width="7.80" height="8.55" fill="#f7c9c4"/>
-<rect x="31.00" y="516.25" width="7.80" height="8.55" fill="#f7c5bb"/>
-<rect x="38.50" y="516.25" width="7.80" height="8.55" fill="#f8b7a4"/>
-<rect x="46.00" y="516.25" width="7.80" height="8.55" fill="#fe6b3a"/>
-<rect x="53.50" y="516.25" width="7.80" height="8.55" fill="#ff5213"/>
-<rect x="61.00" y="516.25" width="7.80" height="8.55" fill="#fe7766"/>
-<rect x="98.50" y="516.25" width="7.80" height="8.55" fill="#fe531a"/>
-<rect x="106.00" y="516.25" width="7.80" height="8.55" fill="#fe857f"/>
-<rect x="113.50" y="516.25" width="7.80" height="8.55" fill="#fba8a4"/>
-<rect x="121.00" y="516.25" width="7.80" height="8.55" fill="#f9ab97"/>
-<rect x="128.50" y="516.25" width="7.80" height="8.55" fill="#fa9575"/>
-<rect x="136.00" y="516.25" width="7.80" height="8.55" fill="#f98461"/>
-<rect x="143.50" y="516.25" width="7.80" height="8.55" fill="#fe4a0f"/>
-<rect x="151.00" y="516.25" width="7.80" height="8.55" fill="#ff6331"/>
-<rect x="173.50" y="516.25" width="7.80" height="8.55" fill="#fe847e"/>
-<rect x="181.00" y="516.25" width="7.80" height="8.55" fill="#fc7041"/>
-<rect x="188.50" y="516.25" width="7.80" height="8.55" fill="#f9ad94"/>
-<rect x="196.00" y="516.25" width="7.80" height="8.55" fill="#ff724e"/>
-<rect x="218.50" y="516.25" width="7.80" height="8.55" fill="#fe7764"/>
-<rect x="226.00" y="516.25" width="7.80" height="8.55" fill="#ff5313"/>
-<rect x="233.50" y="516.25" width="7.80" height="8.55" fill="#f99e7d"/>
-<rect x="241.00" y="516.25" width="7.80" height="8.55" fill="#fb957a"/>
+<rect x="16.00" y="508.00" width="255.30" height="16.80" fill="#000000"/>
+<rect x="53.50" y="516.25" width="7.80" height="8.55" fill="#010100"/>
+<rect x="61.00" y="516.25" width="7.80" height="8.55" fill="#0f1b0b"/>
+<rect x="68.50" y="516.25" width="7.80" height="8.55" fill="#162810"/>
+<rect x="76.00" y="516.25" width="7.80" height="8.55" fill="#27280b"/>
+<rect x="83.50" y="516.25" width="7.80" height="8.55" fill="#362807"/>
+<rect x="91.00" y="516.25" width="7.80" height="8.55" fill="#362307"/>
+<rect x="98.50" y="516.25" width="7.80" height="8.55" fill="#351c07"/>
+<rect x="106.00" y="516.25" width="7.80" height="8.55" fill="#341809"/>
+<rect x="113.50" y="516.25" width="7.80" height="8.55" fill="#320d0e"/>
+<rect x="121.00" y="516.25" width="7.80" height="8.55" fill="#2f0d12"/>
+<rect x="128.50" y="516.25" width="7.80" height="8.55" fill="#220e20"/>
+<rect x="136.00" y="516.25" width="7.80" height="8.55" fill="#1d1023"/>
+<rect x="143.50" y="516.25" width="7.80" height="8.55" fill="#081f2d"/>
+<rect x="151.00" y="516.25" width="7.80" height="8.55" fill="#04202d"/>
+<rect x="158.50" y="516.25" width="7.80" height="8.55" fill="#141c20"/>
+<rect x="166.00" y="516.25" width="7.80" height="8.55" fill="#292b2d"/>
+<rect x="173.50" y="516.25" width="7.80" height="8.55" fill="#222325"/>
+<rect x="181.00" y="516.25" width="7.80" height="8.55" fill="#222325"/>
+<rect x="188.50" y="516.25" width="7.80" height="8.55" fill="#292b2d"/>
+<rect x="196.00" y="516.25" width="7.80" height="8.55" fill="#292b2d"/>
+<rect x="203.50" y="516.25" width="7.80" height="8.55" fill="#292b2d"/>
+<rect x="211.00" y="516.25" width="7.80" height="8.55" fill="#1d1e20"/>
+<rect x="218.50" y="516.25" width="7.80" height="8.55" fill="#27282b"/>
+<rect x="226.00" y="516.25" width="7.80" height="8.55" fill="#292b2d"/>
+<rect x="233.50" y="516.25" width="7.80" height="8.55" fill="#1f2022"/>
+<rect x="241.00" y="516.25" width="7.80" height="8.55" fill="#050506"/>
 <path d="M274.75 508.0V524.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="520.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="520.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Modern Wisdom                    </text>
-<text x="601.00" y="520.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Chris Williamson      </text>
-<text x="766.00" y="520.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
-<text x="916.00" y="520.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    1175</text>
-<text x="983.50" y="520.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    3d ago</text>
+<text x="346.00" y="520.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> How to Decorate                  </text>
+<text x="601.00" y="520.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Ballard Designs       </text>
+<text x="766.00" y="520.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Design             </text>
+<text x="916.00" y="520.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     507</text>
+<text x="983.50" y="520.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">   12d ago</text>
 <path d="M1062.25 508.0V524.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="524.50" width="7.80" height="16.80" fill="#f6d9d8"/>
-<rect x="23.50" y="524.50" width="7.80" height="16.80" fill="#fe9289"/>
-<rect x="31.00" y="524.50" width="7.80" height="16.80" fill="#fe836c"/>
-<rect x="38.50" y="524.50" width="7.80" height="16.80" fill="#f7bfb1"/>
-<rect x="46.00" y="524.50" width="7.80" height="16.80" fill="#fc7d51"/>
-<rect x="53.50" y="524.50" width="7.80" height="16.80" fill="#fe5618"/>
-<rect x="61.00" y="524.50" width="7.80" height="16.80" fill="#fc8e7b"/>
-<rect x="68.50" y="524.50" width="7.80" height="16.80" fill="#fbabaa"/>
-<rect x="76.00" y="524.50" width="7.80" height="16.80" fill="#fd8c7b"/>
-<rect x="83.50" y="524.50" width="7.80" height="16.80" fill="#ff714d"/>
-<rect x="91.00" y="524.50" width="7.80" height="16.80" fill="#fe6633"/>
-<rect x="98.50" y="524.50" width="7.80" height="16.80" fill="#fc7748"/>
-<rect x="106.00" y="524.50" width="7.80" height="16.80" fill="#fba39d"/>
-<rect x="113.50" y="524.50" width="7.80" height="16.80" fill="#fab3af"/>
-<rect x="121.00" y="524.50" width="7.80" height="16.80" fill="#f9b09d"/>
-<rect x="128.50" y="524.50" width="7.80" height="16.80" fill="#fd764a"/>
-<rect x="136.00" y="524.50" width="7.80" height="16.80" fill="#fd642e"/>
-<rect x="143.50" y="524.50" width="7.80" height="16.80" fill="#fe5012"/>
-<rect x="151.00" y="524.50" width="7.80" height="16.80" fill="#fd764a"/>
-<rect x="158.50" y="524.50" width="7.80" height="16.80" fill="#fb9982"/>
-<rect x="166.00" y="524.50" width="7.80" height="16.80" fill="#fc9e97"/>
-<rect x="173.50" y="524.50" width="7.80" height="16.80" fill="#fe8880"/>
-<rect x="181.00" y="524.50" width="7.80" height="16.80" fill="#fc7546"/>
-<rect x="188.50" y="524.50" width="7.80" height="16.80" fill="#f8b49e"/>
-<rect x="196.00" y="524.50" width="7.80" height="16.80" fill="#ff734f"/>
-<rect x="203.50" y="524.50" width="7.80" height="16.80" fill="#fd9180"/>
-<rect x="211.00" y="524.50" width="7.80" height="16.80" fill="#fbacab"/>
-<rect x="218.50" y="524.50" width="7.80" height="16.80" fill="#fc8874"/>
-<rect x="226.00" y="524.50" width="7.80" height="16.80" fill="#ff5515"/>
-<rect x="233.50" y="524.50" width="7.80" height="16.80" fill="#f8a485"/>
-<rect x="241.00" y="524.50" width="7.80" height="16.80" fill="#faa28b"/>
-<rect x="248.50" y="524.50" width="7.80" height="16.80" fill="#fb9a88"/>
-<rect x="256.00" y="524.50" width="7.80" height="16.80" fill="#fca19a"/>
-<rect x="263.50" y="524.50" width="7.80" height="16.80" fill="#fe999e"/>
-<rect x="16.00" y="532.75" width="7.80" height="8.55" fill="#f5dfdd"/>
-<rect x="23.50" y="532.75" width="7.80" height="8.55" fill="#fba7a0"/>
-<rect x="31.00" y="532.75" width="7.80" height="8.55" fill="#fba08f"/>
-<rect x="38.50" y="532.75" width="7.80" height="8.55" fill="#f6c8bb"/>
-<rect x="46.00" y="524.50" width="7.80" height="8.45" fill="#fb8860"/>
-<rect x="53.50" y="532.75" width="7.80" height="8.55" fill="#fb8559"/>
-<rect x="61.00" y="532.75" width="7.80" height="8.55" fill="#f8c2bc"/>
-<rect x="68.50" y="532.75" width="7.80" height="8.55" fill="#f9bbba"/>
-<rect x="76.00" y="532.75" width="7.80" height="8.55" fill="#f7c4bb"/>
-<rect x="83.50" y="532.75" width="7.80" height="8.55" fill="#fd7d5c"/>
-<rect x="91.00" y="532.75" width="7.80" height="8.55" fill="#f9a286"/>
-<rect x="98.50" y="532.75" width="7.80" height="8.55" fill="#f7b299"/>
-<rect x="106.00" y="532.75" width="7.80" height="8.55" fill="#f9b7b1"/>
-<rect x="113.50" y="532.75" width="7.80" height="8.55" fill="#f6d4d2"/>
-<rect x="121.00" y="532.75" width="7.80" height="8.55" fill="#f8b29f"/>
-<rect x="128.50" y="532.75" width="7.80" height="8.55" fill="#fa9879"/>
-<rect x="136.00" y="532.75" width="7.80" height="8.55" fill="#fa9066"/>
-<rect x="143.50" y="532.75" width="7.80" height="8.55" fill="#fb7541"/>
-<rect x="151.00" y="532.75" width="7.80" height="8.55" fill="#f7bda9"/>
-<rect x="158.50" y="532.75" width="7.80" height="8.55" fill="#f9ad9c"/>
-<rect x="166.00" y="532.75" width="7.80" height="8.55" fill="#f8c6c0"/>
-<rect x="173.50" y="532.75" width="7.80" height="8.55" fill="#faaba0"/>
-<rect x="181.00" y="532.75" width="7.80" height="8.55" fill="#fc7746"/>
-<rect x="196.00" y="532.75" width="7.80" height="8.55" fill="#fc8767"/>
-<rect x="203.50" y="532.75" width="7.80" height="8.55" fill="#f7c4bc"/>
-<rect x="211.00" y="532.75" width="7.80" height="8.55" fill="#fab8b7"/>
-<rect x="218.50" y="532.75" width="7.80" height="8.55" fill="#f7c6be"/>
-<rect x="226.00" y="532.75" width="7.80" height="8.55" fill="#fc733f"/>
-<rect x="233.50" y="532.75" width="7.80" height="8.55" fill="#f8a687"/>
-<rect x="241.00" y="532.75" width="7.80" height="8.55" fill="#f6ccc1"/>
-<rect x="248.50" y="532.75" width="7.80" height="8.55" fill="#f9b0a2"/>
-<rect x="256.00" y="532.75" width="7.80" height="8.55" fill="#f8c6c1"/>
-<rect x="263.50" y="532.75" width="7.80" height="8.55" fill="#f9c6c8"/>
+<rect x="16.00" y="524.50" width="37.80" height="16.80" fill="#000000"/>
+<rect x="53.50" y="524.50" width="7.80" height="16.80" fill="#0d1709"/>
+<rect x="61.00" y="524.50" width="7.80" height="16.80" fill="#4f9039"/>
+<rect x="68.50" y="524.50" width="7.80" height="16.80" fill="#68ab41"/>
+<rect x="76.00" y="524.50" width="7.80" height="16.80" fill="#c5aa28"/>
+<rect x="83.50" y="524.50" width="7.80" height="16.80" fill="#e8a81f"/>
+<rect x="91.00" y="524.50" width="7.80" height="16.80" fill="#f18221"/>
+<rect x="98.50" y="524.50" width="7.80" height="16.80" fill="#ee7227"/>
+<rect x="106.00" y="524.50" width="7.80" height="16.80" fill="#e4423d"/>
+<rect x="113.50" y="524.50" width="7.80" height="16.80" fill="#d6373d"/>
+<rect x="121.00" y="524.50" width="7.80" height="16.80" fill="#b8395d"/>
+<rect x="128.50" y="524.50" width="7.80" height="16.80" fill="#8c3d8b"/>
+<rect x="136.00" y="524.50" width="7.80" height="16.80" fill="#67559f"/>
+<rect x="143.50" y="524.50" width="7.80" height="16.80" fill="#178cc6"/>
+<rect x="151.00" y="524.50" width="7.80" height="16.80" fill="#157eac"/>
+<rect x="158.50" y="524.50" width="7.80" height="16.80" fill="#798c99"/>
+<rect x="166.00" y="524.50" width="7.80" height="16.80" fill="#afb7c0"/>
+<rect x="173.50" y="524.50" width="7.80" height="16.80" fill="#90969e"/>
+<rect x="181.00" y="524.50" width="7.80" height="16.80" fill="#82888f"/>
+<rect x="188.50" y="524.50" width="15.30" height="16.80" fill="#afb7c0"/>
+<rect x="203.50" y="524.50" width="7.80" height="16.80" fill="#a9b0b9"/>
+<rect x="211.00" y="524.50" width="7.80" height="16.80" fill="#74797f"/>
+<rect x="218.50" y="524.50" width="7.80" height="16.80" fill="#a5acb5"/>
+<rect x="226.00" y="524.50" width="7.80" height="16.80" fill="#afb7c0"/>
+<rect x="233.50" y="524.50" width="7.80" height="16.80" fill="#a7aeb7"/>
+<rect x="241.00" y="524.50" width="7.80" height="16.80" fill="#5c6065"/>
+<rect x="248.50" y="524.50" width="7.80" height="16.80" fill="#050506"/>
+<rect x="256.00" y="524.50" width="15.30" height="16.80" fill="#000000"/>
+<rect x="46.00" y="532.75" width="7.80" height="8.55" fill="#010301"/>
+<rect x="53.50" y="532.75" width="7.80" height="8.55" fill="#335d25"/>
+<rect x="61.00" y="532.75" width="7.80" height="8.55" fill="#63b447"/>
+<rect x="68.50" y="532.75" width="7.80" height="8.55" fill="#9db539"/>
+<rect x="76.00" y="532.75" width="7.80" height="8.55" fill="#f1b422"/>
+<rect x="83.50" y="532.75" width="7.80" height="8.55" fill="#f4a521"/>
+<rect x="91.00" y="524.50" width="7.80" height="8.45" fill="#e5891f"/>
+<rect x="98.50" y="524.50" width="7.80" height="8.45" fill="#e37720"/>
+<rect x="106.00" y="524.50" width="7.80" height="8.45" fill="#dc562f"/>
+<rect x="113.50" y="532.75" width="7.80" height="8.55" fill="#da3b4b"/>
+<rect x="121.00" y="532.75" width="7.80" height="8.55" fill="#a34085"/>
+<rect x="128.50" y="532.75" width="7.80" height="8.55" fill="#8b479a"/>
+<rect x="136.00" y="532.75" width="7.80" height="8.55" fill="#3780c3"/>
+<rect x="143.50" y="532.75" width="7.80" height="8.55" fill="#1196d0"/>
+<rect x="151.00" y="532.75" width="7.80" height="8.55" fill="#427b97"/>
+<rect x="158.50" y="532.75" width="7.80" height="8.55" fill="#b0b8c2"/>
+<rect x="166.00" y="532.75" width="7.80" height="8.55" fill="#bac2cc"/>
+<rect x="173.50" y="532.75" width="7.80" height="8.55" fill="#979ea6"/>
+<rect x="181.00" y="524.50" width="7.80" height="8.45" fill="#8f969d"/>
+<rect x="188.50" y="532.75" width="7.80" height="8.55" fill="#b2b9c3"/>
+<rect x="196.00" y="532.75" width="7.80" height="8.55" fill="#bac2cc"/>
+<rect x="203.50" y="524.50" width="7.80" height="8.45" fill="#afb7c0"/>
+<rect x="211.00" y="524.50" width="7.80" height="8.45" fill="#7b8086"/>
+<rect x="218.50" y="532.75" width="7.80" height="8.55" fill="#afb7c0"/>
+<rect x="226.00" y="532.75" width="7.80" height="8.55" fill="#bac2cc"/>
+<rect x="233.50" y="532.75" width="7.80" height="8.55" fill="#bac2cc"/>
+<rect x="241.00" y="532.75" width="7.80" height="8.55" fill="#a5acb5"/>
+<rect x="248.50" y="532.75" width="7.80" height="8.55" fill="#1d1e1f"/>
 <path d="M274.75 524.5V541.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="536.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
 <text x="346.00" y="536.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The AI Daily Brief: Artificial I </text>
 <text x="601.00" y="536.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Nathaniel Whittemore  </text>
 <text x="766.00" y="536.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Technology         </text>
-<text x="916.00" y="536.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    1145</text>
-<text x="983.50" y="536.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs"> yesterday</text>
+<text x="916.00" y="536.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    1147</text>
+<text x="983.50" y="536.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 524.5V541.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="541.00" width="7.80" height="16.80" fill="#f6d9d7"/>
-<rect x="23.50" y="541.00" width="7.80" height="16.80" fill="#fe8f87"/>
-<rect x="31.00" y="541.00" width="7.80" height="16.80" fill="#fb9c8b"/>
-<rect x="38.50" y="541.00" width="7.80" height="16.80" fill="#f9aa92"/>
-<rect x="46.00" y="541.00" width="7.80" height="16.80" fill="#fe632e"/>
-<rect x="53.50" y="541.00" width="7.80" height="16.80" fill="#fc7543"/>
-<rect x="61.00" y="541.00" width="7.80" height="16.80" fill="#faa497"/>
-<rect x="68.50" y="541.00" width="7.80" height="16.80" fill="#fbabaa"/>
-<rect x="76.00" y="541.00" width="7.80" height="16.80" fill="#f7cdc7"/>
-<rect x="83.50" y="541.00" width="7.80" height="16.80" fill="#fb977c"/>
-<rect x="91.00" y="541.00" width="7.80" height="16.80" fill="#f7beaa"/>
-<rect x="98.50" y="541.00" width="7.80" height="16.80" fill="#fe622a"/>
-<rect x="106.00" y="541.00" width="7.80" height="16.80" fill="#ff887f"/>
-<rect x="113.50" y="541.00" width="7.80" height="16.80" fill="#fbaca8"/>
-<rect x="121.00" y="541.00" width="7.80" height="16.80" fill="#f9b09c"/>
-<rect x="128.50" y="541.00" width="7.80" height="16.80" fill="#fa9a7c"/>
-<rect x="136.00" y="541.00" width="7.80" height="16.80" fill="#f9956d"/>
-<rect x="143.50" y="541.00" width="7.80" height="16.80" fill="#f8a98a"/>
-<rect x="151.00" y="541.00" width="7.80" height="16.80" fill="#fc8662"/>
-<rect x="158.50" y="541.00" width="7.80" height="16.80" fill="#ff7758"/>
-<rect x="166.00" y="541.00" width="7.80" height="16.80" fill="#fe9288"/>
-<rect x="173.50" y="541.00" width="7.80" height="16.80" fill="#f7c4b8"/>
-<rect x="181.00" y="541.00" width="7.80" height="16.80" fill="#fb8051"/>
-<rect x="188.50" y="541.00" width="7.80" height="16.80" fill="#f8b49e"/>
-<rect x="196.00" y="541.00" width="7.80" height="16.80" fill="#fd8261"/>
-<rect x="203.50" y="541.00" width="7.80" height="16.80" fill="#faa89c"/>
-<rect x="211.00" y="541.00" width="7.80" height="16.80" fill="#fbacac"/>
-<rect x="218.50" y="541.00" width="7.80" height="16.80" fill="#f8c9cc"/>
-<rect x="226.00" y="541.00" width="7.80" height="16.80" fill="#fa926a"/>
-<rect x="233.50" y="541.00" width="7.80" height="16.80" fill="#f8a384"/>
-<rect x="241.00" y="541.00" width="7.80" height="16.80" fill="#fb9a80"/>
-<rect x="248.50" y="541.00" width="7.80" height="16.80" fill="#ff7c64"/>
-<rect x="256.00" y="541.00" width="7.80" height="16.80" fill="#fe9188"/>
-<rect x="263.50" y="541.00" width="7.80" height="16.80" fill="#f6d9d7"/>
-<rect x="16.00" y="541.00" width="7.80" height="8.45" fill="#f4e5e4"/>
-<rect x="23.50" y="541.00" width="7.80" height="8.45" fill="#f8c2bd"/>
-<rect x="31.00" y="541.00" width="7.80" height="8.45" fill="#f6d6cf"/>
-<rect x="38.50" y="549.25" width="7.80" height="8.55" fill="#f7c1b0"/>
-<rect x="46.00" y="549.25" width="7.80" height="8.55" fill="#fe6b3a"/>
-<rect x="53.50" y="549.25" width="7.80" height="8.55" fill="#f99c7a"/>
-<rect x="61.00" y="549.25" width="7.80" height="8.55" fill="#f8bcb7"/>
-<rect x="68.50" y="541.00" width="7.80" height="8.45" fill="#fab5b5"/>
-<rect x="76.00" y="541.00" width="7.80" height="8.45" fill="#f6d3ce"/>
-<rect x="83.50" y="549.25" width="7.80" height="8.55" fill="#fb9a80"/>
-<rect x="91.00" y="541.00" width="7.80" height="8.45" fill="#f7bfac"/>
-<rect x="98.50" y="541.00" width="7.80" height="8.45" fill="#fd6731"/>
-<rect x="106.00" y="541.00" width="7.80" height="8.45" fill="#fe897f"/>
-<rect x="113.50" y="541.00" width="7.80" height="8.45" fill="#fab1ad"/>
-<rect x="121.00" y="541.00" width="7.80" height="8.45" fill="#f9b09d"/>
-<rect x="136.00" y="541.00" width="7.80" height="8.45" fill="#fa956d"/>
-<rect x="143.50" y="549.25" width="7.80" height="8.55" fill="#f7ad8f"/>
-<rect x="151.00" y="541.00" width="7.80" height="8.45" fill="#fb8d6b"/>
-<rect x="158.50" y="541.00" width="7.80" height="8.45" fill="#ff7759"/>
-<rect x="166.00" y="541.00" width="7.80" height="8.45" fill="#fd958c"/>
-<rect x="173.50" y="549.25" width="7.80" height="8.55" fill="#f7c5b9"/>
-<rect x="181.00" y="549.25" width="7.80" height="8.55" fill="#fb8253"/>
-<rect x="196.00" y="549.25" width="7.80" height="8.55" fill="#fb977b"/>
-<rect x="203.50" y="549.25" width="7.80" height="8.55" fill="#f8c3bc"/>
-<rect x="211.00" y="541.00" width="7.80" height="8.45" fill="#fbb2b1"/>
-<rect x="218.50" y="541.00" width="7.80" height="8.45" fill="#f7d2d3"/>
-<rect x="226.00" y="549.25" width="7.80" height="8.55" fill="#fa946e"/>
-<rect x="233.50" y="541.00" width="7.80" height="8.45" fill="#f8a485"/>
-<rect x="241.00" y="541.00" width="7.80" height="8.45" fill="#faa089"/>
-<rect x="248.50" y="541.00" width="7.80" height="8.45" fill="#ff7d65"/>
-<rect x="256.00" y="541.00" width="7.80" height="8.45" fill="#fd948b"/>
-<rect x="263.50" y="541.00" width="7.80" height="8.45" fill="#f6d9d8"/>
+<rect x="16.00" y="541.00" width="30.30" height="16.80" fill="#000000"/>
+<rect x="46.00" y="541.00" width="7.80" height="16.80" fill="#13230e"/>
+<rect x="53.50" y="541.00" width="7.80" height="16.80" fill="#58a140"/>
+<rect x="61.00" y="541.00" width="7.80" height="16.80" fill="#75b643"/>
+<rect x="68.50" y="541.00" width="7.80" height="16.80" fill="#dab428"/>
+<rect x="76.00" y="541.00" width="7.80" height="16.80" fill="#f4a021"/>
+<rect x="83.50" y="541.00" width="7.80" height="16.80" fill="#f18121"/>
+<rect x="91.00" y="541.00" width="7.80" height="16.80" fill="#ed6c2a"/>
+<rect x="98.50" y="541.00" width="7.80" height="16.80" fill="#e43f3f"/>
+<rect x="106.00" y="541.00" width="7.80" height="16.80" fill="#d43b50"/>
+<rect x="113.50" y="541.00" width="7.80" height="16.80" fill="#9d408b"/>
+<rect x="121.00" y="541.00" width="7.80" height="16.80" fill="#944195"/>
+<rect x="128.50" y="541.00" width="7.80" height="16.80" fill="#6362ad"/>
+<rect x="136.00" y="541.00" width="7.80" height="16.80" fill="#1192cb"/>
+<rect x="143.50" y="541.00" width="7.80" height="16.80" fill="#1c81ae"/>
+<rect x="151.00" y="541.00" width="7.80" height="16.80" fill="#8d9da9"/>
+<rect x="158.50" y="541.00" width="7.80" height="16.80" fill="#a4acb4"/>
+<rect x="166.00" y="541.00" width="7.80" height="16.80" fill="#b8c0ca"/>
+<rect x="173.50" y="541.00" width="7.80" height="16.80" fill="#90969e"/>
+<rect x="181.00" y="541.00" width="7.80" height="16.80" fill="#101011"/>
+<rect x="188.50" y="541.00" width="7.80" height="16.80" fill="#858a92"/>
+<rect x="196.00" y="541.00" width="7.80" height="16.80" fill="#b9c1cb"/>
+<rect x="203.50" y="541.00" width="7.80" height="16.80" fill="#4d5055"/>
+<rect x="211.00" y="541.00" width="7.80" height="16.80" fill="#292a2c"/>
+<rect x="218.50" y="541.00" width="7.80" height="16.80" fill="#afb7c0"/>
+<rect x="226.00" y="541.00" width="7.80" height="16.80" fill="#b7bfc9"/>
+<rect x="233.50" y="541.00" width="7.80" height="16.80" fill="#9ea5ae"/>
+<rect x="241.00" y="541.00" width="7.80" height="16.80" fill="#4d5155"/>
+<rect x="248.50" y="541.00" width="7.80" height="16.80" fill="#030404"/>
+<rect x="256.00" y="541.00" width="15.30" height="16.80" fill="#000000"/>
+<rect x="38.50" y="549.25" width="7.80" height="8.55" fill="#030602"/>
+<rect x="46.00" y="549.25" width="7.80" height="8.55" fill="#3d702c"/>
+<rect x="53.50" y="549.25" width="7.80" height="8.55" fill="#65b547"/>
+<rect x="61.00" y="549.25" width="7.80" height="8.55" fill="#acb535"/>
+<rect x="68.50" y="549.25" width="7.80" height="8.55" fill="#f4b422"/>
+<rect x="76.00" y="541.00" width="7.80" height="8.45" fill="#f6b021"/>
+<rect x="83.50" y="541.00" width="7.80" height="8.45" fill="#f28e21"/>
+<rect x="91.00" y="541.00" width="7.80" height="8.45" fill="#f07d22"/>
+<rect x="98.50" y="541.00" width="7.80" height="8.45" fill="#e85534"/>
+<rect x="106.00" y="541.00" width="7.80" height="8.45" fill="#e23a42"/>
+<rect x="113.50" y="541.00" width="7.80" height="8.45" fill="#bc3d6a"/>
+<rect x="121.00" y="549.25" width="7.80" height="8.55" fill="#854b9d"/>
+<rect x="128.50" y="549.25" width="7.80" height="8.55" fill="#2c88c9"/>
+<rect x="136.00" y="541.00" width="7.80" height="8.45" fill="#1697d3"/>
+<rect x="143.50" y="549.25" width="7.80" height="8.55" fill="#538096"/>
+<rect x="151.00" y="549.25" width="7.80" height="8.55" fill="#b4bcc6"/>
+<rect x="158.50" y="541.00" width="7.80" height="8.45" fill="#bac2cc"/>
+<rect x="166.00" y="541.00" width="7.80" height="8.45" fill="#bac2cc"/>
+<rect x="173.50" y="541.00" width="7.80" height="8.45" fill="#91979f"/>
+<rect x="181.00" y="541.00" width="7.80" height="8.45" fill="#1d1e20"/>
+<rect x="188.50" y="541.00" width="7.80" height="8.45" fill="#8a9097"/>
+<rect x="203.50" y="541.00" width="7.80" height="8.45" fill="#575b60"/>
+<rect x="211.00" y="541.00" width="7.80" height="8.45" fill="#313336"/>
+<rect x="226.00" y="541.00" width="7.80" height="8.45" fill="#bac2cc"/>
+<rect x="233.50" y="541.00" width="7.80" height="8.45" fill="#bac2cc"/>
+<rect x="241.00" y="541.00" width="7.80" height="8.45" fill="#a2a9b2"/>
+<rect x="248.50" y="541.00" width="7.80" height="8.45" fill="#1a1b1d"/>
 <path d="M274.75 541.0V557.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="553.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="553.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Cost of Living                   </text>
-<text x="601.00" y="553.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">CBC                   </text>
-<text x="766.00" y="553.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Business           </text>
-<text x="916.00" y="553.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">      56</text>
-<text x="983.50" y="553.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs"> yesterday</text>
+<text x="346.00" y="553.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Roz &amp; Mocha                      </text>
+<text x="601.00" y="553.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Frequency Podcast Netw</text>
+<text x="766.00" y="553.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Society &amp; Culture  </text>
+<text x="916.00" y="553.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    1708</text>
+<text x="983.50" y="553.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 541.0V557.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="557.50" width="7.80" height="16.80" fill="#fbb2b4"/>
-<rect x="23.50" y="557.50" width="7.80" height="16.80" fill="#ff8c84"/>
-<rect x="31.00" y="557.50" width="7.80" height="16.80" fill="#ff7c64"/>
-<rect x="38.50" y="557.50" width="7.80" height="16.80" fill="#fd7b58"/>
-<rect x="46.00" y="557.50" width="7.80" height="16.80" fill="#fb8962"/>
-<rect x="53.50" y="557.50" width="7.80" height="16.80" fill="#fc6933"/>
-<rect x="61.00" y="557.50" width="7.80" height="16.80" fill="#f9a699"/>
-<rect x="68.50" y="557.50" width="7.80" height="16.80" fill="#fbb0ae"/>
-<rect x="76.00" y="557.50" width="7.80" height="16.80" fill="#fba294"/>
-<rect x="83.50" y="557.50" width="7.80" height="16.80" fill="#fd7c5a"/>
-<rect x="91.00" y="557.50" width="7.80" height="16.80" fill="#fe6c3c"/>
-<rect x="98.50" y="557.50" width="7.80" height="16.80" fill="#fa8c67"/>
-<rect x="106.00" y="557.50" width="7.80" height="16.80" fill="#fba7a1"/>
-<rect x="113.50" y="557.50" width="7.80" height="16.80" fill="#fba8a1"/>
-<rect x="121.00" y="557.50" width="7.80" height="16.80" fill="#fc8f76"/>
-<rect x="128.50" y="557.50" width="7.80" height="16.80" fill="#fc7a51"/>
-<rect x="136.00" y="557.50" width="7.80" height="16.80" fill="#fc6434"/>
-<rect x="143.50" y="557.50" width="7.80" height="16.80" fill="#fe4d13"/>
-<rect x="151.00" y="557.50" width="7.80" height="16.80" fill="#fb865f"/>
-<rect x="158.50" y="557.50" width="7.80" height="16.80" fill="#fb9b86"/>
-<rect x="166.00" y="557.50" width="7.80" height="16.80" fill="#fbaca7"/>
-<rect x="173.50" y="557.50" width="7.80" height="16.80" fill="#fe8a83"/>
-<rect x="181.00" y="557.50" width="7.80" height="16.80" fill="#fd602c"/>
-<rect x="188.50" y="557.50" width="7.80" height="16.80" fill="#fc845c"/>
-<rect x="196.00" y="557.50" width="7.80" height="16.80" fill="#fe7956"/>
-<rect x="203.50" y="557.50" width="7.80" height="16.80" fill="#faa99c"/>
-<rect x="211.00" y="557.50" width="7.80" height="16.80" fill="#fbaba9"/>
-<rect x="218.50" y="557.50" width="7.80" height="16.80" fill="#fb9c93"/>
-<rect x="226.00" y="557.50" width="7.80" height="16.80" fill="#fc6e39"/>
-<rect x="233.50" y="557.50" width="7.80" height="16.80" fill="#fc7d51"/>
-<rect x="241.00" y="557.50" width="7.80" height="16.80" fill="#fb9478"/>
-<rect x="248.50" y="557.50" width="7.80" height="16.80" fill="#fba08f"/>
-<rect x="256.00" y="557.50" width="7.80" height="16.80" fill="#fab0aa"/>
-<rect x="263.50" y="557.50" width="7.80" height="16.80" fill="#fe9fa3"/>
-<rect x="16.00" y="557.50" width="7.80" height="8.45" fill="#f6d8d7"/>
-<rect x="23.50" y="557.50" width="7.80" height="8.45" fill="#fe8f86"/>
-<rect x="31.00" y="557.50" width="7.80" height="8.45" fill="#fe7f67"/>
-<rect x="38.50" y="557.50" width="7.80" height="8.45" fill="#f8b3a0"/>
-<rect x="46.00" y="557.50" width="7.80" height="8.45" fill="#f99d7c"/>
-<rect x="53.50" y="557.50" width="7.80" height="8.45" fill="#f8ab8f"/>
-<rect x="61.00" y="557.50" width="7.80" height="8.45" fill="#f9b4b0"/>
-<rect x="68.50" y="557.50" width="7.80" height="8.45" fill="#fbb0b0"/>
-<rect x="76.00" y="557.50" width="7.80" height="8.45" fill="#f6d7d2"/>
-<rect x="83.50" y="557.50" width="7.80" height="8.45" fill="#fc8f71"/>
-<rect x="91.00" y="557.50" width="7.80" height="8.45" fill="#f8b098"/>
-<rect x="98.50" y="557.50" width="7.80" height="8.45" fill="#f8a283"/>
-<rect x="106.00" y="565.75" width="7.80" height="8.55" fill="#f9b2ae"/>
-<rect x="113.50" y="557.50" width="7.80" height="8.45" fill="#f7d1cf"/>
-<rect x="121.00" y="557.50" width="7.80" height="8.45" fill="#f8b29f"/>
-<rect x="128.50" y="557.50" width="7.80" height="8.45" fill="#fa9a7c"/>
-<rect x="136.00" y="557.50" width="7.80" height="8.45" fill="#fa8f6a"/>
-<rect x="143.50" y="557.50" width="7.80" height="8.45" fill="#fa8054"/>
-<rect x="151.00" y="557.50" width="7.80" height="8.45" fill="#f7b9a5"/>
-<rect x="158.50" y="565.75" width="7.80" height="8.55" fill="#f9ac99"/>
-<rect x="166.00" y="557.50" width="7.80" height="8.45" fill="#f9bcb5"/>
-<rect x="173.50" y="557.50" width="7.80" height="8.45" fill="#f8b3a8"/>
-<rect x="181.00" y="557.50" width="7.80" height="8.45" fill="#fc7747"/>
-<rect x="188.50" y="557.50" width="7.80" height="8.45" fill="#f8b49d"/>
-<rect x="196.00" y="557.50" width="7.80" height="8.45" fill="#faa087"/>
-<rect x="203.50" y="557.50" width="7.80" height="8.45" fill="#f8bfb8"/>
-<rect x="211.00" y="565.75" width="7.80" height="8.55" fill="#fab5b5"/>
-<rect x="218.50" y="557.50" width="7.80" height="8.45" fill="#f6d5d6"/>
-<rect x="226.00" y="557.50" width="7.80" height="8.45" fill="#fa946d"/>
-<rect x="233.50" y="557.50" width="7.80" height="8.45" fill="#f8a688"/>
-<rect x="241.00" y="557.50" width="7.80" height="8.45" fill="#f6c9bd"/>
-<rect x="248.50" y="565.75" width="7.80" height="8.55" fill="#faac9d"/>
-<rect x="256.00" y="557.50" width="7.80" height="8.45" fill="#f9bbb4"/>
-<rect x="263.50" y="557.50" width="7.80" height="8.45" fill="#f7cfd1"/>
+<rect x="16.00" y="557.50" width="22.80" height="16.80" fill="#000000"/>
+<rect x="38.50" y="557.50" width="7.80" height="16.80" fill="#1c3314"/>
+<rect x="46.00" y="557.50" width="7.80" height="16.80" fill="#5da943"/>
+<rect x="53.50" y="557.50" width="7.80" height="16.80" fill="#7fb541"/>
+<rect x="61.00" y="557.50" width="7.80" height="16.80" fill="#e6a91f"/>
+<rect x="68.50" y="557.50" width="7.80" height="16.80" fill="#e5921f"/>
+<rect x="76.00" y="557.50" width="7.80" height="16.80" fill="#e2781f"/>
+<rect x="83.50" y="557.50" width="7.80" height="16.80" fill="#de6129"/>
+<rect x="91.00" y="557.50" width="7.80" height="16.80" fill="#d6393c"/>
+<rect x="98.50" y="557.50" width="7.80" height="16.80" fill="#c33850"/>
+<rect x="106.00" y="557.50" width="7.80" height="16.80" fill="#903c86"/>
+<rect x="113.50" y="557.50" width="7.80" height="16.80" fill="#924296"/>
+<rect x="121.00" y="557.50" width="7.80" height="16.80" fill="#556bb4"/>
+<rect x="128.50" y="557.50" width="7.80" height="16.80" fill="#1086ba"/>
+<rect x="136.00" y="557.50" width="7.80" height="16.80" fill="#247da5"/>
+<rect x="143.50" y="557.50" width="7.80" height="16.80" fill="#9ba7b2"/>
+<rect x="151.00" y="557.50" width="7.80" height="16.80" fill="#666b70"/>
+<rect x="158.50" y="557.50" width="7.80" height="16.80" fill="#3f4245"/>
+<rect x="166.00" y="557.50" width="7.80" height="16.80" fill="#acb3bd"/>
+<rect x="173.50" y="557.50" width="7.80" height="16.80" fill="#878d94"/>
+<rect x="181.00" y="557.50" width="7.80" height="16.80" fill="#0f0f10"/>
+<rect x="188.50" y="557.50" width="7.80" height="16.80" fill="#7d8289"/>
+<rect x="196.00" y="557.50" width="7.80" height="16.80" fill="#aeb5bf"/>
+<rect x="203.50" y="557.50" width="7.80" height="16.80" fill="#484b4f"/>
+<rect x="211.00" y="557.50" width="7.80" height="16.80" fill="#26282a"/>
+<rect x="218.50" y="557.50" width="7.80" height="16.80" fill="#a5acb4"/>
+<rect x="226.00" y="557.50" width="7.80" height="16.80" fill="#989ea6"/>
+<rect x="233.50" y="557.50" width="7.80" height="16.80" fill="#151617"/>
+<rect x="241.00" y="557.50" width="30.30" height="16.80" fill="#000000"/>
+<rect x="31.00" y="565.75" width="7.80" height="8.55" fill="#050904"/>
+<rect x="38.50" y="565.75" width="7.80" height="8.55" fill="#42772f"/>
+<rect x="46.00" y="565.75" width="7.80" height="8.55" fill="#61ab43"/>
+<rect x="53.50" y="565.75" width="7.80" height="8.55" fill="#aeaa2e"/>
+<rect x="61.00" y="557.50" width="7.80" height="8.45" fill="#e4b426"/>
+<rect x="68.50" y="557.50" width="7.80" height="8.45" fill="#f5ae21"/>
+<rect x="76.00" y="557.50" width="7.80" height="8.45" fill="#f28921"/>
+<rect x="83.50" y="557.50" width="7.80" height="8.45" fill="#f07b23"/>
+<rect x="91.00" y="557.50" width="7.80" height="8.45" fill="#e74e37"/>
+<rect x="98.50" y="557.50" width="7.80" height="8.45" fill="#e13a43"/>
+<rect x="106.00" y="557.50" width="7.80" height="8.45" fill="#b33e73"/>
+<rect x="113.50" y="565.75" width="7.80" height="8.55" fill="#784a96"/>
+<rect x="121.00" y="565.75" width="7.80" height="8.55" fill="#2185c0"/>
+<rect x="128.50" y="557.50" width="7.80" height="8.45" fill="#1398d4"/>
+<rect x="136.00" y="565.75" width="7.80" height="8.55" fill="#5c7c8e"/>
+<rect x="143.50" y="565.75" width="7.80" height="8.55" fill="#acb4bd"/>
+<rect x="151.00" y="557.50" width="7.80" height="8.45" fill="#a6adb6"/>
+<rect x="158.50" y="557.50" width="7.80" height="8.45" fill="#64686e"/>
+<rect x="166.00" y="557.50" width="7.80" height="8.45" fill="#b7bfc9"/>
+<rect x="173.50" y="557.50" width="7.80" height="8.45" fill="#90969e"/>
+<rect x="181.00" y="557.50" width="7.80" height="8.45" fill="#101011"/>
+<rect x="188.50" y="557.50" width="7.80" height="8.45" fill="#858a92"/>
+<rect x="196.00" y="557.50" width="7.80" height="8.45" fill="#b9c1cb"/>
+<rect x="203.50" y="557.50" width="7.80" height="8.45" fill="#4d5055"/>
+<rect x="211.00" y="557.50" width="7.80" height="8.45" fill="#292a2c"/>
+<rect x="218.50" y="557.50" width="7.80" height="8.45" fill="#afb7c0"/>
+<rect x="226.00" y="557.50" width="7.80" height="8.45" fill="#a5acb5"/>
+<rect x="233.50" y="557.50" width="7.80" height="8.45" fill="#27282b"/>
+<rect x="241.00" y="557.50" width="7.80" height="8.45" fill="#030303"/>
 <path d="M274.75 557.5V574.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="569.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="569.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Viall Files                  </text>
-<text x="601.00" y="569.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Nick Viall            </text>
-<text x="766.00" y="569.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Relationships      </text>
-<text x="916.00" y="569.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    1362</text>
-<text x="983.50" y="569.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
+<text x="346.00" y="569.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The World's Best Construction Po </text>
+<text x="601.00" y="569.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">The B1M               </text>
+<text x="766.00" y="569.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Design             </text>
+<text x="916.00" y="569.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     213</text>
+<text x="983.50" y="569.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">   11d ago</text>
 <path d="M1062.25 557.5V574.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="574.00" width="7.80" height="16.80" fill="#ff959a"/>
-<rect x="23.50" y="574.00" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="31.00" y="574.00" width="7.80" height="16.80" fill="#ff7c64"/>
-<rect x="38.50" y="574.00" width="7.80" height="16.80" fill="#ff6e46"/>
-<rect x="46.00" y="574.00" width="7.80" height="16.80" fill="#ff602b"/>
-<rect x="53.50" y="574.00" width="7.80" height="16.80" fill="#fe4b11"/>
-<rect x="61.00" y="574.00" width="7.80" height="16.80" fill="#fe7365"/>
-<rect x="68.50" y="574.00" width="7.80" height="16.80" fill="#ff9190"/>
-<rect x="76.00" y="574.00" width="7.80" height="16.80" fill="#ff826f"/>
-<rect x="83.50" y="574.00" width="7.80" height="16.80" fill="#ff714d"/>
-<rect x="91.00" y="574.00" width="7.80" height="16.80" fill="#ff5f2b"/>
-<rect x="98.50" y="574.00" width="7.80" height="16.80" fill="#fe4513"/>
-<rect x="106.00" y="574.00" width="7.80" height="16.80" fill="#fe837e"/>
-<rect x="113.50" y="574.00" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="121.00" y="574.00" width="7.80" height="16.80" fill="#fe7759"/>
-<rect x="128.50" y="574.00" width="7.80" height="16.80" fill="#fe5a2a"/>
-<rect x="136.00" y="574.00" width="15.30" height="16.80" fill="#fe3804"/>
-<rect x="151.00" y="574.00" width="7.80" height="16.80" fill="#fe5a2a"/>
-<rect x="158.50" y="574.00" width="7.80" height="16.80" fill="#ff7758"/>
-<rect x="166.00" y="574.00" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="173.50" y="574.00" width="7.80" height="16.80" fill="#fe837d"/>
-<rect x="181.00" y="574.00" width="7.80" height="16.80" fill="#fe4513"/>
-<rect x="188.50" y="574.00" width="7.80" height="16.80" fill="#ff5f2b"/>
-<rect x="196.00" y="574.00" width="7.80" height="16.80" fill="#ff714c"/>
-<rect x="203.50" y="574.00" width="7.80" height="16.80" fill="#ff816f"/>
-<rect x="211.00" y="574.00" width="7.80" height="16.80" fill="#ff9190"/>
-<rect x="218.50" y="574.00" width="7.80" height="16.80" fill="#fe7263"/>
-<rect x="226.00" y="574.00" width="7.80" height="16.80" fill="#fe4c11"/>
-<rect x="233.50" y="574.00" width="7.80" height="16.80" fill="#ff602a"/>
-<rect x="241.00" y="574.00" width="7.80" height="16.80" fill="#fe6e47"/>
-<rect x="248.50" y="574.00" width="7.80" height="16.80" fill="#ff7c64"/>
-<rect x="256.00" y="574.00" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="263.50" y="574.00" width="7.80" height="16.80" fill="#ff969a"/>
-<rect x="53.50" y="574.00" width="7.80" height="8.45" fill="#fe5013"/>
-<rect x="61.00" y="574.00" width="7.80" height="8.45" fill="#fe7565"/>
-<rect x="91.00" y="574.00" width="7.80" height="8.45" fill="#ff602c"/>
-<rect x="98.50" y="574.00" width="7.80" height="8.45" fill="#fe4e18"/>
-<rect x="106.00" y="574.00" width="7.80" height="8.45" fill="#fe847e"/>
-<rect x="128.50" y="574.00" width="7.80" height="8.45" fill="#ff6231"/>
-<rect x="136.00" y="574.00" width="7.80" height="8.45" fill="#fe400a"/>
-<rect x="143.50" y="574.00" width="7.80" height="8.45" fill="#fe410a"/>
-<rect x="151.00" y="574.00" width="7.80" height="8.45" fill="#ff6231"/>
-<rect x="181.00" y="574.00" width="7.80" height="8.45" fill="#fe4e18"/>
-<rect x="188.50" y="574.00" width="7.80" height="8.45" fill="#ff602c"/>
-<rect x="218.50" y="574.00" width="7.80" height="8.45" fill="#fe7464"/>
-<rect x="226.00" y="574.00" width="7.80" height="8.45" fill="#ff5013"/>
+<rect x="16.00" y="574.00" width="255.30" height="16.80" fill="#000000"/>
+<rect x="31.00" y="574.00" width="7.80" height="8.45" fill="#030502"/>
+<rect x="38.50" y="574.00" width="7.80" height="8.45" fill="#13220e"/>
+<rect x="46.00" y="574.00" width="7.80" height="8.45" fill="#18270f"/>
+<rect x="53.50" y="574.00" width="7.80" height="8.45" fill="#2e2709"/>
+<rect x="61.00" y="574.00" width="7.80" height="8.45" fill="#352607"/>
+<rect x="68.50" y="574.00" width="7.80" height="8.45" fill="#341f07"/>
+<rect x="76.00" y="574.00" width="7.80" height="8.45" fill="#341b07"/>
+<rect x="83.50" y="574.00" width="7.80" height="8.45" fill="#32130b"/>
+<rect x="91.00" y="574.00" width="7.80" height="8.45" fill="#310c0e"/>
+<rect x="98.50" y="574.00" width="7.80" height="8.45" fill="#290d16"/>
+<rect x="106.00" y="574.00" width="7.80" height="8.45" fill="#200e20"/>
+<rect x="113.50" y="574.00" width="7.80" height="8.45" fill="#171424"/>
+<rect x="121.00" y="574.00" width="7.80" height="8.45" fill="#04202d"/>
+<rect x="128.50" y="574.00" width="7.80" height="8.45" fill="#051c26"/>
+<rect x="136.00" y="574.00" width="7.80" height="8.45" fill="#1d2123"/>
+<rect x="143.50" y="574.00" width="7.80" height="8.45" fill="#27292b"/>
+<rect x="151.00" y="574.00" width="7.80" height="8.45" fill="#0f0f10"/>
+<rect x="158.50" y="574.00" width="7.80" height="8.45" fill="#0e0e0f"/>
+<rect x="166.00" y="574.00" width="7.80" height="8.45" fill="#27292b"/>
+<rect x="173.50" y="574.00" width="7.80" height="8.45" fill="#1f2022"/>
+<rect x="181.00" y="574.00" width="7.80" height="8.45" fill="#030404"/>
+<rect x="188.50" y="574.00" width="7.80" height="8.45" fill="#1c1e1f"/>
+<rect x="196.00" y="574.00" width="7.80" height="8.45" fill="#28292c"/>
+<rect x="203.50" y="574.00" width="7.80" height="8.45" fill="#101112"/>
+<rect x="211.00" y="574.00" width="7.80" height="8.45" fill="#09090a"/>
+<rect x="218.50" y="574.00" width="7.80" height="8.45" fill="#252729"/>
+<rect x="226.00" y="574.00" width="7.80" height="8.45" fill="#232426"/>
+<rect x="233.50" y="574.00" width="7.80" height="8.45" fill="#050505"/>
 <path d="M274.75 574.0V590.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="586.00" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs">for you</text>
-<text x="346.00" y="586.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> Dwarkesh Podcast                 </text>
-<text x="601.00" y="586.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Dwarkesh Patel        </text>
+<text x="346.00" y="586.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="255.00" lengthAdjust="spacingAndGlyphs"> The Vergecast                    </text>
+<text x="601.00" y="586.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">The Verge             </text>
 <text x="766.00" y="586.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Technology         </text>
-<text x="916.00" y="586.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     147</text>
-<text x="983.50" y="586.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    8d ago</text>
+<text x="916.00" y="586.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    1123</text>
+<text x="983.50" y="586.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 574.0V590.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="590.50" width="7.80" height="16.80" fill="#ff959a"/>
-<rect x="23.50" y="590.50" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="31.00" y="590.50" width="7.80" height="16.80" fill="#ff7c64"/>
-<rect x="38.50" y="590.50" width="7.80" height="16.80" fill="#ff6e46"/>
-<rect x="46.00" y="590.50" width="7.80" height="16.80" fill="#ff5b27"/>
-<rect x="53.50" y="590.50" width="7.80" height="16.80" fill="#fe3b06"/>
-<rect x="61.00" y="590.50" width="7.80" height="16.80" fill="#fe7264"/>
-<rect x="68.50" y="590.50" width="7.80" height="16.80" fill="#ff9190"/>
-<rect x="76.00" y="590.50" width="7.80" height="16.80" fill="#ff826f"/>
-<rect x="83.50" y="590.50" width="7.80" height="16.80" fill="#ff6f4b"/>
-<rect x="91.00" y="590.50" width="7.80" height="16.80" fill="#fe4714"/>
-<rect x="98.50" y="590.50" width="7.80" height="16.80" fill="#fe3c0c"/>
-<rect x="106.00" y="590.50" width="7.80" height="16.80" fill="#fe837e"/>
-<rect x="113.50" y="590.50" width="7.80" height="16.80" fill="#ff897f"/>
-<rect x="121.00" y="590.50" width="7.80" height="16.80" fill="#fe5e3a"/>
-<rect x="128.50" y="590.50" width="7.80" height="16.80" fill="#fe3704"/>
-<rect x="136.00" y="590.50" width="15.30" height="16.80" fill="#fe3501"/>
-<rect x="151.00" y="590.50" width="7.80" height="16.80" fill="#fe3704"/>
-<rect x="158.50" y="590.50" width="7.80" height="16.80" fill="#fe5e3a"/>
-<rect x="166.00" y="590.50" width="7.80" height="16.80" fill="#ff8980"/>
-<rect x="173.50" y="590.50" width="7.80" height="16.80" fill="#fe837d"/>
-<rect x="181.00" y="590.50" width="7.80" height="16.80" fill="#fe3b0b"/>
-<rect x="188.50" y="590.50" width="7.80" height="16.80" fill="#fe4715"/>
-<rect x="196.00" y="590.50" width="7.80" height="16.80" fill="#ff6f4a"/>
-<rect x="203.50" y="590.50" width="7.80" height="16.80" fill="#ff816f"/>
-<rect x="211.00" y="590.50" width="7.80" height="16.80" fill="#ff9190"/>
-<rect x="218.50" y="590.50" width="7.80" height="16.80" fill="#fe7263"/>
-<rect x="226.00" y="590.50" width="7.80" height="16.80" fill="#fe3b06"/>
-<rect x="233.50" y="590.50" width="7.80" height="16.80" fill="#ff5b27"/>
-<rect x="241.00" y="590.50" width="7.80" height="16.80" fill="#fe6e47"/>
-<rect x="248.50" y="590.50" width="7.80" height="16.80" fill="#ff7c64"/>
-<rect x="256.00" y="590.50" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="263.50" y="590.50" width="7.80" height="16.80" fill="#ff969a"/>
-<rect x="46.00" y="590.50" width="7.80" height="8.45" fill="#ff5f2a"/>
-<rect x="53.50" y="590.50" width="7.80" height="8.45" fill="#fe430c"/>
-<rect x="83.50" y="590.50" width="7.80" height="8.45" fill="#ff714d"/>
-<rect x="91.00" y="590.50" width="7.80" height="8.45" fill="#fe5724"/>
-<rect x="98.50" y="590.50" width="7.80" height="8.45" fill="#fe3e0e"/>
-<rect x="113.50" y="590.50" width="7.80" height="8.45" fill="#ff8a81"/>
-<rect x="121.00" y="590.50" width="7.80" height="8.45" fill="#fe7456"/>
-<rect x="128.50" y="590.50" width="7.80" height="8.45" fill="#fe4716"/>
-<rect x="151.00" y="590.50" width="7.80" height="8.45" fill="#fe4716"/>
-<rect x="158.50" y="590.50" width="7.80" height="8.45" fill="#ff7455"/>
-<rect x="166.00" y="590.50" width="7.80" height="8.45" fill="#ff8a81"/>
-<rect x="181.00" y="590.50" width="7.80" height="8.45" fill="#fe3e0e"/>
-<rect x="188.50" y="590.50" width="7.80" height="8.45" fill="#ff5825"/>
-<rect x="196.00" y="590.50" width="7.80" height="8.45" fill="#ff714c"/>
-<rect x="226.00" y="590.50" width="7.80" height="8.45" fill="#fe430c"/>
-<rect x="233.50" y="590.50" width="7.80" height="8.45" fill="#ff5f2a"/>
+<rect x="16.00" y="590.50" width="255.30" height="16.80" fill="#000000"/>
 <path d="M274.75 590.5V607.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<text x="278.50" y="602.50" font-size="12.5" font-weight="400" fill="#936829" text-anchor="start" xml:space="preserve" textLength="7.50" lengthAdjust="spacingAndGlyphs">✓</text>
-<text x="286.00" y="602.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="772.50" lengthAdjust="spacingAndGlyphs"> #1      The Daily                        The New York Times     Daily News             2788  yesterday</text>
+<text x="293.50" y="602.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="15.00" lengthAdjust="spacingAndGlyphs">#1</text>
+<text x="308.50" y="602.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="292.50" lengthAdjust="spacingAndGlyphs">      The Daily                        </text>
+<text x="601.00" y="602.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">The New York Times    </text>
+<text x="766.00" y="602.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Daily News         </text>
+<text x="916.00" y="602.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    2789</text>
+<text x="983.50" y="602.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 590.5V607.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="607.00" width="7.80" height="16.80" fill="#ff959a"/>
-<rect x="23.50" y="607.00" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="31.00" y="607.00" width="7.80" height="16.80" fill="#ff7c64"/>
-<rect x="38.50" y="607.00" width="7.80" height="16.80" fill="#fe673f"/>
-<rect x="46.00" y="607.00" width="7.80" height="16.80" fill="#fe3d0a"/>
-<rect x="53.50" y="607.00" width="7.80" height="16.80" fill="#fe3602"/>
-<rect x="61.00" y="607.00" width="7.80" height="16.80" fill="#fe7264"/>
-<rect x="68.50" y="607.00" width="7.80" height="16.80" fill="#ff9190"/>
-<rect x="76.00" y="607.00" width="7.80" height="16.80" fill="#fe7862"/>
-<rect x="83.50" y="607.00" width="7.80" height="16.80" fill="#fe4213"/>
-<rect x="91.00" y="607.00" width="7.80" height="16.80" fill="#fe3501"/>
-<rect x="98.50" y="607.00" width="7.80" height="16.80" fill="#fe3b0b"/>
-<rect x="106.00" y="607.00" width="7.80" height="16.80" fill="#fe6b58"/>
-<rect x="113.50" y="607.00" width="7.80" height="16.80" fill="#fe4317"/>
-<rect x="121.00" y="607.00" width="45.30" height="16.80" fill="#fe3501"/>
-<rect x="166.00" y="607.00" width="7.80" height="16.80" fill="#fe4317"/>
-<rect x="173.50" y="607.00" width="7.80" height="16.80" fill="#fe6a57"/>
-<rect x="181.00" y="607.00" width="7.80" height="16.80" fill="#fe3b0a"/>
-<rect x="188.50" y="607.00" width="7.80" height="16.80" fill="#fe3501"/>
-<rect x="196.00" y="607.00" width="7.80" height="16.80" fill="#fe4314"/>
-<rect x="203.50" y="607.00" width="7.80" height="16.80" fill="#fe7863"/>
-<rect x="211.00" y="607.00" width="7.80" height="16.80" fill="#ff9190"/>
-<rect x="218.50" y="607.00" width="7.80" height="16.80" fill="#fe7263"/>
-<rect x="226.00" y="607.00" width="7.80" height="16.80" fill="#fe3602"/>
-<rect x="233.50" y="607.00" width="7.80" height="16.80" fill="#fe3d0a"/>
-<rect x="241.00" y="607.00" width="7.80" height="16.80" fill="#fe673f"/>
-<rect x="248.50" y="607.00" width="7.80" height="16.80" fill="#ff7c64"/>
-<rect x="256.00" y="607.00" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="263.50" y="607.00" width="7.80" height="16.80" fill="#ff969a"/>
-<rect x="38.50" y="607.00" width="7.80" height="8.45" fill="#ff6e46"/>
-<rect x="46.00" y="607.00" width="7.80" height="8.45" fill="#fe4e1b"/>
-<rect x="53.50" y="607.00" width="7.80" height="8.45" fill="#fe3603"/>
-<rect x="76.00" y="607.00" width="7.80" height="8.45" fill="#ff816f"/>
-<rect x="83.50" y="607.00" width="7.80" height="8.45" fill="#fe6039"/>
-<rect x="91.00" y="607.00" width="7.80" height="8.45" fill="#fe3805"/>
-<rect x="98.50" y="607.00" width="7.80" height="8.45" fill="#fe3c0c"/>
-<rect x="106.00" y="607.00" width="7.80" height="8.45" fill="#fe837e"/>
-<rect x="113.50" y="607.00" width="7.80" height="8.45" fill="#fe7461"/>
-<rect x="121.00" y="607.00" width="7.80" height="8.45" fill="#fe3d0d"/>
-<rect x="158.50" y="607.00" width="7.80" height="8.45" fill="#fe3d0d"/>
-<rect x="166.00" y="607.00" width="7.80" height="8.45" fill="#fe7461"/>
-<rect x="173.50" y="607.00" width="7.80" height="8.45" fill="#fe827d"/>
-<rect x="181.00" y="607.00" width="7.80" height="8.45" fill="#fe3b0b"/>
-<rect x="188.50" y="607.00" width="7.80" height="8.45" fill="#fe3805"/>
-<rect x="196.00" y="607.00" width="7.80" height="8.45" fill="#fe6039"/>
-<rect x="203.50" y="607.00" width="7.80" height="8.45" fill="#ff816f"/>
-<rect x="233.50" y="607.00" width="7.80" height="8.45" fill="#fe4e1b"/>
-<rect x="241.00" y="607.00" width="7.80" height="8.45" fill="#fe6e46"/>
+<rect x="16.00" y="607.00" width="255.30" height="16.80" fill="#000000"/>
 <path d="M274.75 607.0V623.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="619.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="15.00" lengthAdjust="spacingAndGlyphs">#2</text>
-<text x="308.50" y="619.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="292.50" lengthAdjust="spacingAndGlyphs">      Dateline NBC                     </text>
-<text x="601.00" y="619.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">NBC News              </text>
-<text x="766.00" y="619.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> True Crime         </text>
-<text x="916.00" y="619.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     936</text>
-<text x="983.50" y="619.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    2d ago</text>
+<text x="308.50" y="619.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="292.50" lengthAdjust="spacingAndGlyphs">      32 Thoughts: The Podcast         </text>
+<text x="601.00" y="619.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Sportsnet             </text>
+<text x="766.00" y="619.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Hockey             </text>
+<text x="916.00" y="619.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     600</text>
+<text x="983.50" y="619.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 607.0V623.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="623.50" width="7.80" height="16.80" fill="#ff959a"/>
-<rect x="23.50" y="623.50" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="31.00" y="623.50" width="7.80" height="16.80" fill="#fe694b"/>
-<rect x="38.50" y="623.50" width="7.80" height="16.80" fill="#fe3a08"/>
-<rect x="46.00" y="623.50" width="7.80" height="16.80" fill="#fe3501"/>
-<rect x="53.50" y="623.50" width="7.80" height="16.80" fill="#fe3602"/>
-<rect x="61.00" y="623.50" width="7.80" height="16.80" fill="#fe6d5b"/>
-<rect x="68.50" y="623.50" width="7.80" height="16.80" fill="#fe5f43"/>
-<rect x="76.00" y="623.50" width="7.80" height="16.80" fill="#fe3704"/>
-<rect x="83.50" y="623.50" width="120.30" height="16.80" fill="#fe3501"/>
-<rect x="203.50" y="623.50" width="7.80" height="16.80" fill="#fe3704"/>
-<rect x="211.00" y="623.50" width="7.80" height="16.80" fill="#fe5f44"/>
-<rect x="218.50" y="623.50" width="7.80" height="16.80" fill="#fe6c5a"/>
-<rect x="226.00" y="623.50" width="7.80" height="16.80" fill="#fe3602"/>
-<rect x="233.50" y="623.50" width="7.80" height="16.80" fill="#fe3501"/>
-<rect x="241.00" y="623.50" width="7.80" height="16.80" fill="#fe3a08"/>
-<rect x="248.50" y="623.50" width="7.80" height="16.80" fill="#fe6a4b"/>
-<rect x="256.00" y="623.50" width="7.80" height="16.80" fill="#ff8a81"/>
-<rect x="263.50" y="623.50" width="7.80" height="16.80" fill="#ff969a"/>
-<rect x="31.00" y="623.50" width="7.80" height="8.45" fill="#ff7b62"/>
-<rect x="38.50" y="623.50" width="7.80" height="8.45" fill="#fe5125"/>
-<rect x="46.00" y="623.50" width="7.80" height="8.45" fill="#fe3602"/>
-<rect x="61.00" y="623.50" width="7.80" height="8.45" fill="#fe7264"/>
-<rect x="68.50" y="623.50" width="7.80" height="8.45" fill="#fe8b87"/>
-<rect x="76.00" y="623.50" width="7.80" height="8.45" fill="#fe512b"/>
-<rect x="83.50" y="623.50" width="7.80" height="8.45" fill="#fe3602"/>
-<rect x="98.50" y="623.50" width="7.80" height="8.45" fill="#fe3603"/>
-<rect x="106.00" y="623.50" width="7.80" height="8.45" fill="#fe3b0a"/>
-<rect x="173.50" y="623.50" width="7.80" height="8.45" fill="#fe3a0a"/>
-<rect x="181.00" y="623.50" width="7.80" height="8.45" fill="#fe3603"/>
-<rect x="196.00" y="623.50" width="7.80" height="8.45" fill="#fe3602"/>
-<rect x="203.50" y="623.50" width="7.80" height="8.45" fill="#fe522c"/>
-<rect x="211.00" y="623.50" width="7.80" height="8.45" fill="#ff8b88"/>
-<rect x="218.50" y="623.50" width="7.80" height="8.45" fill="#fe7263"/>
-<rect x="233.50" y="623.50" width="7.80" height="8.45" fill="#fe3602"/>
-<rect x="241.00" y="623.50" width="7.80" height="8.45" fill="#fe5125"/>
-<rect x="248.50" y="623.50" width="7.80" height="8.45" fill="#ff7b62"/>
+<rect x="16.00" y="623.50" width="255.30" height="16.80" fill="#000000"/>
 <path d="M274.75 623.5V640.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="635.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="15.00" lengthAdjust="spacingAndGlyphs">#3</text>
-<text x="308.50" y="635.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="292.50" lengthAdjust="spacingAndGlyphs">      The Joe Rogan Experience         </text>
-<text x="601.00" y="635.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Joe Rogan             </text>
-<text x="766.00" y="635.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Comedy             </text>
-<text x="916.00" y="635.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    2000</text>
-<text x="983.50" y="635.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    2d ago</text>
+<text x="308.50" y="635.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="292.50" lengthAdjust="spacingAndGlyphs">      Dateline NBC                     </text>
+<text x="601.00" y="635.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">NBC News              </text>
+<text x="766.00" y="635.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> True Crime         </text>
+<text x="916.00" y="635.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     937</text>
+<text x="983.50" y="635.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    4d ago</text>
 <path d="M1062.25 623.5V640.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="640.00" width="7.80" height="16.80" fill="#ff8c8c"/>
-<rect x="23.50" y="640.00" width="7.80" height="16.80" fill="#fe522e"/>
-<rect x="31.00" y="640.00" width="7.80" height="16.80" fill="#fe3602"/>
-<rect x="38.50" y="640.00" width="172.80" height="16.80" fill="#fe3501"/>
-<rect x="211.00" y="640.00" width="7.80" height="16.80" fill="#fe3806"/>
-<rect x="218.50" y="640.00" width="7.80" height="16.80" fill="#fe451a"/>
-<rect x="226.00" y="640.00" width="15.30" height="16.80" fill="#fe3501"/>
-<rect x="241.00" y="640.00" width="7.80" height="16.80" fill="#fe3704"/>
-<rect x="248.50" y="640.00" width="7.80" height="16.80" fill="#fe491d"/>
-<rect x="256.00" y="640.00" width="7.80" height="16.80" fill="#fd6242"/>
-<rect x="263.50" y="640.00" width="7.80" height="16.80" fill="#fe8d8c"/>
-<rect x="16.00" y="640.00" width="7.80" height="8.45" fill="#ff959a"/>
-<rect x="23.50" y="640.00" width="7.80" height="8.45" fill="#fe7e70"/>
-<rect x="31.00" y="640.00" width="7.80" height="8.45" fill="#fe4518"/>
-<rect x="53.50" y="640.00" width="7.80" height="8.45" fill="#fe3502"/>
-<rect x="61.00" y="640.00" width="7.80" height="8.45" fill="#fd441a"/>
-<rect x="68.50" y="640.00" width="7.80" height="8.45" fill="#fe3806"/>
-<rect x="203.50" y="648.25" width="7.80" height="8.55" fill="#fe3603"/>
-<rect x="211.00" y="648.25" width="7.80" height="8.55" fill="#fe4211"/>
-<rect x="218.50" y="648.25" width="7.80" height="8.55" fill="#fd7c5a"/>
-<rect x="226.00" y="648.25" width="7.80" height="8.55" fill="#fd6740"/>
-<rect x="233.50" y="648.25" width="7.80" height="8.55" fill="#fe5d33"/>
-<rect x="241.00" y="648.25" width="7.80" height="8.55" fill="#fd886a"/>
-<rect x="248.50" y="648.25" width="7.80" height="8.55" fill="#fdab95"/>
-<rect x="256.00" y="640.00" width="7.80" height="8.45" fill="#fe7f72"/>
-<rect x="263.50" y="640.00" width="7.80" height="8.45" fill="#ff969a"/>
+<rect x="16.00" y="640.00" width="255.30" height="16.80" fill="#000000"/>
 <path d="M274.75 640.0V656.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="652.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="15.00" lengthAdjust="spacingAndGlyphs">#4</text>
-<text x="308.50" y="652.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="292.50" lengthAdjust="spacingAndGlyphs">      Spittin Chiclets                 </text>
-<text x="601.00" y="652.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Barstool Sports       </text>
-<text x="766.00" y="652.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Hockey             </text>
-<text x="916.00" y="652.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     699</text>
-<text x="983.50" y="652.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    2d ago</text>
+<text x="308.50" y="652.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="292.50" lengthAdjust="spacingAndGlyphs">      Crime Junkie                     </text>
+<text x="601.00" y="652.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Audiochuck            </text>
+<text x="766.00" y="652.00" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> True Crime         </text>
+<text x="916.00" y="652.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     537</text>
+<text x="983.50" y="652.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
 <path d="M1062.25 640.0V656.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="656.50" width="7.80" height="16.80" fill="#fe3602"/>
-<rect x="23.50" y="656.50" width="172.80" height="16.80" fill="#fe3501"/>
-<rect x="196.00" y="656.50" width="7.80" height="16.80" fill="#fe3704"/>
-<rect x="203.50" y="656.50" width="7.80" height="16.80" fill="#fc704c"/>
-<rect x="211.00" y="656.50" width="7.80" height="16.80" fill="#fb8364"/>
-<rect x="218.50" y="656.50" width="7.80" height="16.80" fill="#fba993"/>
-<rect x="226.00" y="656.50" width="7.80" height="16.80" fill="#fbae99"/>
-<rect x="233.50" y="656.50" width="7.80" height="16.80" fill="#fcb6a3"/>
-<rect x="241.00" y="656.50" width="7.80" height="16.80" fill="#fcb29e"/>
-<rect x="248.50" y="656.50" width="7.80" height="16.80" fill="#fcb5a2"/>
-<rect x="256.00" y="656.50" width="7.80" height="16.80" fill="#fd4819"/>
-<rect x="263.50" y="656.50" width="7.80" height="16.80" fill="#fe3602"/>
-<rect x="16.00" y="656.50" width="7.80" height="8.45" fill="#fe5535"/>
-<rect x="23.50" y="656.50" width="7.80" height="8.45" fill="#fe3704"/>
-<rect x="196.00" y="664.75" width="7.80" height="8.55" fill="#fe3805"/>
-<rect x="203.50" y="664.75" width="7.80" height="8.55" fill="#fc8262"/>
-<rect x="211.00" y="664.75" width="7.80" height="8.55" fill="#fc9175"/>
-<rect x="218.50" y="664.75" width="7.80" height="8.55" fill="#fcb5a3"/>
-<rect x="226.00" y="664.75" width="7.80" height="8.55" fill="#fcae99"/>
-<rect x="233.50" y="664.75" width="7.80" height="8.55" fill="#fdc6b8"/>
-<rect x="241.00" y="656.50" width="7.80" height="8.45" fill="#fcb5a2"/>
-<rect x="248.50" y="656.50" width="7.80" height="8.45" fill="#fcb8a6"/>
-<rect x="256.00" y="656.50" width="7.80" height="8.45" fill="#fd4c1f"/>
-<rect x="263.50" y="656.50" width="7.80" height="8.45" fill="#fe5636"/>
+<rect x="16.00" y="656.50" width="255.30" height="16.80" fill="#000000"/>
 <path d="M274.75 656.5V673.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <text x="293.50" y="668.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="15.00" lengthAdjust="spacingAndGlyphs">#5</text>
-<text x="308.50" y="668.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="292.50" lengthAdjust="spacingAndGlyphs">      20/20                            </text>
-<text x="601.00" y="668.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">ABC News              </text>
-<text x="766.00" y="668.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> True Crime         </text>
-<text x="916.00" y="668.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">     575</text>
-<text x="983.50" y="668.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">     today</text>
+<text x="308.50" y="668.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="292.50" lengthAdjust="spacingAndGlyphs">      The Joe Rogan Experience         </text>
+<text x="601.00" y="668.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="165.00" lengthAdjust="spacingAndGlyphs">Joe Rogan             </text>
+<text x="766.00" y="668.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> Comedy             </text>
+<text x="916.00" y="668.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">    2000</text>
+<text x="983.50" y="668.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="75.00" lengthAdjust="spacingAndGlyphs">    3d ago</text>
 <path d="M1062.25 656.5V673.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
-<rect x="16.00" y="673.00" width="255.30" height="16.80" fill="#fe3501"/>
-<rect x="196.00" y="673.00" width="7.80" height="8.45" fill="#fe3602"/>
-<rect x="203.50" y="673.00" width="7.80" height="8.45" fill="#fe4516"/>
-<rect x="211.00" y="673.00" width="7.80" height="8.45" fill="#fd4718"/>
-<rect x="218.50" y="673.00" width="7.80" height="8.45" fill="#fd491a"/>
-<rect x="226.00" y="673.00" width="7.80" height="8.45" fill="#fd4616"/>
-<rect x="233.50" y="673.00" width="7.80" height="8.45" fill="#fe4a1b"/>
-<rect x="241.00" y="673.00" width="7.80" height="8.45" fill="#fd4617"/>
-<rect x="248.50" y="673.00" width="7.80" height="8.45" fill="#fd4819"/>
-<rect x="256.00" y="673.00" width="7.80" height="8.45" fill="#fe3704"/>
+<rect x="16.00" y="673.00" width="255.30" height="16.80" fill="#000000"/>
 <path d="M274.75 673.0V678.25Q274.75 681.25 277.75 681.25H278.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M278.5 681.25H286.0" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M286.0 681.25H293.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
@@ -1306,12 +873,13 @@ text{font-family:hm,hf,ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans M
 <path d="M1051.0 681.25H1058.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <path d="M1062.25 673.0V678.25Q1062.25 681.25 1059.25 681.25H1058.5" fill="none" stroke="#ffb03b" stroke-width="1.1"/>
 <rect x="1021.00" y="689.50" width="37.80" height="16.80" fill="#ffb03b"/>
-<text x="16.00" y="701.50" font-size="12.5" font-weight="600" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="150.00" lengthAdjust="spacingAndGlyphs"> ▶ Terminal Delirium</text>
-<text x="181.00" y="701.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs">Radiolab</text>
-<text x="796.00" y="701.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="225.00" lengthAdjust="spacingAndGlyphs">15:17 left  queue 2  vol 80%  </text>
+<text x="16.00" y="701.50" font-size="12.5" font-weight="600" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="157.50" lengthAdjust="spacingAndGlyphs"> ▶ 718: The Warp Zone</text>
+<text x="188.50" y="701.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="172.50" lengthAdjust="spacingAndGlyphs">Accidental Tech Podcast</text>
+<text x="361.00" y="701.50" font-size="12.5" font-weight="400" fill="#ffb03b" text-anchor="start" xml:space="preserve" textLength="210.00" lengthAdjust="spacingAndGlyphs">  · 4 iPhone Duo face-unlock</text>
+<text x="773.50" y="701.50" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="247.50" lengthAdjust="spacingAndGlyphs">1:18:08 left  queue 2  vol 100%  </text>
 <text x="1021.00" y="701.50" font-size="12.5" font-weight="600" fill="#1e1e1e" text-anchor="start" xml:space="preserve" textLength="37.50" lengthAdjust="spacingAndGlyphs"> 1.5×</text>
-<rect x="526.00" y="706.00" width="487.80" height="16.80" fill="#37373c"/>
-<text x="16.00" y="718.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs"> 21:55 </text>
+<rect x="203.50" y="706.00" width="795.30" height="16.80" fill="#37373c"/>
+<text x="16.00" y="718.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="52.50" lengthAdjust="spacingAndGlyphs"> 20:19 </text>
 <rect x="68.50" y="706.00" width="7.80" height="16.80" fill="#ffb03b"/>
 <rect x="76.00" y="706.00" width="7.80" height="16.80" fill="#ffaf3b"/>
 <rect x="83.50" y="706.00" width="7.80" height="16.80" fill="#ffae3b"/>
@@ -1330,50 +898,7 @@ text{font-family:hm,hf,ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans M
 <rect x="181.00" y="706.00" width="7.80" height="16.80" fill="#ffa641"/>
 <rect x="188.50" y="706.00" width="7.80" height="16.80" fill="#ffa541"/>
 <rect x="196.00" y="706.00" width="7.80" height="16.80" fill="#ffa441"/>
-<rect x="203.50" y="706.00" width="7.80" height="16.80" fill="#ffa442"/>
-<rect x="211.00" y="706.00" width="7.80" height="16.80" fill="#ffa342"/>
-<rect x="218.50" y="706.00" width="7.80" height="16.80" fill="#ffa343"/>
-<rect x="226.00" y="706.00" width="7.80" height="16.80" fill="#ffa243"/>
-<rect x="233.50" y="706.00" width="7.80" height="16.80" fill="#ffa143"/>
-<rect x="241.00" y="706.00" width="7.80" height="16.80" fill="#ffa144"/>
-<rect x="248.50" y="706.00" width="7.80" height="16.80" fill="#ffa044"/>
-<rect x="256.00" y="706.00" width="7.80" height="16.80" fill="#ff9f45"/>
-<rect x="263.50" y="706.00" width="7.80" height="16.80" fill="#ff9f45"/>
-<rect x="271.00" y="706.00" width="7.80" height="16.80" fill="#ff9e45"/>
-<rect x="278.50" y="706.00" width="7.80" height="16.80" fill="#ff9d46"/>
-<rect x="286.00" y="706.00" width="7.80" height="16.80" fill="#ff9d46"/>
-<rect x="293.50" y="706.00" width="7.80" height="16.80" fill="#ff9c47"/>
-<rect x="301.00" y="706.00" width="7.80" height="16.80" fill="#ff9b47"/>
-<rect x="308.50" y="706.00" width="7.80" height="16.80" fill="#ff9b47"/>
-<rect x="316.00" y="706.00" width="7.80" height="16.80" fill="#ff9a48"/>
-<rect x="323.50" y="706.00" width="7.80" height="16.80" fill="#ff9948"/>
-<rect x="331.00" y="706.00" width="7.80" height="16.80" fill="#ff9949"/>
-<rect x="338.50" y="706.00" width="7.80" height="16.80" fill="#ff9849"/>
-<rect x="346.00" y="706.00" width="7.80" height="16.80" fill="#ff9849"/>
-<rect x="353.50" y="706.00" width="7.80" height="16.80" fill="#ff974a"/>
-<rect x="361.00" y="706.00" width="7.80" height="16.80" fill="#ff964a"/>
-<rect x="368.50" y="706.00" width="7.80" height="16.80" fill="#ff964b"/>
-<rect x="376.00" y="706.00" width="7.80" height="16.80" fill="#ff954b"/>
-<rect x="383.50" y="706.00" width="7.80" height="16.80" fill="#ff944b"/>
-<rect x="391.00" y="706.00" width="7.80" height="16.80" fill="#ff944c"/>
-<rect x="398.50" y="706.00" width="7.80" height="16.80" fill="#ff934c"/>
-<rect x="406.00" y="706.00" width="7.80" height="16.80" fill="#ff924d"/>
-<rect x="413.50" y="706.00" width="7.80" height="16.80" fill="#ff924d"/>
-<rect x="421.00" y="706.00" width="7.80" height="16.80" fill="#ff914d"/>
-<rect x="428.50" y="706.00" width="7.80" height="16.80" fill="#ff904e"/>
-<rect x="436.00" y="706.00" width="7.80" height="16.80" fill="#ff904e"/>
-<rect x="443.50" y="706.00" width="7.80" height="16.80" fill="#ff8f4f"/>
-<rect x="451.00" y="706.00" width="7.80" height="16.80" fill="#ff8e4f"/>
-<rect x="458.50" y="706.00" width="7.80" height="16.80" fill="#ff8e4f"/>
-<rect x="466.00" y="706.00" width="7.80" height="16.80" fill="#ff8d50"/>
-<rect x="473.50" y="706.00" width="7.80" height="16.80" fill="#ff8d50"/>
-<rect x="481.00" y="706.00" width="7.80" height="16.80" fill="#ff8c51"/>
-<rect x="488.50" y="706.00" width="7.80" height="16.80" fill="#ff8b51"/>
-<rect x="496.00" y="706.00" width="7.80" height="16.80" fill="#ff8b51"/>
-<rect x="503.50" y="706.00" width="7.80" height="16.80" fill="#ff8a52"/>
-<rect x="511.00" y="706.00" width="7.80" height="16.80" fill="#ff8952"/>
-<rect x="518.50" y="706.00" width="7.80" height="16.80" fill="#ff8953"/>
-<rect x="526.00" y="706.00" width="3.75" height="16.80" fill="#ff8853"/>
-<text x="1013.50" y="718.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="45.00" lengthAdjust="spacingAndGlyphs"> 44:51</text>
+<rect x="203.50" y="706.00" width="1.88" height="16.80" fill="#ffa442"/>
+<text x="998.50" y="718.00" font-size="12.5" font-weight="400" fill="#7c7c7d" text-anchor="start" xml:space="preserve" textLength="60.00" lengthAdjust="spacingAndGlyphs"> 2:17:31</text>
 <text x="16.00" y="734.50" font-size="12.5" font-weight="400" fill="#d4d4d4" text-anchor="start" xml:space="preserve" textLength="1050.00" lengthAdjust="spacingAndGlyphs"> ? keys · Enter play · Space pause · a queue · L notes · / search · f follow · q quit                                                       </text>
 </svg>

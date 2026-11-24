@@ -154,7 +154,7 @@ def pie(s, cx, cy, r, frac, color=ACC):
 
 def hero():
     h = 352
-    s = Svg(W, h, "hark: podcasts in your terminal. Every open podcast, your place never lost. About 11 MB of RAM with 8 shows and 3,500 episodes, 0% CPU while paused, a 3,000-episode feed read in 19 ms, one 4.7 MB binary with nothing else to install.")
+    s = Svg(W, h, "hark: podcasts in your terminal. It plays any public podcast feed, with its own audio engine. About 13 MB of memory with 9 shows, 0% CPU while paused, a 3,046-episode feed read in 14 ms, one 5.5 MB program.")
     s.gradient("lg", x2="1", y2="0")
     s.gradient("pg")
     s.card()
@@ -162,7 +162,7 @@ def hero():
         s.text(44, 70 + i * 25, row, 21, 600, "url(#lg)")
     x = 400
     s.text(x, 82, "Podcasts in your terminal.", 27, 500, TXT, ls="-.6")
-    s.text(x, 112, "Every open podcast. Your place, never lost.", 14, 400, MID)
+    s.text(x, 112, "Any public feed. Light on memory, quiet when idle.", 14, 400, MID)
     # a now-playing line, as in the app
     s.add(f'<path d="M{x} 151L{x + 8.5} 155.5L{x} 160z" fill="{ACC}"/>')
     s.text(x + 18, 160, "Terminal Delirium", 13, 600, ACC)
@@ -171,9 +171,9 @@ def hero():
     pill(s, W - 92, 160, "1.5×")
     s.text(x, 186, "21:31", 11, 400, MID)
     progress_bar(s, x + 42, 180, W - 44 - x - 42 - 44, 0.48)
-    s.text(W - 44, 186, "44:51", 11, 400, MID, "end")
+    s.text(W - 44, 186, "38:45", 11, 400, MID, "end")
     s.add(f'<line x1="44" y1="238" x2="{W - 44}" y2="238" stroke="{PANE}"/>')
-    stats = [("~11 MB", "RAM with 8 shows"), ("0%", "CPU while paused"), ("19 ms", "for 3,044 episodes"), ("4.7 MB", "one binary, no mpv")]
+    stats = [("~13 MB", "memory, 9 shows"), ("0%", "CPU while paused"), ("14 ms", "to read 3,046 episodes"), ("5.5 MB", "one program, no mpv")]
     cw = (W - 88) / 4
     for i, (big, small) in enumerate(stats):
         cx = 44 + i * cw
@@ -182,6 +182,31 @@ def hero():
         s.text(cx, 290, big, 25, 500, TXT, ls="-.5")
         s.text(cx, 314, small, 12, 400, MID)
     s.save("hero.svg")
+
+
+# ---------------------------------------------------------------------------- what's different
+
+
+def different():
+    cards = [
+        ("Small and quiet", ["About 13 MB of memory with 9 shows, and 0% CPU", "while paused. Nothing runs when you're not listening."]),
+        ("Its own audio engine", ["Decoding, speed and sound all happen inside one", "program: no mpv or VLC to install alongside it."]),
+        ("Private suggestions", ["For you is worked out on your computer from what you", "play. Apple only sees the genre charts it asks for."]),
+        ("Any open podcast", ["Any public RSS feed. No account, no sign-in, and", "your shows come in and go out as standard OPML."]),
+    ]
+    h = 290
+    s = Svg(W, h, "What's different about hark: " + "; ".join(f"{t}: " + " ".join(ls) for t, ls in cards))
+    s.card()
+    s.pane(24, 26, W - 49, h - 53, "what's different")
+    cw, ch = (W - 88 - 14) / 2, 94
+    for i, (title, lines) in enumerate(cards):
+        x, top = 44 + (i % 2) * (cw + 14), 52 + (i // 2) * (ch + 14)
+        s.rect(x + 0.5, top + 0.5, cw, ch, TILE, rx=4, stroke=PANE)
+        s.rect(x + 16, top + 20, 3, 18, ACC, rx=1.5)
+        s.text(x + 28, top + 34, title, 14, 600, TXT)
+        for j, l in enumerate(lines):
+            s.text(x + 16, top + 60 + j * 17, l, 11, 400, MID)
+    s.save("different.svg")
 
 
 # ---------------------------------------------------------------------------- screenshots
@@ -332,8 +357,14 @@ def screenshot(name, ansi, label, cols=140, rows=42, crop=None):
                 s.rect(x + 4.6, y + 4, 1.8, lh - 8, f)
                 c += 1
                 continue
+            if ch == "⤓":  # no font here has it: an arrow down onto a bar
+                mx = x + cw / 2
+                s.add(f'<path d="M{mx} {y + 3.5}V{y + lh - 6.5}M{mx - 2.6} {y + lh - 9}L{mx} {y + lh - 6.2}L{mx + 2.6} {y + lh - 9}" fill="none" stroke="{f}" stroke-width="1.3"/>')
+                s.rect(x + 1, y + lh - 4.6, cw - 2, 1.4, f)
+                c += 1
+                continue
             e = c
-            while e < cols and row[e][0] not in BOX and row[e][0] not in BLOCKS and row[e][0] != "⏸" and row[e][1] == f and row[e][3] == bold:
+            while e < cols and row[e][0] not in BOX and row[e][0] not in BLOCKS and row[e][0] not in "⏸⤓" and row[e][1] == f and row[e][3] == bold:
                 e += 1
             run = "".join(x[0] for x in row[c:e])
             if run.strip():
@@ -348,20 +379,22 @@ def screenshot(name, ansi, label, cols=140, rows=42, crop=None):
 def features():
     items = [
         ("/", "Search", "every show in Apple's directory"),
-        ("o", "Discover", "top charts by genre, and For you"),
-        ("f", "Preview, then follow", "play any show before following"),
-        ("◔", "Your place, never lost", "saved every 10 s, smart resume"),
-        ("[ ]", "Speed, not chipmunks", "0.5–3×, pitch kept (Sonic)"),
-        ("a", "A queue that plays on", "A plays next, n skips to it"),
+        ("o", "Discover and For you", "charts by genre, picks from your listening"),
+        ("◔", "Picks up where you left off", "saved as you listen, a little rewind"),
+        ("[ ]", "Speed, pitch kept", "0.5–3×, per show if you like (e)"),
+        ("a", "A queue that plays on", "A plays next, n skips ahead"),
+        ("c", "Chapters", "from the feed or the MP3 itself"),
+        ("d", "Downloads", "offline listening, K keeps the newest"),
+        ("z", "Sleep timer", "15–60 min or end of episode, fades out"),
+        ("I", "Skip intros and outros", "set once per show"),
         ("L", "Show notes", "clean text, links listed"),
-        ("i", "Cover art", "real images in kitty, Ghostty, iTerm2"),
-        ("▶", "Media keys", "KDE widget, lock screen, playerctl"),
-        ("t", "trill's look", "themes, mouse, ? for every key"),
+        ("▶", "Media keys", "Linux (MPRIS) and macOS (Now Playing)"),
+        ("t", "Themes and the mouse", "cover art, ? for every key"),
     ]
-    h = 372
-    s = Svg(W, h, "What hark does, by key: " + "; ".join(f"{k}: {a}, {b}" for k, a, b in items) + ". Plus an Inbox of new episodes, In progress, OPML import from any podcast app, and the mouse.")
+    h = 448
+    s = Svg(W, h, "What hark does, by key: " + "; ".join(f"{k}: {a}, {b}" for k, a, b in items) + ". Plus an Inbox of new episodes, In progress, and OPML import from any podcast app.")
     s.card()
-    s.pane(24, 26, W - 49, h - 53, "what it does", "press ? in hark for every key")
+    s.pane(24, 26, W - 49, h - 53, "features", "press ? in hark for every key")
     for i, (k, a, b) in enumerate(items):
         col, row = i % 2, i // 2
         x, y = 52 + col * 400, 62 + row * 56
@@ -374,8 +407,70 @@ def features():
             s.text(x + 15, y + 20, k, 14 if len(k) == 1 else 12, 600, ACC, "middle")
         s.text(x + 46, y + 12, a, 14, 500, TXT)
         s.text(x + 46, y + 30, b, 12, 400, MID)
-    s.text(W / 2, h - 13, "plus an Inbox of new episodes · In progress · OPML import from any podcast app · the mouse", 12, 400, DIM, "middle")
+    s.text(W / 2, h - 44, "plus an Inbox of new episodes · In progress · OPML import from any podcast app", 12, 400, DIM, "middle")
     s.save("features.svg")
+
+
+# ---------------------------------------------------------------------------- for you
+
+
+def foryou():
+    h = 280
+    s = Svg(W, h, "How For you works. 1: your shows and what you play, on your computer: hours listened weigh more than just following. 2: their genres and subgenres, such as Tech News or Documentary, weighted by that. 3: Apple's top chart for each of your top four, fetched at once and kept for 12 hours. 4: ranked: a show in several of your charts rises, shows that went quiet sink, no single genre takes over, and x hides a show for good. Your list of shows stays on your computer.")
+    s.card()
+    s.pane(24, 26, W - 49, h - 53, "how For you works", "your list of shows stays on your computer")
+    steps = [
+        ("1", "What you play", ["your shows, and the hours", "you spend with each"]),
+        ("2", "Your genres", ["down to subgenres like", "Tech News or Documentary"]),
+        ("3", "Apple's charts", ["your top four, at once,", "kept for 12 hours"]),
+        ("4", "Ranked for you", ["in several charts: up", "gone quiet: down"]),
+    ]
+    s.defs.append(f'<marker id="fa" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="{DIM}"/></marker>')
+    cw = (W - 88 - 3 * 28) / 4
+    for i, (n, title, lines) in enumerate(steps):
+        x = 44 + i * (cw + 28)
+        top = 60
+        hot = i == 3
+        s.rect(x + 0.5, top + 0.5, cw, 128, TILE, rx=4, stroke=ACC if hot else PANE)
+        s.add(f'<circle cx="{x + 26}" cy="{top + 30}" r="12" fill="{ACC if hot else PANE}"/>')
+        s.text(x + 26, top + 34.5, n, 13, 600, BG if hot else TXT, "middle")
+        s.text(x + 16, top + 70, title, 14, 600, ACC if hot else TXT)
+        for j, l in enumerate(lines):
+            s.text(x + 16, top + 94 + j * 17, l, 11.5, 400, MID)
+        if i < 3:
+            ax = x + cw + 4
+            s.add(f'<path d="M{ax} {top + 64}L{ax + 19} {top + 64}" stroke="{DIM}" stroke-width="1.2" fill="none" marker-end="url(#fa)"/>')
+    s.text(W / 2, 222, "x hides a show for good. The Inbox uses the same signal: shows you play most move up a little.", 12, 400, MID, "middle")
+    s.save("foryou.svg")
+
+
+# ---------------------------------------------------------------------------- get started
+
+
+def start():
+    steps = [
+        ("1", "Install", ["one command per system,", "see below"]),
+        ("2", "Find shows", ["/ to search, or Discover;", "or paste an OPML file's path"]),
+        ("3", "Listen", ["Enter plays, Space pauses,", "[ ] changes the speed"]),
+    ]
+    h = 190
+    s = Svg(W, h, "Get started in three steps. 1: install hark, one command per system. 2: find shows: press / to search, or open Discover, or paste the path of an OPML file from your old podcast app. 3: listen: Enter plays, Space pauses, [ and ] change the speed.")
+    s.card()
+    s.pane(24, 26, W - 49, h - 53, "get started")
+    cw = (W - 88 - 2 * 28) / 3
+    s.defs.append(f'<marker id="sa" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="{DIM}"/></marker>')
+    for i, (n, title, lines) in enumerate(steps):
+        x = 44 + i * (cw + 28)
+        top = 54
+        s.add(f'<circle cx="{x + 20}" cy="{top + 22}" r="13" fill="{ACC}"/>')
+        s.text(x + 20, top + 27, n, 14, 600, BG, "middle")
+        s.text(x + 44, top + 27, title, 15, 600, TXT)
+        for j, l in enumerate(lines):
+            s.text(x + 44, top + 52 + j * 18, l, 12, 400, MID)
+        if i < 2:
+            ax = x + cw + 2
+            s.add(f'<path d="M{ax} {top + 22}L{ax + 22} {top + 22}" stroke="{DIM}" stroke-width="1.2" fill="none" marker-end="url(#sa)"/>')
+    s.save("get-started.svg")
 
 
 # ---------------------------------------------------------------------------- progress
@@ -383,10 +478,10 @@ def features():
 
 def progress():
     h = 352
-    s = Svg(W, h, "Your place, never lost. hark saves where you are every 10 seconds while playing, and on pause, seek, switching episodes, quitting, closing the terminal and logging out. Tested: closing the terminal saved the exact second; a kill -9 lost 6 seconds. Coming back rewinds a little for context: 3 seconds after a minute away, 10 after an hour, 20 after a day. Stopping in the last 30 seconds, the outro, marks the episode played.")
+    s = Svg(W, h, "hark picks up where you left off. It saves your place every 10 seconds while playing, and when you pause, seek, switch episodes, quit, close the terminal or log out. Coming back, it rewinds a little for context: 3 seconds after a minute away, 10 after an hour, 20 after a day. Stopping in the last 30 seconds, the outro, counts the episode as played.")
     s.gradient("pg")
     s.card()
-    s.pane(24, 26, W - 49, h - 53, "your place, never lost", "tested, not promised")
+    s.pane(24, 26, W - 49, h - 53, "picks up where you left off")
     # an episode as a timeline
     x0, x1, y = 60, W - 60, 92
     progress_bar(s, x0, y, x1 - x0, 0.58, h=8)
@@ -401,21 +496,20 @@ def progress():
     s.text(px, y - 12, "you are here", 12, 500, TXT, "middle")
     s.text(x1, y - 12, "outro", 12, 400, ACC, "end")
     s.text(x0, y + 26, "0:00", 11, 400, DIM)
-    s.text(x1, y + 26, "44:51", 11, 400, DIM, "end")
+    s.text(x1, y + 26, "38:45", 11, 400, DIM, "end")
     cards = [
-        ("Nothing to lose", ["saved every 10 s, and on", "pause, seek, switch, quit,", "a closed terminal, logout"], "tested: kill -9 lost 6 s"),
-        ("Smart resume", ["back a bit, for context:", "3 s after a minute away", "10 s after an hour", "20 s after a day"], "you hear the sentence again"),
-        ("Done means done", ["stop in the last 30 s and", "it's marked played;", "seek back and it isn't"], "no 'In progress' forever"),
+        ("Saved as you listen", ["every 10 s, and when you", "pause, seek, switch, quit,", "or close the terminal"]),
+        ("A little rewind", ["for context, when you return:", "3 s after a minute away", "10 s after an hour", "20 s after a day"]),
+        ("Outros count", ["stop in the last 30 s and", "the episode is marked played;", "seek back and it isn't"]),
     ]
     cw = (W - 88 - 2 * 16) / 3
-    for i, (title, lines, foot) in enumerate(cards):
+    for i, (title, lines) in enumerate(cards):
         x = 44 + i * (cw + 16)
         top = 150
         s.rect(x + 0.5, top + 0.5, cw, 150, TILE, rx=4, stroke=PANE)
         s.text(x + 16, top + 28, title, 14, 600, ACC)
         for j, l in enumerate(lines):
             s.text(x + 16, top + 52 + j * 18, l, 12, 400, TXT if j == 0 else MID)
-        s.text(x + 16, top + 136, foot, 11, 400, DIM)
     s.save("progress.svg")
 
 
@@ -424,11 +518,11 @@ def progress():
 
 def numbers():
     h = 300
-    s = Svg(W, h, "Footprint, measured on an i9-14900HX. Memory (PSS) while streaming an episode: hark 8 MB in all; mpv, tuned down, playing the same episode: 61 MB. hark idle with 8 shows and 3,514 episodes: 10.6 MB; streaming with the cover drawn: 15 to 18 MB. CPU: 0 paused, about 1.3 to 2% playing at 1.5x. A 20.7 MB feed is read in 19 ms; from a link to playing in about 0.6 s.")
+    s = Svg(W, h, "Footprint, measured on an i9-14900HX, memory as PSS. hark's player on its own, streaming an episode: 11 MB; mpv, tuned down, playing the same episode: 61 MB. The whole app idle with 9 shows and 7,937 episodes: 13.4 MB; playing at 1.5x with the cover drawn: 17.5 MB. CPU: 0% paused, about 1.2% playing at 1.5x. A 20.7 MB feed with 3,046 episodes is read in 14 ms; from a link to playing in about 0.6 s.")
     s.gradient("pg")
     s.card()
     s.pane(24, 26, W - 49, h - 53, "footprint", "measured · PSS · i9-14900HX")
-    bars = [("hark", "player only, streaming", 8.1, "8.1 MB", True), ("mpv", "same episode, tuned down", 61.0, "61 MB", False), ("hark", "whole app, idle, 8 shows", 10.6, "10.6 MB", True), ("hark", "whole app, playing + art", 16.0, "15–18 MB", True)]
+    bars = [("hark", "player only, streaming", 11.0, "11 MB", True), ("mpv", "same episode, tuned down", 61.0, "61 MB", False), ("hark", "whole app, idle, 9 shows", 13.4, "13.4 MB", True), ("hark", "playing 1.5×, cover drawn", 17.5, "17.5 MB", True)]
     full = 61.0
     x0, bw = 300, W - 300 - 140
     for i, (who, what, mb, label, ours) in enumerate(bars):
@@ -439,7 +533,7 @@ def numbers():
         s.rect(x0, y + 2, w, 14, "url(#pg)" if ours else "#3a3a3a", rx=2)
         s.text(x0 + w + 10, y + 14, label, 13, 500, TXT if ours else MID)
     s.add(f'<line x1="52" y1="206" x2="{W - 52}" y2="206" stroke="{PANE}"/>')
-    stats = [("0%", "CPU while paused"), ("1.3–2%", "CPU playing at 1.5×"), ("19 ms", "read a 20.7 MB feed"), ("0.6 s", "from a link to playing")]
+    stats = [("0%", "CPU while paused"), ("1.2%", "CPU playing at 1.5×"), ("14 ms", "read 3,046 episodes"), ("0.6 s", "from a link to playing")]
     cw = (W - 104) / 4
     for i, (big, small) in enumerate(stats):
         x = 52 + i * cw
@@ -453,7 +547,7 @@ def numbers():
 
 def how():
     h = 330
-    s = Svg(W, h, "How it works. hark reads public RSS feeds and streams episodes from wherever the show hosts them. One async thread draws the screen and does the networking; audio runs on its own thread: symphonia decodes, Sonic changes the speed without changing the pitch, cpal plays through PipeWire or PulseAudio. Feeds, show notes and the stream are cached on disk; your subscriptions, place and queue are plain files. The desktop gets MPRIS. Apple's podcast directory is asked only when you search or browse.")
+    s = Svg(W, h, "How it works. hark reads public RSS feeds and streams episodes from wherever the show hosts them. One async thread draws the screen and does the networking; audio runs on its own thread: symphonia decodes, Sonic changes the speed without changing the pitch, cpal plays the sound. Feeds, show notes and the stream are cached on disk; your shows, place, queue and downloads are plain files. Media keys come through MPRIS on Linux and Now Playing on macOS. Apple's podcast directory is asked only for search, charts and For you.")
     s.card()
     s.pane(24, 26, W - 49, h - 53, "how it works", "no account · no mpv · no analytics")
 
@@ -470,11 +564,11 @@ def how():
 
     s.defs.append(f'<marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="{DIM}"/></marker>')
     box(52, 58, 196, 92, "Podcast feeds", ["public RSS, any host", "asked 'only if changed'", "8 at a time"])
-    box(52, 176, 196, 92, "Apple directory", ["search and charts,", "only when you look"])
+    box(52, 176, 196, 92, "Apple directory", ["search, charts, For you:", "only when you look"])
     box(318, 58, 244, 120, "hark", ["one async thread:", "screen + network", "redraws only on change", "input sleeps on its own thread"], hot=True)
     box(318, 200, 244, 68, "Audio thread", ["symphonia → Sonic → cpal", "sleeps until it's needed"])
-    box(632, 58, 196, 92, "On disk", ["subscriptions.opml", "state.tsv · queue.tsv", "feeds + notes cached"])
-    box(632, 176, 196, 92, "Desktop", ["MPRIS: media keys,", "KDE widget, lock screen", "PipeWire / PulseAudio"])
+    box(632, 58, 196, 92, "On disk", ["your shows as OPML", "place · queue · downloads", "feeds + notes cached"])
+    box(632, 176, 196, 92, "Desktop", ["media keys, widgets,", "MPRIS · Now Playing", "PipeWire · CoreAudio"])
     arrow(248, 104, 316, 104, "feeds")
     arrow(248, 222, 316, 160, "search")
     arrow(440, 178, 440, 198)
@@ -488,12 +582,12 @@ def how():
 
 def keys():
     groups = [
-        ("Move", [("↑↓ jk", "move"), ("g G", "top / bottom"), ("Tab h l", "switch pane"), ("Enter", "open · play"), ("Esc", "back"), ("w", "to what's playing")]),
-        ("Listen", [("Space", "play / pause"), ("← →", "−15 s / +30 s"), ("p", "from the start"), ("[ ]", "speed ∓0.1×"), ("+ -", "volume ±5%")]),
-        ("Queue", [("a", "add / take out"), ("A", "play next"), ("n", "next in queue"), ("m", "played / not")]),
-        ("Shows", [("/", "search · URL · OPML"), ("f", "follow"), ("o O", "genres"), ("L", "show notes"), ("R", "refresh now"), ("D D", "unsubscribe"), ("t i", "theme · cover")]),
+        ("Move", [("↑↓ jk", "move"), ("g G", "top / bottom"), ("Tab h l", "switch pane"), ("Enter", "open · play"), ("Esc", "back"), ("w", "to what's playing"), ("?", "every key")]),
+        ("Listen", [("Space", "play / pause"), ("← →", "−15 s / +30 s"), ("[ ]", "speed ∓0.1×"), ("+ -", "volume ±5%"), ("c C", "chapters"), ("z", "sleep timer"), ("e I E", "show speed · intro · outro")]),
+        ("Queue", [("a", "add / take out"), ("A", "play next"), ("n", "next in queue"), ("m", "played / not"), ("d", "download"), ("K", "keep newest")]),
+        ("Shows", [("/", "search · URL · OPML"), ("f", "follow"), ("o O", "genres"), ("s", "sort"), ("x M", "skip · more by"), ("L", "show notes"), ("R", "refresh"), ("t i", "theme · cover")]),
     ]
-    h = 318
+    h = 346
     s = Svg(W, h, "Every key, grouped as in hark's help: " + "; ".join(f"{g}: " + ", ".join(f"{k} {d}" for k, d in ks) for g, ks in groups))
     s.card()
     s.pane(24, 26, W - 49, h - 53, "keys", "? in hark shows them all")
@@ -514,11 +608,14 @@ if __name__ == "__main__":
     if not JB[400].exists():
         raise SystemExit("set HARK_FONTS to JetBrains Mono's fonts/ttf directory (see the top of this file)")
     hero()
+    different()
     features()
+    foryou()
+    start()
     progress()
     numbers()
     how()
     keys()
-    screenshot("screen-library.svg", "screen-main.ansi", "hark playing Terminal Delirium from Radiolab at 1.5×: the Library sidebar with the Inbox, In progress and Queue counts, eight shows and the episode's cover art; the Inbox lists new episodes from every show with progress marks, queued episodes and real lengths; the now-playing bar shows 15:33 left at this speed.")
-    screenshot("screen-discover.svg", "screen-discover.ansi", "hark's Discover: a strip of genres, then shows For you picked from the genres of the shows you follow, each with its author, genre, number of episodes and when its latest episode came out.")
-    screenshot("screen-notes.svg", "screen-notes.ansi", "hark showing an episode's show notes as clean text: paragraphs and bulleted lists of guests and sources.")
+    screenshot("screen-library.svg", "screen-main.ansi", "hark playing 718: The Warp Zone from Accidental Tech Podcast at 1.5×, on its fourth chapter: the Library sidebar with Inbox, In progress, Queue and Downloads counts, nine shows and the episode's cover; the Inbox lists new episodes from every show with progress marks, two queued episodes and one downloaded.")
+    screenshot("screen-discover.svg", "screen-discover.ansi", "hark's Discover: a strip of genres, then For you: shows from the charts of the genres you listen to, each with its maker, the genre it was picked for, its number of episodes and when its latest episode came out.")
+    screenshot("screen-notes.svg", "screen-notes.ansi", "hark showing an episode's show notes as clean text, with the links listed underneath.")
