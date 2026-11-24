@@ -17,6 +17,9 @@ pub struct Show {
     /// Top-level `itunes:category` names ("Business", "Comedy"), for recommendations.
     pub categories: Vec<String>,
     pub episodes: Vec<Episode>,
+    /// Each episode's `Extra`, in the same order, straight after parsing only: saved to disk,
+    /// then dropped.
+    pub extras: Vec<Extra>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
@@ -87,22 +90,39 @@ pub fn sort(eps: &mut [Episode], by: Sort) {
 #[derive(Debug, Default, Clone)]
 pub struct Episode {
     /// The feed's guid, or the audio url when there is none.
-    pub guid: String,
-    pub title: String,
+    pub guid: Box<str>,
+    pub title: Box<str>,
     /// Seconds since the Unix epoch; 0 = unknown.
     pub published: i64,
     /// 0 = unknown (filled in once played).
     pub duration_s: u32,
-    pub url: String,
-    pub mime: String,
-    pub bytes: u64,
-    pub image: Option<String>,
+    pub url: Box<str>,
+}
+
+/// What an episode carries that's only needed one episode at a time: kept on disk next to the
+/// feed (`store::save_notes`), not in memory. 64 bytes an episode instead of 240, times
+/// thousands of episodes.
+#[derive(Debug, Default, Clone, PartialEq)]
+pub struct Extra {
     /// Show notes (HTML as the feed gives it).
     pub notes: String,
     /// Podcasting 2.0 `podcast:chapters` (JSON).
     pub chapters: Option<String>,
     /// Podcasting 2.0 `podcast:transcript`: (url, mime), the most useful kind on offer.
     pub transcript: Option<(String, String)>,
+    /// The episode's own artwork, only when it isn't the show's.
+    pub image: Option<String>,
+}
+
+/// An episode while its `<item>` is being read.
+#[derive(Default)]
+struct Item {
+    guid: String,
+    title: String,
+    published: i64,
+    duration_s: u32,
+    url: String,
+    extra: Extra,
 }
 
 // shortcut: tags are matched by their usual prefixes (itunes:, podcast:, content:), not by
@@ -113,14 +133,14 @@ pub fn parse(xml: &[u8]) -> Result<Show, String> {
     let mut path: Vec<String> = Vec::new();
     let mut text = String::new();
     let mut show = Show::default();
-    let mut ep: Option<Episode> = None;
+    let mut ep: Option<Item> = None;
     loop {
         let ev = r.read_event_into(&mut buf).map_err(|e| format!("XML error at byte {}: {e}", r.buffer_position()))?;
         match ev {
             Event::Start(e) => {
                 attrs(&e, &path, &mut show, &mut ep);
                 if e.name().as_ref() == "item" {
-                    ep = Some(Episode::default());
+                    ep = Some(Item::default());
                 }
                 path.push(e.name().as_ref().to_string());
                 text.clear();
@@ -149,19 +169,18 @@ pub fn parse(xml: &[u8]) -> Result<Show, String> {
                     (Some("item"), "pubDate", Some(e)) => e.published = rfc2822(t).unwrap_or(0),
                     (Some("item"), "itunes:duration", Some(e)) => e.duration_s = duration(t),
                     // description is the usual home of the notes; the others only fill a gap
-                    (Some("item"), "description", Some(e)) => e.notes = t.to_string(),
-                    (Some("item"), "content:encoded" | "itunes:summary", Some(e)) if e.notes.is_empty() => e.notes = t.to_string(),
+                    (Some("item"), "description", Some(e)) => e.extra.notes = t.to_string(),
+                    (Some("item"), "content:encoded" | "itunes:summary", Some(e)) if e.extra.notes.is_empty() => e.extra.notes = t.to_string(),
                     (Some("channel"), "title", None) => show.title = t.to_string(),
                     (Some("channel"), "itunes:author", None) => show.author = t.to_string(),
                     (Some("channel"), "itunes:new-feed-url", None) if !t.is_empty() => show.new_url = Some(t.to_string()),
                     (Some("image"), "url", None) if show.image.is_none() && !t.is_empty() => show.image = Some(t.to_string()),
                     (_, "item", Some(_)) => {
-                        let mut e = ep.take().unwrap_or_default();
+                        let e = ep.take().unwrap_or_default();
                         if !e.url.is_empty() {
-                            if e.guid.is_empty() {
-                                e.guid = e.url.clone();
-                            }
-                            show.episodes.push(e);
+                            let guid = if e.guid.is_empty() { e.url.clone() } else { e.guid };
+                            show.episodes.push(Episode { guid: guid.into(), title: e.title.into(), published: e.published, duration_s: e.duration_s, url: e.url.into() });
+                            show.extras.push(e.extra);
                         }
                     }
                     _ => {}
@@ -176,20 +195,24 @@ pub fn parse(xml: &[u8]) -> Result<Show, String> {
     if show.title.is_empty() && show.episodes.is_empty() {
         return Err("not a podcast feed".into());
     }
+    // most feeds repeat the show's cover on every episode
+    for x in &mut show.extras {
+        if x.image.is_some() && x.image == show.image {
+            x.image = None;
+        }
+    }
     Ok(show)
 }
 
 /// Attribute-carrying tags: enclosure, images, chapters, transcripts.
-fn attrs(e: &BytesStart, path: &[String], show: &mut Show, ep: &mut Option<Episode>) {
+fn attrs(e: &BytesStart, path: &[String], show: &mut Show, ep: &mut Option<Item>) {
     let get = |k: &str| e.try_get_attribute(k).ok().flatten().and_then(|a| a.normalized_value(quick_xml::XmlVersion::Implicit1_0).ok()).map(|v| v.trim().to_string()).filter(|v| !v.is_empty());
     let in_channel = path.last().is_some_and(|p| p == "channel");
     match (e.name().as_ref(), ep.as_mut()) {
         ("enclosure", Some(ep)) => {
             ep.url = get("url").unwrap_or_default();
-            ep.mime = get("type").unwrap_or_default();
-            ep.bytes = get("length").and_then(|l| l.parse().ok()).unwrap_or(0);
         }
-        ("itunes:image", Some(ep)) => ep.image = get("href"),
+        ("itunes:image", Some(ep)) => ep.extra.image = get("href"),
         ("itunes:image", None) if in_channel => show.image = get("href").or(show.image.take()),
         ("itunes:category", None) if in_channel => {
             if let Some(c) = get("text").filter(|c| !show.categories.contains(c)) {
@@ -201,13 +224,13 @@ fn attrs(e: &BytesStart, path: &[String], show: &mut Show, ep: &mut Option<Episo
                 show.subcategories.push(c);
             }
         }
-        ("podcast:chapters", Some(ep)) => ep.chapters = get("url"),
+        ("podcast:chapters", Some(ep)) => ep.extra.chapters = get("url"),
         ("podcast:transcript", Some(ep)) => {
             if let (Some(url), Some(mime)) = (get("url"), get("type")) {
                 // timed formats first: they can follow along like lyrics
                 let rank = |m: &str| ["text/vtt", "application/x-subrip", "application/srt", "application/json", "text/html", "text/plain"].iter().position(|x| *x == m).unwrap_or(9);
-                if ep.transcript.as_ref().is_none_or(|(_, cur)| rank(&mime) < rank(cur)) {
-                    ep.transcript = Some((url, mime));
+                if ep.extra.transcript.as_ref().is_none_or(|(_, cur)| rank(&mime) < rank(cur)) {
+                    ep.extra.transcript = Some((url, mime));
                 }
             }
         }
@@ -448,14 +471,16 @@ mod tests {
         assert_eq!(s.categories, ["Business", "Comedy"], "top level only");
         assert_eq!(s.subcategories, ["Investing"]);
         assert_eq!(s.episodes.len(), 2);
-        let e = &s.episodes[0];
-        assert_eq!((e.title.as_str(), e.guid.as_str(), e.published, e.duration_s), ("Ep 2: <Fun> & games", "ep-2", 3600, 3601));
-        assert_eq!((e.url.as_str(), e.mime.as_str(), e.bytes), ("https://ex/2.mp3?a=1&b=2", "audio/mpeg", 123));
-        assert_eq!(e.notes, "short");
-        assert_eq!(e.chapters.as_deref(), Some("https://ex/2.json"));
-        assert_eq!(e.transcript, Some(("https://ex/2.vtt".into(), "text/vtt".into())));
-        let e = &s.episodes[1];
-        assert_eq!((e.guid.as_str(), e.notes.as_str(), e.duration_s), ("https://ex/1.mp3", "only content", 0));
+        assert_eq!(s.extras.len(), 2, "one Extra per episode");
+        let (e, x) = (&s.episodes[0], &s.extras[0]);
+        assert_eq!((&*e.title, &*e.guid, e.published, e.duration_s), ("Ep 2: <Fun> & games", "ep-2", 3600, 3601));
+        assert_eq!(&*e.url, "https://ex/2.mp3?a=1&b=2");
+        assert_eq!(x.notes, "short");
+        assert_eq!(x.chapters.as_deref(), Some("https://ex/2.json"));
+        assert_eq!(x.transcript, Some(("https://ex/2.vtt".into(), "text/vtt".into())));
+        let (e, x) = (&s.episodes[1], &s.extras[1]);
+        assert_eq!((&*e.guid, x.notes.as_str(), e.duration_s), ("https://ex/1.mp3", "only content", 0));
+        assert_eq!(std::mem::size_of::<Episode>(), 64, "the in-memory episode stays small");
     }
 
     #[test]

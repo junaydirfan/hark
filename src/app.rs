@@ -368,12 +368,12 @@ impl App {
     /// The row for an episode by its guid (indexes shift when a feed refreshes).
     fn locate(&self, url: &str, guid: &str) -> Option<Item> {
         let s = self.show(url)?;
-        let i = s.show.episodes.iter().position(|e| e.guid == guid)?;
+        let i = s.show.episodes.iter().position(|e| &*e.guid == guid)?;
         Some(Item::Ep { show: s.url.clone(), i })
     }
 
     fn key_of(&self, item: &Item) -> Option<(Url, String)> {
-        self.episode(item).map(|(s, e)| (s.url.clone(), e.guid.clone()))
+        self.episode(item).map(|(s, e)| (s.url.clone(), e.guid.to_string()))
     }
 
     /// Recompute the open view and the sidebar counts, keeping the selected row selected.
@@ -507,7 +507,7 @@ impl App {
             .show
             .episodes
             .iter()
-            .filter_map(|e| self.state.get(&e.guid).map(|l| (e, l)))
+            .filter_map(|e| self.state.get(&*e.guid).map(|l| (e, l)))
             .map(|(e, l)| {
                 let secs = if !l.played { l.pos } else if l.dur > 0.0 { l.dur } else { e.duration_s as f64 };
                 let age_days = (now - l.updated).max(0) as f64 / 86400.0;
@@ -934,8 +934,9 @@ impl App {
 
     fn play(&mut self, item: &Item) {
         let Some((s, e)) = self.episode(item) else { return };
-        let (show_url, guid, title, url, dur, show) = (s.url.clone(), e.guid.clone(), e.title.clone(), e.url.clone(), e.duration_s as f64, s.show.title.clone());
-        let art = e.image.clone().or_else(|| s.show.image.clone());
+        let (show_url, guid, title, url, dur, show) = (s.url.clone(), e.guid.to_string(), e.title.to_string(), e.url.to_string(), e.duration_s as f64, s.show.title.clone());
+        // the episode's own cover is on disk with its notes (a file read, once per play)
+        let art = store::load_extra(&show_url, &guid).and_then(|x| x.image).or_else(|| s.show.image.clone());
         self.remember();
         let l = self.state.get(&guid).copied().unwrap_or_default();
         let dur = if l.dur > 0.0 { l.dur } else { dur };
@@ -1060,7 +1061,7 @@ impl App {
     fn toggle_played(&mut self) {
         let Some(it) = self.selected_item().cloned() else { return };
         let Some((_, e)) = self.episode(&it) else { return };
-        let guid = e.guid.clone();
+        let guid = e.guid.to_string();
         let l = self.state.entry(guid.clone()).or_default();
         (l.pos, l.played, l.updated) = (0.0, !l.played, unix_now());
         let played = l.played;
@@ -1122,7 +1123,7 @@ impl App {
             self.status = "Highlight an episode (or play one) to read its notes.".into();
             return;
         };
-        let title = self.locate(&url, &guid).and_then(|it| self.episode(&it).map(|(_, e)| e.title.clone())).unwrap_or_default();
+        let title = self.locate(&url, &guid).and_then(|it| self.episode(&it).map(|(_, e)| e.title.to_string())).unwrap_or_default();
         let (lines, links) = match store::load_notes(&url, &guid) {
             Some(html) => feed::notes_text(&html),
             None => (vec!["No show notes saved for this episode yet. They arrive with the next refresh (R).".into()], Vec::new()),
@@ -1482,10 +1483,8 @@ async fn fetch_feed(client: &reqwest::Client, url: &str, etag: &str, last_modifi
     let url = url.to_string();
     let show = tokio::task::spawn_blocking(move || {
         let mut show = feed::parse(&body)?;
-        let _ = store::save_notes(&url, &show.episodes);
-        for e in &mut show.episodes {
-            e.notes = String::new();
-        }
+        let _ = store::save_notes(&url, &show.episodes, &show.extras);
+        show.extras = Vec::new();
         Ok::<_, String>(show)
     })
     .await

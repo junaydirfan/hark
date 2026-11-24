@@ -195,6 +195,12 @@ fn query_terminal_images() -> Option<ratatui_image::picker::Picker> {
     use ratatui_image::picker::{Picker, ProtocolType, cap_parser::QueryStdioOptions};
     use std::io::Write;
     const TIMEOUT: Duration = Duration::from_millis(400);
+    // a terminal that didn't answer last time won't now either: skip the half-second wait
+    let memo = paths::cache_dir().join("terminal");
+    let key = terminal_key();
+    if let Some(p) = slow_terminal(&memo, &key) {
+        return Some(p);
+    }
     let t0 = Instant::now();
     let mut picker = Picker::from_query_stdio_with_options(QueryStdioOptions { timeout: TIMEOUT, ..Default::default() }).ok();
     // Konsole draws iTerm2 inline images but doesn't announce it; ratatui-image falls back to
@@ -219,8 +225,30 @@ fn query_terminal_images() -> Option<ratatui_image::picker::Picker> {
         let _ = out.write_all(b"\x1b[5n");
         let _ = out.flush();
         std::thread::sleep(Duration::from_millis(100));
+        // only the plain case: a terminal that answered too slowly but does draw images could
+        // have a font size that changes, so it keeps being asked
+        if picker.as_ref().is_some_and(|p| p.protocol_type() == ProtocolType::Halfblocks) {
+            let _ = paths::write_atomic(&memo, format!("{key}\n").as_bytes());
+        }
     }
     picker
+}
+
+/// Which terminal this is, as far as the environment says (a new version asks again).
+fn terminal_key() -> String {
+    ["TERM", "TERM_PROGRAM", "TERM_PROGRAM_VERSION", "KONSOLE_VERSION", "VTE_VERSION", "TMUX"]
+        .iter()
+        .map(|v| std::env::var(v).map(|x| if *v == "TMUX" { "tmux".into() } else { x.replace(['\t', '\n'], " ") }).unwrap_or_default())
+        .collect::<Vec<_>>()
+        .join("|")
+}
+
+/// Half-blocks, when this terminal was too slow to answer last time and ended up with them
+/// anyway (asked again after a week, in case it learned to).
+fn slow_terminal(memo: &std::path::Path, key: &str) -> Option<ratatui_image::picker::Picker> {
+    let fresh = std::fs::metadata(memo).and_then(|m| m.modified()).ok()?.elapsed().ok()? < Duration::from_secs(7 * 86400);
+    let text = std::fs::read_to_string(memo).ok().filter(|_| fresh)?;
+    (text.trim_end() == key).then(ratatui_image::picker::Picker::halfblocks)
 }
 
 async fn show_feed(src: &str, by: Option<&String>) -> Result<(), String> {
@@ -253,12 +281,12 @@ async fn show_feed(src: &str, by: Option<&String>) -> Result<(), String> {
         bytes.len() as f64 / 1e6,
         fetched,
         parsed,
-        with(|e| e.chapters.is_some()),
-        with(|e| e.transcript.is_some()),
+        show.extras.iter().filter(|x| x.chapters.is_some()).count(),
+        show.extras.iter().filter(|x| x.transcript.is_some()).count(),
         with(|e| e.duration_s == 0),
     );
-    for e in show.episodes.iter().take(3) {
-        println!("  {} | {}s | {} | {} | notes {} chars", e.published, e.duration_s, e.title, e.mime, e.notes.len());
+    for (e, x) in show.episodes.iter().zip(&show.extras).take(3) {
+        println!("  {} | {}s | {} | notes {} chars", e.published, e.duration_s, e.title, x.notes.len());
     }
     Ok(())
 }

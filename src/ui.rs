@@ -172,9 +172,9 @@ fn draw_table(f: &mut Frame, app: &mut App, area: Rect) {
         .iter()
         .filter_map(|it| app.episode(it))
         .map(|(s, e)| {
-            let l = app.state.get(&e.guid).copied().unwrap_or_default();
-            let queued = app.queue.iter().any(|(u, g)| *u == s.url && *g == e.guid);
-            let now = Some(e.guid.as_str()) == playing;
+            let l = app.state.get(&*e.guid).copied().unwrap_or_default();
+            let queued = app.queue.iter().any(|(u, g)| *u == s.url && **g == *e.guid);
+            let now = Some(&*e.guid) == playing;
             // the length the player measured beats the feed's own figure
             let dur = if l.dur > 0.0 { l.dur } else { e.duration_s as f64 };
             let (mark, len) = if now {
@@ -186,7 +186,7 @@ fn draw_table(f: &mut Frame, app: &mut App, area: Rect) {
             } else {
                 (" ", if dur > 0.0 { fmt_s(dur) } else { String::new() })
             };
-            let mut title = vec![Span::raw(e.title.as_str())];
+            let mut title = vec![Span::raw(&*e.title)];
             if queued {
                 title.insert(0, Span::raw("≡ ").fg(accent()));
             }
