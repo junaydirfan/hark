@@ -68,6 +68,8 @@ pub enum Msg {
     Preview { url: String, res: Result<Option<Cached>, String> },
     /// Directory results for a cache key ("top:0", "foryou", "search:<q>").
     Cards { key: String, res: Result<Vec<Card>, String> },
+    /// An episode's chapters file arrived (Podcasting 2.0 JSON).
+    Chapters { guid: String, list: Vec<(f64, String)> },
     /// A newer hark release is out (its tag).
     Update(String),
     /// A cover, encoded for the terminal at `size` cells.
@@ -132,6 +134,16 @@ pub struct Now {
     saved_at: f64,
     /// When it was paused, for smart resume on un-pause.
     paused_at: Option<Instant>,
+    /// (start seconds, title), in order: the feed's chapters file, else the file's own.
+    pub chapters: Vec<(f64, String)>,
+}
+
+impl Now {
+    /// The chapter playing: its index and title.
+    pub fn chapter(&self) -> Option<(usize, &str)> {
+        let i = self.chapters.iter().rposition(|(t, _)| *t <= self.pos + 0.5)?;
+        Some((i, self.chapters[i].1.as_str()))
+    }
 }
 
 /// The sleep timer (`z`).
@@ -724,6 +736,13 @@ impl App {
         let (url, res, adding) = match msg {
             Msg::Feed { url, res, adding } => (url, res, adding),
             Msg::Preview { url, res } => return self.on_preview(url, res),
+            Msg::Chapters { guid, list } => {
+                // the feed's own chapters beat ones embedded in the file: they're usually richer
+                if let Some(n) = self.now.as_mut().filter(|n| n.guid == guid && !list.is_empty()) {
+                    n.chapters = list;
+                }
+                return;
+            }
             Msg::Update(tag) => {
                 self.update = Some(tag);
                 return;
@@ -951,7 +970,16 @@ impl App {
         let Some((s, e)) = self.episode(item) else { return };
         let (show_url, guid, title, url, dur, show) = (s.url.clone(), e.guid.to_string(), e.title.to_string(), e.url.to_string(), e.duration_s as f64, s.show.title.clone());
         // the episode's own cover is on disk with its notes (a file read, once per play)
-        let art = store::load_extra(&show_url, &guid).and_then(|x| x.image).or_else(|| s.show.image.clone());
+        let extra = store::load_extra(&show_url, &guid).unwrap_or_default();
+        let art = extra.image.or_else(|| s.show.image.clone());
+        if let Some(c) = extra.chapters {
+            let (client, tx, guid) = (self.client.clone(), self.tx.clone(), guid.clone());
+            tokio::spawn(async move {
+                if let Ok(b) = async { client.get(&c).send().await?.error_for_status()?.bytes().await }.await {
+                    let _ = tx.send(Msg::Chapters { guid, list: feed::chapters_json(&b) });
+                }
+            });
+        }
         self.remember();
         let l = self.state.get(&guid).copied().unwrap_or_default();
         let dur = if l.dur > 0.0 { l.dur } else { dur };
@@ -979,7 +1007,7 @@ impl App {
             self.queue.remove(q);
             self.save_queue();
         }
-        self.now = Some(Now { show_url, guid: guid.clone(), title, show, duration: dur, pos: at, playing: true, buffering: false, art, saved_at: at, paused_at: None });
+        self.now = Some(Now { show_url, guid: guid.clone(), title, show, duration: dur, pos: at, playing: true, buffering: false, art, saved_at: at, paused_at: None, chapters: Vec::new() });
         // a replayed episode starts unplayed again
         let l = self.state.entry(guid).or_default();
         (l.played, l.pos, l.updated) = (false, at, unix_now());
@@ -1131,6 +1159,28 @@ impl App {
         self.save_show_prefs();
     }
 
+    /// `c` / `C`: the next chapter / back to the start of this one (or the one before, near
+    /// its start).
+    fn chapter_jump(&mut self, dir: i32) {
+        let Some(n) = &self.now else { return };
+        if n.chapters.is_empty() {
+            self.status = "This episode has no chapters.".into();
+            return;
+        }
+        let i = n.chapter().map_or(0, |(i, _)| i);
+        let to = if dir > 0 {
+            n.chapters.get(i + 1).map(|c| c.0)
+        } else if n.pos - n.chapters[i].0 > 3.0 {
+            Some(n.chapters[i].0)
+        } else {
+            Some(n.chapters[i.saturating_sub(1)].0)
+        };
+        match to {
+            Some(t) => self.seek_to(t),
+            None => self.status = "That's the last chapter.".into(),
+        }
+    }
+
     /// `z`: off → 15 → 30 → 45 → 60 minutes → the end of this episode → off.
     fn cycle_sleep(&mut self) {
         let mins = |m: u64| Some(Sleep::Minutes(m, Instant::now() + Duration::from_secs(m * 60)));
@@ -1269,7 +1319,10 @@ impl App {
     pub fn on_engine(&mut self, ev: Event) -> bool {
         let Some(n) = &mut self.now else { return false };
         match ev {
-            Event::Loaded { duration_s } => {
+            Event::Loaded { duration_s, chapters } => {
+                if n.chapters.is_empty() {
+                    n.chapters = chapters;
+                }
                 if duration_s > 0.0 {
                     n.duration = duration_s;
                     self.state.entry(n.guid.clone()).or_default().dur = duration_s;
@@ -1537,6 +1590,8 @@ impl App {
             KeyCode::Char('I') => self.mark_intro(),
             KeyCode::Char('E') => self.mark_outro(),
             KeyCode::Char('z') => self.cycle_sleep(),
+            KeyCode::Char('c') => self.chapter_jump(1),
+            KeyCode::Char('C') => self.chapter_jump(-1),
             KeyCode::Char('M') => self.more_from_author(),
             KeyCode::Char('O') => self.cycle_genre(-1),
             KeyCode::Char('D') => self.unsubscribe(),

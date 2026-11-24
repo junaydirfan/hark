@@ -362,6 +362,7 @@ fn draw_now(f: &mut Frame, app: &mut App, area: Rect) {
             Span::styled(n.title.as_str(), Style::new().fg(accent()).bold()),
             Span::raw("  "),
             Span::styled(n.show.as_str(), Style::new().dim()),
+            Span::styled(n.chapter().map(|(i, t)| format!("  · {} {t}", i + 1)).unwrap_or_default(), Style::new().fg(accent())),
         ])),
         l,
     );
@@ -402,6 +403,7 @@ const HELP: [(&str, &[(&str, &str)]); 4] = [
         ("e", "this show keeps this speed"),
         ("I E", "skip this show's intro / outro"),
         ("z", "sleep timer"),
+        ("c C", "next chapter / back one"),
         ("+ -", "volume ±5%"),
     ]),
     ("Queue", &[
