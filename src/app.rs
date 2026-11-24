@@ -164,8 +164,8 @@ pub struct App {
     pub quit: bool,
     /// A newer release's tag, for the bottom line.
     pub update: Option<String>,
-    /// Order of a show's episode list (session only).
-    pub sort: feed::Sort,
+    /// Per-show settings (episode order), by feed url.
+    show_prefs: HashMap<String, store::ShowPrefs>,
     /// Shows opened from Discover or Search, not followed.
     previews: Vec<ShowView>,
     /// Directory results this session, by key; and the keys being fetched.
@@ -240,7 +240,7 @@ impl App {
             help_open: false,
             quit: false,
             update: None,
-            sort: feed::Sort::Newest,
+            show_prefs: store::load_show_prefs(),
             previews: Vec::new(),
             cards: HashMap::new(),
             cards_loading: Vec::new(),
@@ -347,8 +347,9 @@ impl App {
             Kind::Search(q) => self.cards.get(&format!("search:{q}")).into_iter().flatten().cloned().map(Item::Show).collect(),
             Kind::Show(u) => self.show(u).map_or(Vec::new(), |s| {
                 let mut idx: Vec<usize> = (0..s.show.episodes.len()).collect();
-                if self.sort != feed::Sort::Newest {
-                    idx.sort_by_key(|&i| self.sort.key(&s.show.episodes[i]));
+                let sort = self.sort_of(u);
+                if sort != feed::Sort::Newest {
+                    idx.sort_by_key(|&i| sort.key(&s.show.episodes[i]));
                 }
                 idx.into_iter().map(|i| Item::Ep { show: u.clone(), i }).collect()
             }),
@@ -395,7 +396,7 @@ impl App {
                     if !s.show.categories.is_empty() {
                         t.push_str(&format!(" · {}", s.show.categories.join(", ")));
                     }
-                    t.push_str(&format!(" · {n} episodes, {} (s)", self.sort.name()));
+                    t.push_str(&format!(" · {n} episodes, {} (s)", self.sort_of(u).name()));
                     if !self.is_followed(u) {
                         t.push_str(" · not followed: f to follow");
                     }
@@ -497,16 +498,21 @@ impl App {
         self.push(Kind::Search(q));
     }
 
-    /// `o` / `O` in Discover: the next / previous genre.
+    fn sort_of(&self, url: &str) -> feed::Sort {
+        self.show_prefs.get(url).map_or_default(|p| p.sort)
+    }
+
+    /// `s` in a show: the next episode order, remembered for that show.
     fn cycle_sort(&mut self) {
-        if !matches!(self.view.kind, Kind::Show(_)) {
-            return;
-        }
-        self.sort = self.sort.next();
+        let Kind::Show(u) = &self.view.kind else { return };
+        let p = self.show_prefs.entry(u.to_string()).or_default();
+        p.sort = p.sort.next();
+        let _ = store::save_show_prefs(self.show_prefs.iter().map(|(u, p)| (u.as_str(), p)));
         self.view.state.select(Some(0));
         self.rebuild();
     }
 
+    /// `o` / `O` in Discover: the next / previous genre.
     fn cycle_genre(&mut self, delta: isize) {
         if self.view.kind != Kind::Discover {
             return;

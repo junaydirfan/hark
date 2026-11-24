@@ -37,6 +37,16 @@ impl Sort {
         })
     }
 
+    /// The word `parse` reads back.
+    pub fn id(self) -> &'static str {
+        match self {
+            Sort::Newest => "newest",
+            Sort::Oldest => "oldest",
+            Sort::Longest => "longest",
+            Sort::Shortest => "shortest",
+        }
+    }
+
     pub fn next(self) -> Sort {
         match self {
             Sort::Newest => Sort::Oldest,

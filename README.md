@@ -39,7 +39,9 @@ hark is a podcast player for the terminal that does one thing and does it cheapl
 - **Search** (`/`) every show in the Apple Podcasts directory, with its genre, its size and when its latest episode came out, so a dead show looks dead.
 - **Discover:** *For you*, then the top charts for your country. `o` / `O` flips through 19 genres, from Business to True Crime.
 - **Preview, then follow:** open any show, browse and play its episodes, and `f` to follow it when you like it.
-- **Sort a show** (`s`): newest, oldest, longest or shortest first.
+- **Sort a show** (`s`): newest, oldest, longest or shortest first. hark remembers it per show, so a serial can stay oldest-first.
+- **Stays fresh:** feeds refresh at launch, with `R`, and on their own every hour while hark is open.
+- **MP3 and M4A/AAC** episodes play.
 - **Inbox:** every unplayed episode from your shows in the last 30 days, newest first.
 - **In progress:** what you started and didn't finish, most recent first, each with ◔ ◑ ◕ and the time left.
 - **A queue that plays on:** `a` adds an episode, `A` plays it next, and when an episode ends the next one starts. It's kept between runs.
@@ -279,6 +281,7 @@ hark has no account and sends no analytics. It talks to the servers of the shows
 | `~/.local/share/hark/subscriptions.opml` | your shows, as standard OPML |
 | `~/.local/share/hark/state.tsv` | where you are in each episode you've started, and what you've finished |
 | `~/.local/share/hark/queue.tsv` | the queue |
+| `~/.local/share/hark/show-prefs.tsv` | each show's episode order |
 | `~/.local/share/hark/prefs` | speed, volume, theme, cover on/off |
 | `~/.cache/hark/` | feed caches, show notes, the episode streaming right now, and the latest release seen; safe to delete |
 
