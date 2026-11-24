@@ -167,15 +167,15 @@ mod dbus {
                 let _ = p.set_volume(app.prefs.volume as f64 / 100.0).await;
                 self.vol = Some(app.prefs.volume);
             }
-            if self.rate != Some(app.prefs.speed) {
-                let _ = p.set_rate(app.prefs.speed as f64).await;
-                self.rate = Some(app.prefs.speed);
+            if self.rate != Some(app.speed) {
+                let _ = p.set_rate(app.speed as f64).await;
+                self.rate = Some(app.speed);
             }
             // Clients read Position on demand and extrapolate while Playing (at Rate); tell them
             // about jumps with the Seeked signal.
             let pos = app.now.as_ref().map_or(0.0, |n| n.pos);
             p.set_position(Time::from_millis((pos * 1000.0) as i64));
-            let expected = if status == PlaybackStatus::Playing { self.pos + self.pos_at.elapsed().as_secs_f64() * app.prefs.speed as f64 } else { self.pos };
+            let expected = if status == PlaybackStatus::Playing { self.pos + self.pos_at.elapsed().as_secs_f64() * app.speed as f64 } else { self.pos };
             if !new_track && (pos - expected).abs() > 1.5 {
                 let _ = p.seeked(Time::from_millis((pos * 1000.0) as i64)).await;
             }
@@ -366,7 +366,7 @@ mod mac {
             let guid = app.now.as_ref().map_or("", |n| n.guid.as_str());
             let playing = app.now.as_ref().is_some_and(|n| n.playing);
             let pos = app.now.as_ref().map_or(0.0, |n| n.pos);
-            let speed = app.prefs.speed;
+            let speed = app.speed;
             let expected = self.pos + if self.playing { self.pos_at.elapsed().as_secs_f64() * self.speed as f64 } else { 0.0 };
             if guid == self.guid && playing == self.playing && speed == self.speed && (pos - expected).abs() < 1.5 {
                 return;

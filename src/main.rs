@@ -7,6 +7,7 @@
 
 mod app;
 mod discover;
+mod download;
 mod engine;
 mod feed;
 mod mpris;

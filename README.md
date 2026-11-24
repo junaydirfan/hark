@@ -46,6 +46,10 @@ hark is a podcast player for the terminal that does one thing and does it cheapl
 - **In progress:** what you started and didn't finish, most recent first, each with ◔ ◑ ◕ and the time left.
 - **A queue that plays on:** `a` adds an episode, `A` plays it next, and when an episode ends the next one starts. It's kept between runs.
 - **Speed without chipmunks:** 0.5–3×, with the pitch kept by [Sonic](https://github.com/waywardgeek/sonic), the algorithm made for speeding up speech. The now-playing line shows the time left *at your speed*.
+- **Chapters:** from the show's chapters file (Podcasting 2.0) or the ones embedded in the MP3 (ID3). The chapter playing shows next to the show's name; `c` jumps to the next, `C` back.
+- **Per-show speed, intros and outros:** `e` keeps a show at its own speed (`[` `]` then change only that show's). `I` where the intro ends and every episode of that show starts there; `E` where the outro starts and episodes end there, on to the next in the queue.
+- **Sleep timer:** `z` for 15, 30, 45 or 60 minutes, or the end of the episode. The volume fades over the last 10 seconds, and your place is saved.
+- **Downloads:** `d` keeps an episode for offline listening (resumed if it's cut off, and only when the server vouches it's the same file, so shows with ads stitched in on the fly don't end up spliced), and it plays from the file from then on. `K` in a show keeps its newest 1, 3 or 5 unplayed episodes downloaded on every refresh. Played downloads delete themselves.
 - **Show notes:** `L` shows an episode's notes as clean text, with its links listed underneath.
 - **Cover art** of what's playing, under the library: real images in kitty, Ghostty, WezTerm, foot, iTerm2 and Konsole, and colour half-blocks everywhere else.
 - **Desktop native (Linux):** media keys, the KDE and GNOME media widgets, the lock screen, `playerctl` and KDE Connect, through MPRIS. Speed is the playback rate there, so the widget can change it too.
@@ -243,7 +247,9 @@ From then on, new episodes land in the **Inbox**, and whatever you start waits i
 | `f` | follow the highlighted show | | `o` / `O` | Discover: next / previous genre |
 | `D` `D` | unsubscribe | | `t` / `i` | next colour theme / cover on-off |
 | `s` | sort a show's episodes | | `x` | For you: not interested |
-| `M` | more from this show's maker | | | |
+| `M` | more from this show's maker | | `c` / `C` | next chapter / back one |
+| `e` | this show keeps its own speed | | `I` / `E` | skip this show's intro / outro from here |
+| `z` | sleep timer | | `d` / `K` | download · keep a show's newest downloaded |
 | `q` `Ctrl-C` | quit (your place is saved) | | `?` | every key |
 
 In lists: `▶` playing, `◔ ◑ ◕` started (with the time left), `✓` played, `≡` queued, `[E]` explicit.
@@ -286,7 +292,8 @@ hark has no account and sends no analytics. It talks to the servers of the shows
 | `~/.local/share/hark/subscriptions.opml` | your shows, as standard OPML |
 | `~/.local/share/hark/state.tsv` | where you are in each episode you've started, and what you've finished |
 | `~/.local/share/hark/queue.tsv` | the queue |
-| `~/.local/share/hark/show-prefs.tsv` | each show's episode order |
+| `~/.local/share/hark/show-prefs.tsv` | each show's episode order, speed, intro/outro skip and downloads to keep |
+| `~/.local/share/hark/downloads/` | downloaded episodes, listed in `downloads.tsv` |
 | `~/.local/share/hark/not-interested.txt` | shows you hid from For you (delete a line to undo) |
 | `~/.local/share/hark/prefs` | speed, volume, theme, cover on/off |
 | `~/.cache/hark/` | feed caches, show notes, the charts (12 h), the episode streaming right now, and the latest release seen; safe to delete |

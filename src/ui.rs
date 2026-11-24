@@ -149,6 +149,7 @@ fn draw_table(f: &mut Frame, app: &mut App, area: Rect) {
         let msg = match app.view.kind {
             Kind::Inbox => "\n Nothing new in the last 30 days. Episodes from your shows land here as they come out.",
             Kind::InProgress => "\n Nothing in progress. Episodes you start and don't finish wait here.",
+            Kind::Downloads => "\n No downloads. Press d on an episode to keep it for offline listening, or K in a show\n to keep its newest episodes downloaded. Played ones delete themselves.",
             Kind::Queue => "\n The queue is empty. Press a on an episode to add it, A to play it next.\n When an episode ends, the next one in the queue starts.",
             Kind::Discover if app.cards_pending() => "\n Loading charts from Apple Podcasts…",
             Kind::Discover => "\n Apple Podcasts sent nothing for this chart. o / O tries another genre.",
@@ -189,6 +190,11 @@ fn draw_table(f: &mut Frame, app: &mut App, area: Rect) {
             let mut title = vec![Span::raw(&*e.title)];
             if queued {
                 title.insert(0, Span::raw("≡ ").fg(accent()));
+            }
+            if let Some(p) = app.downloading.get(&*e.guid) {
+                title.insert(0, Span::raw(format!("⤓{p}% ")).dim());
+            } else if app.is_downloaded(&e.guid) {
+                title.insert(0, Span::raw("⤓ ").fg(accent()));
             }
             let mut cells = vec![Cell::from(mark).fg(accent()), Cell::from(Line::from(title))];
             if many_shows {
@@ -328,17 +334,20 @@ fn now_flags(app: &App) -> Line<'static> {
     if app.now.as_ref().is_some_and(|n| n.buffering) {
         s.push(Span::styled("buffering…  ", Style::new().fg(accent())));
     }
+    if let Some(z) = app.sleep_label() {
+        s.push(Span::styled(format!("{z}  "), Style::new().fg(accent())));
+    }
     // what's left in real time at your speed: what a podcast listener plans around
     if let Some(n) = app.now.as_ref().filter(|n| n.duration > 0.0) {
-        s.push(Span::styled(format!("{} left  ", fmt_s((n.duration - n.pos).max(0.0) / app.prefs.speed as f64)), info));
+        s.push(Span::styled(format!("{} left  ", fmt_s((n.duration - n.pos).max(0.0) / app.speed as f64)), info));
     }
     if !app.queue.is_empty() {
         s.push(Span::styled(format!("queue {}  ", app.queue.len()), info));
     }
     s.push(Span::styled(format!("vol {}%  ", app.prefs.volume), info));
-    let lit = (app.prefs.speed - 1.0).abs() > 0.01;
+    let lit = (app.speed - 1.0).abs() > 0.01;
     let style = if lit { Style::new().fg(Color::Black).bg(accent()).bold() } else { Style::new().fg(Color::DarkGray) };
-    s.push(Span::styled(format!(" {:.1}× ", app.prefs.speed), style));
+    s.push(Span::styled(format!(" {:.1}× ", app.speed), style));
     Line::from(s)
 }
 
@@ -359,6 +368,7 @@ fn draw_now(f: &mut Frame, app: &mut App, area: Rect) {
             Span::styled(n.title.as_str(), Style::new().fg(accent()).bold()),
             Span::raw("  "),
             Span::styled(n.show.as_str(), Style::new().dim()),
+            Span::styled(n.chapter().map(|(i, t)| format!("  · {} {t}", i + 1)).unwrap_or_default(), Style::new().fg(accent())),
         ])),
         l,
     );
@@ -396,6 +406,9 @@ const HELP: [(&str, &[(&str, &str)]); 4] = [
         ("← →  , .", "back 15 s / forward 30 s"),
         ("p", "back to the start"),
         ("[ ]", "speed −/+ 0.1× (pitch stays)"),
+        ("e I E", "own speed · skip intro / outro"),
+        ("z  c C", "sleep timer · chapter next / back"),
+        ("d  K", "download · keep a show's newest"),
         ("+ -", "volume ±5%"),
     ]),
     ("Queue", &[
@@ -408,8 +421,7 @@ const HELP: [(&str, &[(&str, &str)]); 4] = [
         ("/", "search · paste a feed URL / OPML"),
         ("f", "follow the highlighted show"),
         ("o O", "Discover: next / previous genre"),
-        ("x", "For you: not interested"),
-        ("M", "more from this show's maker"),
+        ("x  M", "skip in For you · more by maker"),
         ("s", "sort a show: date / length"),
         ("L", "show notes"),
         ("R", "refresh every show now"),

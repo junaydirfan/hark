@@ -238,6 +238,21 @@ fn attrs(e: &BytesStart, path: &[String], show: &mut Show, ep: &mut Option<Item>
     }
 }
 
+/// Podcasting 2.0 chapters (`{"chapters": [{"startTime": 0, "title": "…"}, …]}`) → (start
+/// seconds, title), in order; chapters marked `"toc": false` (art changes, mostly) are left out.
+pub fn chapters_json(body: &[u8]) -> Vec<(f64, String)> {
+    let v: serde_json::Value = serde_json::from_slice(body).unwrap_or_default();
+    let mut out: Vec<(f64, String)> = v["chapters"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter(|c| c["toc"].as_bool() != Some(false))
+        .filter_map(|c| Some((c["startTime"].as_f64()?, c["title"].as_str().unwrap_or("").trim().to_string())))
+        .collect();
+    out.sort_by(|a, b| a.0.total_cmp(&b.0));
+    out
+}
+
 /// Show notes are HTML (sometimes plain text): readable lines, plus the links they point to.
 pub fn notes_text(html: &str) -> (Vec<String>, Vec<String>) {
     let mut text = String::new();
@@ -481,6 +496,13 @@ mod tests {
         let (e, x) = (&s.episodes[1], &s.extras[1]);
         assert_eq!((&*e.guid, x.notes.as_str(), e.duration_s), ("https://ex/1.mp3", "only content", 0));
         assert_eq!(std::mem::size_of::<Episode>(), 64, "the in-memory episode stays small");
+    }
+
+    #[test]
+    fn chapters_from_json() {
+        let j = br#"{"version":"1.2.0","chapters":[{"startTime":95.5,"title":" Second "},{"startTime":0,"title":"Intro"},{"startTime":40,"title":"art","toc":false}]}"#;
+        assert_eq!(chapters_json(j), [(0.0, "Intro".to_string()), (95.5, "Second".to_string())]);
+        assert!(chapters_json(b"not json").is_empty());
     }
 
     #[test]

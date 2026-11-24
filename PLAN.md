@@ -102,9 +102,12 @@ author, image and `itunes:new-feed-url`. Items with no audio are skipped.
    show list never leaves the machine); preview before following (`f`); cover art; MPRIS on Linux
    with speed as the playback rate. OPML export (`hark --export`), the hourly refresh
    while open and macOS Now Playing followed on 2026-11-23. Still to do: Windows media controls.
-3. **Best at it.** Chapters (Podcasting 2.0 JSON + ID3 CHAP); synced transcripts; downloads
-   (resumable, keep newest N); per-show speed and intro/outro skip; sleep timer; loudness
-   levelling.
+3. **Best at it. (mostly done, 2026-11-24)** Chapters (Podcasting 2.0 JSON, else ID3 CHAP through
+   symphonia's `id3v2` reader; `c`/`C`); downloads (`d`, resumable with `If-Range` on a strong ETag
+   only, since dynamically inserted ads make every request a different file; `K` keeps the newest
+   1/3/5; played ones delete themselves); per-show speed (`e`) and intro/outro skip (`I`/`E`);
+   sleep timer (`z`, 10 s fade). Still to do: synced transcripts (the link is already kept with
+   the notes), loudness levelling.
 4. **Sync.** gPodder-compatible sync (gpodder.net / Nextcloud) with phone apps like
    AntennaPod; Windows media controls.
 

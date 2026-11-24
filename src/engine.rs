@@ -38,13 +38,31 @@ pub enum Cmd {
 
 #[derive(Debug, PartialEq)]
 pub enum Event {
-    Loaded { duration_s: f64 },
+    /// `chapters`: the ones embedded in the file (ID3 `CHAP`), (start seconds, title), in order.
+    Loaded { duration_s: f64, chapters: Vec<(f64, String)> },
     /// Where playback is, in the episode's own seconds; sent when the whole second changes.
     Position(f64),
     /// true: waiting for the download; false: playing again.
     Buffering(bool),
     Ended,
     Error(String),
+}
+
+/// ID3 chapters, nested groups flattened: (start seconds, title).
+fn chapter_list(g: &symphonia::core::meta::ChapterGroup, out: &mut Vec<(f64, String)>) {
+    use symphonia::core::meta::{ChapterGroupItem, StandardTag};
+    for it in &g.items {
+        match it {
+            ChapterGroupItem::Group(g) => chapter_list(g, out),
+            ChapterGroupItem::Chapter(c) => {
+                let title = c.tags.iter().find_map(|t| match &t.std {
+                    Some(StandardTag::ChapterTitle(s)) => Some(s.trim().to_string()),
+                    _ => None,
+                });
+                out.push((c.start_time.as_secs_f64(), title.unwrap_or_default()));
+            }
+        }
+    }
 }
 
 /// Half a second of audio is decoded ahead; the output asks for more when it drops below a quarter.
@@ -238,9 +256,14 @@ impl Player {
             self.stream = Some(self.open_output(rate, channels)?);
             self.fmt = Some((rate, channels));
         }
+        let mut chapters = Vec::new();
+        if let Some(g) = format.chapters() {
+            chapter_list(g, &mut chapters);
+        }
+        chapters.sort_by(|a, b| a.0.total_cmp(&b.0));
         self.track = Some(Track { format, decoder, id, tb, decoded_s: 0.0, eof: false, net });
         self.buffering = false;
-        self.emit(Event::Loaded { duration_s });
+        self.emit(Event::Loaded { duration_s, chapters });
         self.paused = false;
         self.seek(at_s);
         self.fill(); // queue audio before the output starts, so its first request isn't silence

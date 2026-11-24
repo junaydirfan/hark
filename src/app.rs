@@ -27,7 +27,7 @@ use crate::{
 pub type Url = Rc<str>;
 
 /// Sidebar entries above the shows.
-pub const FIXED: [&str; 4] = ["Inbox", "In progress", "Queue", "Discover"];
+pub const FIXED: [&str; 5] = ["Inbox", "In progress", "Queue", "Downloads", "Discover"];
 /// Shows looked at but not followed are kept this many at a time.
 const PREVIEWS: usize = 8;
 /// Feeds are refreshed at launch when older than this, and on `R`.
@@ -68,6 +68,11 @@ pub enum Msg {
     Preview { url: String, res: Result<Option<Cached>, String> },
     /// Directory results for a cache key ("top:0", "foryou", "search:<q>").
     Cards { key: String, res: Result<Vec<Card>, String> },
+    /// A download moved on (percent), or finished.
+    DlProgress { guid: String, pct: u8 },
+    DlDone { guid: String, show: String, file: String, res: Result<(), String> },
+    /// An episode's chapters file arrived (Podcasting 2.0 JSON).
+    Chapters { guid: String, list: Vec<(f64, String)> },
     /// A newer hark release is out (its tag).
     Update(String),
     /// A cover, encoded for the terminal at `size` cells.
@@ -99,6 +104,7 @@ pub enum Kind {
     Inbox,
     InProgress,
     Queue,
+    Downloads,
     Discover,
     Search(String),
     Show(Url),
@@ -132,6 +138,25 @@ pub struct Now {
     saved_at: f64,
     /// When it was paused, for smart resume on un-pause.
     paused_at: Option<Instant>,
+    /// (start seconds, title), in order: the feed's chapters file, else the file's own.
+    pub chapters: Vec<(f64, String)>,
+}
+
+impl Now {
+    /// The chapter playing: its index and title.
+    pub fn chapter(&self) -> Option<(usize, &str)> {
+        let i = self.chapters.iter().rposition(|(t, _)| *t <= self.pos + 0.5)?;
+        Some((i, self.chapters[i].1.as_str()))
+    }
+}
+
+/// The sleep timer (`z`).
+#[derive(Clone, Copy, PartialEq)]
+pub enum Sleep {
+    /// Pause after this many minutes, at this moment (the volume fades over the last 10 s).
+    Minutes(u64, Instant),
+    /// Stop when this episode ends instead of going on with the queue.
+    EndOfEpisode,
 }
 
 /// `L`: an episode's show notes in place of the table.
@@ -161,8 +186,8 @@ pub struct App {
     pub now: Option<Now>,
     pub prefs: Prefs,
     pub queue: VecDeque<(Url, String)>,
-    /// Inbox, In progress, Queue sizes for the sidebar.
-    pub counts: [usize; 3],
+    /// Inbox, In progress, Queue, Downloads sizes for the sidebar.
+    pub counts: [usize; 4],
     pub notes: Option<Notes>,
     pub help_open: bool,
     pub quit: bool,
@@ -170,6 +195,13 @@ pub struct App {
     pub update: Option<String>,
     /// Per-show settings (episode order), by feed url.
     show_prefs: HashMap<String, store::ShowPrefs>,
+    /// Downloaded episodes: guid → (feed url, file name); and the ones on their way (percent).
+    downloads: HashMap<String, (String, String)>,
+    pub downloading: HashMap<String, u8>,
+    dl_gate: Arc<Semaphore>,
+    /// The speed playing now: the show's own (`e`) or your usual one (`prefs.speed`).
+    pub speed: f32,
+    pub sleep: Option<Sleep>,
     /// Feeds you said no to (`x`): never in For you.
     hidden: std::collections::HashSet<String>,
     /// Shows opened from Discover or Search, not followed.
@@ -209,6 +241,7 @@ fn sort_episodes(show: &mut Show) {
 impl App {
     pub fn new(engine: Engine, tx: UnboundedSender<Msg>, img_picker: Option<Picker>) -> App {
         let prefs = store::load_prefs();
+        let speed = prefs.speed;
         engine.send(Cmd::Speed(prefs.speed));
         engine.send(Cmd::Volume(prefs.volume as f32 / 100.0));
         crate::theme::set(prefs.theme);
@@ -241,13 +274,18 @@ impl App {
             now: None,
             prefs,
             queue,
-            counts: [0; 3],
+            counts: [0; 4],
             notes: None,
             help_open: false,
             quit: false,
             update: None,
             show_prefs: store::load_show_prefs(),
             hidden: store::load_hidden(),
+            speed,
+            sleep: None,
+            downloads: store::load_downloads(),
+            downloading: HashMap::new(),
+            dl_gate: Arc::new(Semaphore::new(2)),
             previews: Vec::new(),
             cards: HashMap::new(),
             cards_loading: Vec::new(),
@@ -348,6 +386,11 @@ impl App {
                 v.into_iter().map(|(_, it)| it).collect()
             }
             Kind::Queue => self.queue.iter().filter_map(|(u, g)| self.locate(u, g)).collect(),
+            Kind::Downloads => {
+                let mut v: Vec<(i64, Item)> = self.downloads.iter().filter_map(|(g, (u, _))| self.locate(u, g)).filter_map(|it| Some((self.episode(&it)?.1.published, it))).collect();
+                v.sort_by_key(|(p, _)| std::cmp::Reverse(*p));
+                v.into_iter().map(|(_, it)| it).collect()
+            }
             Kind::Discover => {
                 let top = format!("top:{}", self.genre);
                 let keys = if self.genre == 0 { vec!["foryou".to_string(), top] } else { vec![top] };
@@ -386,6 +429,7 @@ impl App {
             Kind::Inbox => format!("Inbox · {n} new in the last {INBOX_DAYS} days"),
             Kind::InProgress => format!("In progress · {n}"),
             Kind::Queue => format!("Queue · {n}"),
+            Kind::Downloads => format!("Downloads · {n} · d deletes one · played ones delete themselves"),
             Kind::Discover => {
                 let what = match self.genre_name() {
                     Some(g) => format!("top {g} podcasts"),
@@ -424,7 +468,7 @@ impl App {
         let sel = keep.and_then(|(u, g)| self.view.rows.iter().position(|it| self.key_of(it).is_some_and(|(a, b)| a == u && b == g)));
         let cur = self.view.state.selected().unwrap_or(0);
         self.view.state.select(Some(sel.unwrap_or(cur).min(n.saturating_sub(1))));
-        self.counts = [self.rows_for(&Kind::Inbox).len(), self.rows_for(&Kind::InProgress).len(), self.queue.len()];
+        self.counts = [self.rows_for(&Kind::Inbox).len(), self.rows_for(&Kind::InProgress).len(), self.queue.len(), self.downloads.len()];
     }
 
     fn open(&mut self, kind: Kind) {
@@ -640,7 +684,8 @@ impl App {
             0 => Kind::Inbox,
             1 => Kind::InProgress,
             2 => Kind::Queue,
-            3 => Kind::Discover,
+            3 => Kind::Downloads,
+            4 => Kind::Discover,
             _ => match self.shows.get(i - FIXED.len()) {
                 Some(s) => Kind::Show(s.url.clone()),
                 None => return,
@@ -709,6 +754,31 @@ impl App {
         let (url, res, adding) = match msg {
             Msg::Feed { url, res, adding } => (url, res, adding),
             Msg::Preview { url, res } => return self.on_preview(url, res),
+            Msg::DlProgress { guid, pct } => {
+                self.downloading.insert(guid, pct);
+                return;
+            }
+            Msg::DlDone { guid, show, file, res } => {
+                self.downloading.remove(&guid);
+                let title = self.locate(&show, &guid).and_then(|it| self.episode(&it).map(|(_, e)| e.title.to_string())).unwrap_or_default();
+                match res {
+                    Ok(()) => {
+                        self.downloads.insert(guid, (show, file));
+                        let _ = store::save_downloads(&self.downloads);
+                        self.status = format!("Downloaded {title}.");
+                    }
+                    Err(e) => self.status = format!("Couldn't download {title}: {e}"),
+                }
+                self.rebuild();
+                return;
+            }
+            Msg::Chapters { guid, list } => {
+                // the feed's own chapters beat ones embedded in the file: they're usually richer
+                if let Some(n) = self.now.as_mut().filter(|n| n.guid == guid && !list.is_empty()) {
+                    n.chapters = list;
+                }
+                return;
+            }
             Msg::Update(tag) => {
                 self.update = Some(tag);
                 return;
@@ -790,6 +860,7 @@ impl App {
                     self.save_subs();
                 }
                 self.sort_shows_keeping(adding.then_some(key.as_str()));
+                self.auto_download(&key);
                 crate::trim_heap();
             }
         }
@@ -936,14 +1007,37 @@ impl App {
         let Some((s, e)) = self.episode(item) else { return };
         let (show_url, guid, title, url, dur, show) = (s.url.clone(), e.guid.to_string(), e.title.to_string(), e.url.to_string(), e.duration_s as f64, s.show.title.clone());
         // the episode's own cover is on disk with its notes (a file read, once per play)
-        let art = store::load_extra(&show_url, &guid).and_then(|x| x.image).or_else(|| s.show.image.clone());
+        let extra = store::load_extra(&show_url, &guid).unwrap_or_default();
+        let art = extra.image.or_else(|| s.show.image.clone());
+        if let Some(c) = extra.chapters {
+            let (client, tx, guid) = (self.client.clone(), self.tx.clone(), guid.clone());
+            tokio::spawn(async move {
+                if let Ok(b) = async { client.get(&c).send().await?.error_for_status()?.bytes().await }.await {
+                    let _ = tx.send(Msg::Chapters { guid, list: feed::chapters_json(&b) });
+                }
+            });
+        }
         self.remember();
         let l = self.state.get(&guid).copied().unwrap_or_default();
         let dur = if l.dur > 0.0 { l.dur } else { dur };
         let back = rewind_for(unix_now() - l.updated);
-        let at = if l.played || l.pos <= 0.0 || finished(l.pos, dur) { 0.0 } else { (l.pos - back).max(0.0) };
-        self.engine.send(Cmd::Load { src: url, at_s: at });
+        let mut at = if l.played || l.pos <= 0.0 || finished(l.pos, dur) { 0.0 } else { (l.pos - back).max(0.0) };
+        let sp = self.show_prefs.get(&*show_url).copied().unwrap_or_default();
+        let intro = sp.intro as f64;
+        let skipped = intro > 0.0 && at < intro && (dur <= 0.0 || intro < dur);
+        if skipped {
+            at = intro;
+        }
+        let speed = sp.speed.unwrap_or(self.prefs.speed);
+        if speed != self.speed {
+            self.speed = speed;
+            self.engine.send(Cmd::Speed(speed));
+        }
+        let local = self.downloads.get(&guid).map(|(_, f)| crate::download::dir().join(f)).filter(|p| p.exists());
+        let src = local.map_or(url, |p| p.to_string_lossy().into_owned());
+        self.engine.send(Cmd::Load { src, at_s: at });
         self.status = match (at > 0.0, back > 0.0) {
+            _ if skipped => format!("Skipped the intro ({}).", fmt_s(at)),
             (false, _) => String::new(),
             (true, false) => format!("Resuming at {}.", fmt_s(at)),
             (true, true) => format!("Resuming at {} ({back:.0} s back, for context).", fmt_s(at)),
@@ -952,7 +1046,7 @@ impl App {
             self.queue.remove(q);
             self.save_queue();
         }
-        self.now = Some(Now { show_url, guid: guid.clone(), title, show, duration: dur, pos: at, playing: true, buffering: false, art, saved_at: at, paused_at: None });
+        self.now = Some(Now { show_url, guid: guid.clone(), title, show, duration: dur, pos: at, playing: true, buffering: false, art, saved_at: at, paused_at: None, chapters: Vec::new() });
         // a replayed episode starts unplayed again
         let l = self.state.entry(guid).or_default();
         (l.played, l.pos, l.updated) = (false, at, unix_now());
@@ -985,6 +1079,11 @@ impl App {
         let Some(n) = &mut self.now else { return };
         n.playing = !n.playing;
         if n.playing {
+            // a timer that ran out while paused is done; the fade's volume comes back
+            if matches!(self.sleep, Some(Sleep::Minutes(_, t)) if t <= Instant::now()) {
+                self.sleep = None;
+            }
+            self.engine.send(Cmd::Volume(self.prefs.volume as f32 / 100.0));
             // back from a long pause: a few seconds of context, as when reopening an episode
             let back = n.paused_at.take().map_or(0.0, |t| rewind_for(t.elapsed().as_secs() as i64));
             if back > 0.0 {
@@ -1016,10 +1115,222 @@ impl App {
         self.set_speed_to(self.prefs.speed + delta);
     }
 
+    /// `[` `]`, the media widget: the playing show's own speed when it has one, else your usual.
     fn set_speed_to(&mut self, x: f32) {
-        self.prefs.speed = (x * 10.0).round().clamp(5.0, 30.0) / 10.0;
-        self.engine.send(Cmd::Speed(self.prefs.speed));
-        let _ = store::save_prefs(&self.prefs);
+        self.speed = (x * 10.0).round().clamp(5.0, 30.0) / 10.0;
+        self.engine.send(Cmd::Speed(self.speed));
+        let own = self.now.as_ref().and_then(|n| self.show_prefs.get_mut(&*n.show_url)).filter(|p| p.speed.is_some());
+        match own {
+            Some(p) => {
+                p.speed = Some(self.speed);
+                self.save_show_prefs();
+            }
+            None => {
+                self.prefs.speed = self.speed;
+                let _ = store::save_prefs(&self.prefs);
+            }
+        }
+    }
+
+    fn save_show_prefs(&self) {
+        let _ = store::save_show_prefs(self.show_prefs.iter().map(|(u, p)| (u.as_str(), p)));
+    }
+
+    /// `e`: keep the playing show at the current speed (again: back to your usual one).
+    fn toggle_show_speed(&mut self) {
+        let Some((url, show)) = self.now.as_ref().map(|n| (n.show_url.to_string(), n.show.clone())) else {
+            self.status = "Play an episode first: e keeps its show at its own speed.".into();
+            return;
+        };
+        let p = self.show_prefs.entry(url).or_default();
+        if p.speed.take().is_some() {
+            self.speed = self.prefs.speed;
+            self.engine.send(Cmd::Speed(self.speed));
+            self.status = format!("{show} plays at your usual {:.1}× again.", self.speed);
+        } else {
+            p.speed = Some(self.speed);
+            self.status = format!("{show} keeps {:.1}×; [ ] now change it for this show only (e again: your usual {:.1}×).", self.speed, self.prefs.speed);
+        }
+        self.save_show_prefs();
+    }
+
+    /// `I`: the playing show's intro ends here; every episode starts here from now on. At the
+    /// very start: intros play again.
+    fn mark_intro(&mut self) {
+        let Some((url, show, pos)) = self.now.as_ref().map(|n| (n.show_url.to_string(), n.show.clone(), n.pos)) else {
+            self.status = "Play an episode, and press I where its intro ends.".into();
+            return;
+        };
+        if pos > 600.0 {
+            self.status = "That's over 10 minutes in; press I where the intro ends.".into();
+            return;
+        }
+        let p = self.show_prefs.entry(url).or_default();
+        if pos < 3.0 {
+            p.intro = 0.0;
+            self.status = format!("{show}: intros play again.");
+        } else {
+            p.intro = pos as f32;
+            self.status = format!("{show}: episodes start at {}, after the intro (I in the first seconds: off).", fmt_s(pos));
+        }
+        self.save_show_prefs();
+    }
+
+    /// `E`: the playing show's outro starts here; episodes end this much early from now on. Far
+    /// from the end: outros play again.
+    fn mark_outro(&mut self) {
+        let Some((url, show, left)) = self.now.as_ref().map(|n| (n.show_url.to_string(), n.show.clone(), n.duration - n.pos)) else {
+            self.status = "Play an episode, and press E where its outro starts.".into();
+            return;
+        };
+        if left <= 0.0 || self.now.as_ref().is_some_and(|n| n.duration <= 0.0) {
+            self.status = "This episode's length isn't known yet; try again in a moment.".into();
+            return;
+        }
+        let p = self.show_prefs.entry(url).or_default();
+        if left > 900.0 {
+            p.outro = 0.0;
+            self.status = format!("{show}: outros play again (E is for the last 15 minutes).");
+        } else {
+            p.outro = left as f32;
+            self.status = format!("{show}: episodes end {} early, before the outro (E far from the end: off).", fmt_s(left));
+        }
+        self.save_show_prefs();
+    }
+
+    /// `d`: download the highlighted episode for offline listening; again: delete the download.
+    fn toggle_download(&mut self) {
+        let Some(it) = self.selected_item().cloned() else { return };
+        let Some((s, e)) = self.episode(&it) else {
+            self.status = "d downloads an episode; highlight one.".into();
+            return;
+        };
+        let (show, guid, url, title) = (s.sub.url.clone(), e.guid.to_string(), e.url.to_string(), e.title.to_string());
+        if let Some(p) = self.downloading.get(&guid) {
+            self.status = format!("Already downloading {title} ({p}%).");
+        } else if self.downloads.contains_key(&guid) {
+            self.delete_download(&guid);
+            self.status = format!("Deleted the download of {title}.");
+            self.rebuild();
+        } else {
+            self.start_download(show, guid, url);
+            self.status = format!("Downloading {title}…");
+        }
+    }
+
+    fn start_download(&mut self, show: String, guid: String, url: String) {
+        let file = crate::download::file_name(&guid, &url);
+        self.downloading.insert(guid.clone(), 0);
+        let (client, tx, gate) = (self.client.clone(), self.tx.clone(), self.dl_gate.clone());
+        tokio::spawn(async move {
+            let _permit = gate.acquire().await;
+            let dest = crate::download::dir().join(&file);
+            let last = std::sync::atomic::AtomicU8::new(0);
+            let res = crate::download::fetch(&client, &url, &dest, |done, total| {
+                let pct = (done * 100).checked_div(total).map_or(0, |p| p.min(100) as u8);
+                if last.swap(pct, std::sync::atomic::Ordering::Relaxed) != pct {
+                    let _ = tx.send(Msg::DlProgress { guid: guid.clone(), pct });
+                }
+            })
+            .await;
+            let _ = tx.send(Msg::DlDone { guid, show, file, res });
+        });
+    }
+
+    pub fn is_downloaded(&self, guid: &str) -> bool {
+        self.downloads.contains_key(guid)
+    }
+
+    fn delete_download(&mut self, guid: &str) {
+        if let Some((_, f)) = self.downloads.remove(guid) {
+            let _ = std::fs::remove_file(crate::download::dir().join(f));
+            let _ = store::save_downloads(&self.downloads);
+        }
+    }
+
+    /// A show with `K` set: its newest unplayed episodes, downloaded.
+    pub fn auto_download(&mut self, url: &str) {
+        let keep = self.show_prefs.get(url).map_or(0, |p| p.keep) as usize;
+        let Some(s) = self.shows.iter().find(|s| s.sub.url == url) else { return };
+        let want: Vec<(String, String)> = s
+            .show
+            .episodes
+            .iter()
+            .filter(|e| !self.state.get(&*e.guid).is_some_and(|l| l.played))
+            .take(keep)
+            .filter(|e| !self.downloads.contains_key(&*e.guid) && !self.downloading.contains_key(&*e.guid))
+            .map(|e| (e.guid.to_string(), e.url.to_string()))
+            .collect();
+        for (guid, ep_url) in want {
+            self.start_download(url.to_string(), guid, ep_url);
+        }
+    }
+
+    /// `K` in a show: keep its newest 1 / 3 / 5 episodes downloaded, or none.
+    fn cycle_keep(&mut self) {
+        let Kind::Show(u) = &self.view.kind else {
+            self.status = "Open a show, then K keeps its newest episodes downloaded.".into();
+            return;
+        };
+        let (u, title) = (u.to_string(), self.show(u).map(|s| s.show.title.clone()).unwrap_or_default());
+        let p = self.show_prefs.entry(u.clone()).or_default();
+        p.keep = match p.keep {
+            0 => 1,
+            1 => 3,
+            3 => 5,
+            _ => 0,
+        };
+        let keep = p.keep;
+        self.save_show_prefs();
+        self.status = if keep == 0 { format!("{title}: no automatic downloads.") } else { format!("{title}: keeping the newest {keep} unplayed downloaded (K: more, then off).") };
+        self.auto_download(&u);
+    }
+
+    /// `c` / `C`: the next chapter / back to the start of this one (or the one before, near
+    /// its start).
+    fn chapter_jump(&mut self, dir: i32) {
+        let Some(n) = &self.now else { return };
+        if n.chapters.is_empty() {
+            self.status = "This episode has no chapters.".into();
+            return;
+        }
+        let i = n.chapter().map_or(0, |(i, _)| i);
+        let to = if dir > 0 {
+            n.chapters.get(i + 1).map(|c| c.0)
+        } else if n.pos - n.chapters[i].0 > 3.0 {
+            Some(n.chapters[i].0)
+        } else {
+            Some(n.chapters[i.saturating_sub(1)].0)
+        };
+        match to {
+            Some(t) => self.seek_to(t),
+            None => self.status = "That's the last chapter.".into(),
+        }
+    }
+
+    /// `z`: off → 15 → 30 → 45 → 60 minutes → the end of this episode → off.
+    fn cycle_sleep(&mut self) {
+        let mins = |m: u64| Some(Sleep::Minutes(m, Instant::now() + Duration::from_secs(m * 60)));
+        self.sleep = match self.sleep {
+            None => mins(15),
+            Some(Sleep::Minutes(m, _)) if m < 60 => mins(m + 15),
+            Some(Sleep::Minutes(..)) => Some(Sleep::EndOfEpisode),
+            Some(Sleep::EndOfEpisode) => None,
+        };
+        self.engine.send(Cmd::Volume(self.prefs.volume as f32 / 100.0));
+        self.status = match self.sleep {
+            Some(Sleep::Minutes(m, _)) => format!("Sleep timer: pausing in {m} minutes (z: longer)."),
+            Some(Sleep::EndOfEpisode) => "Sleep timer: stopping when this episode ends.".into(),
+            None => "Sleep timer off.".into(),
+        };
+    }
+
+    /// What the now-playing line shows for the sleep timer.
+    pub fn sleep_label(&self) -> Option<String> {
+        match self.sleep? {
+            Sleep::Minutes(_, t) => Some(format!("☾ {}", fmt_s(t.saturating_duration_since(Instant::now()).as_secs_f64()))),
+            Sleep::EndOfEpisode => Some("☾ end of episode".into()),
+        }
     }
 
     fn set_volume(&mut self, delta: i16) {
@@ -1135,7 +1446,10 @@ impl App {
     pub fn on_engine(&mut self, ev: Event) -> bool {
         let Some(n) = &mut self.now else { return false };
         match ev {
-            Event::Loaded { duration_s } => {
+            Event::Loaded { duration_s, chapters } => {
+                if n.chapters.is_empty() {
+                    n.chapters = chapters;
+                }
                 if duration_s > 0.0 {
                     n.duration = duration_s;
                     self.state.entry(n.guid.clone()).or_default().dur = duration_s;
@@ -1143,28 +1457,59 @@ impl App {
             }
             Event::Position(p) => {
                 n.pos = p;
+                let outro = self.show_prefs.get(&*n.show_url).map_or(0.0, |s| s.outro as f64);
+                if outro > 0.0 && n.duration > 0.0 && p >= n.duration - outro {
+                    // the rest is the outro: stop it and carry on as if it ended
+                    self.engine.send(Cmd::Pause(true));
+                    self.episode_ended();
+                    return true;
+                }
                 if (p - n.saved_at).abs() >= SAVE_EVERY_S {
                     self.remember();
                 }
+                if let Some(Sleep::Minutes(_, t)) = self.sleep {
+                    let left = t.saturating_duration_since(Instant::now()).as_secs_f64();
+                    let vol = self.prefs.volume as f32 / 100.0;
+                    if left <= 0.0 {
+                        self.sleep = None;
+                        self.toggle_pause();
+                        self.engine.send(Cmd::Volume(vol));
+                        self.status = "Sleep timer: paused. Your place is saved.".into();
+                    } else if left < 10.0 {
+                        self.engine.send(Cmd::Volume(vol * left as f32 / 10.0));
+                    }
+                }
             }
             Event::Buffering(b) => n.buffering = b,
-            Event::Ended => {
-                n.playing = false;
-                n.pos = n.duration;
-                let title = n.title.clone();
-                self.state.insert(n.guid.clone(), Listen { pos: 0.0, played: true, updated: unix_now(), dur: n.duration });
-                self.save_state();
-                if !self.play_next() {
-                    self.status = format!("Finished {title}. The queue is empty.");
-                }
-                self.rebuild();
-            }
+            Event::Ended => self.episode_ended(),
             Event::Error(e) => {
                 n.playing = false;
                 self.status = e;
             }
         }
         true
+    }
+
+    /// The playing episode is over (it ended, or its outro began): mark it played, then the
+    /// next in the queue, unless the sleep timer says stop.
+    fn episode_ended(&mut self) {
+        let Some(n) = &mut self.now else { return };
+        n.playing = false;
+        n.pos = n.duration;
+        let title = n.title.clone();
+        let guid = n.guid.clone();
+        self.state.insert(guid.clone(), Listen { pos: 0.0, played: true, updated: unix_now(), dur: n.duration });
+        self.save_state();
+        // a played download has done its job (the engine has the file open already; deleting it
+        // is fine on unix, and on Windows the next play of something else frees it)
+        self.delete_download(&guid);
+        if self.sleep == Some(Sleep::EndOfEpisode) {
+            self.sleep = None;
+            self.status = format!("Finished {title}. Sleep timer: stopped here.");
+        } else if !self.play_next() {
+            self.status = format!("Finished {title}. The queue is empty.");
+        }
+        self.rebuild();
     }
 
     /// Media keys, the desktop's media widget, playerctl.
@@ -1372,6 +1717,14 @@ impl App {
             KeyCode::Char('s') => self.cycle_sort(),
             KeyCode::Char('o') => self.cycle_genre(1),
             KeyCode::Char('x') => self.hide_card(),
+            KeyCode::Char('e') => self.toggle_show_speed(),
+            KeyCode::Char('I') => self.mark_intro(),
+            KeyCode::Char('E') => self.mark_outro(),
+            KeyCode::Char('z') => self.cycle_sleep(),
+            KeyCode::Char('c') => self.chapter_jump(1),
+            KeyCode::Char('d') => self.toggle_download(),
+            KeyCode::Char('K') => self.cycle_keep(),
+            KeyCode::Char('C') => self.chapter_jump(-1),
             KeyCode::Char('M') => self.more_from_author(),
             KeyCode::Char('O') => self.cycle_genre(-1),
             KeyCode::Char('D') => self.unsubscribe(),
