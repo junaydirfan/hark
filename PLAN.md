@@ -117,6 +117,16 @@ second; `kill -9` lost 6 s. Smart resume rewinds 3/10/20 s after a minute/hour/d
 outro (last 30 s) counts as finished. The length the decoder measures replaces the feed's.
 Next: sync with phone apps (gPodder, Phase 4), so your place follows you.
 
+## Recommendations (2026-11-23)
+
+For you weights each followed show by 1 + hours listened (fading by half every 90 days past
+the first 90), spreads that over the show's subgenres (its broad genre counts half), asks for
+the top 4 charts in parallel (12 h disk cache; a failed chart is skipped, a stale copy beats
+none), scores `weight / (1 + rank/10)` summed over charts, × freshness (1 / 0.6 / 0.2 for a
+last episode within 30 / 90 / older days), and picks greedily with each genre damped 15% per
+pick. `x` hides a show for good; `M` searches the maker. The Inbox lifts a show you listen to
+by up to 3 days. All signals are local; Apple sees only chart genres.
+
 ## Targets
 
 Launch to list < 30 ms (from cache) · own RAM < 15 MB with 50 shows / 10k episodes · idle CPU 0 ·

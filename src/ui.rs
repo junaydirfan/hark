@@ -408,6 +408,8 @@ const HELP: [(&str, &[(&str, &str)]); 4] = [
         ("/", "search · paste a feed URL / OPML"),
         ("f", "follow the highlighted show"),
         ("o O", "Discover: next / previous genre"),
+        ("x", "For you: not interested"),
+        ("M", "more from this show's maker"),
         ("s", "sort a show: date / length"),
         ("L", "show notes"),
         ("R", "refresh every show now"),

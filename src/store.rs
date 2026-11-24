@@ -85,14 +85,15 @@ fn clean(s: &str) -> String {
 pub fn save_feed(url: &str, c: &Cached) -> std::io::Result<()> {
     let s = &c.show;
     let mut out = format!(
-        "{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
+        "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
         clean(&c.etag),
         clean(&c.last_modified),
         c.fetched,
         clean(&s.title),
         clean(&s.author),
         clean(s.image.as_deref().unwrap_or("")),
-        clean(&s.categories.join("|"))
+        clean(&s.categories.join("|")),
+        clean(&s.subcategories.join("|"))
     );
     for e in &s.episodes {
         out.push_str(&format!("{}\t{}\t{}\t{}\t{}\t{}\n", clean(&e.guid), e.published, e.duration_s, clean(&e.url), clean(&e.mime), clean(&e.title)));
@@ -105,8 +106,8 @@ pub fn load_feed(url: &str) -> Option<Cached> {
     let mut lines = text.lines();
     let h: Vec<&str> = lines.next()?.split('\t').collect();
     let field = |i: usize| h.get(i).copied().unwrap_or("").to_string();
-    let categories = field(6).split('|').filter(|c| !c.is_empty()).map(str::to_string).collect();
-    let mut show = Show { title: field(3), author: field(4), image: Some(field(5)).filter(|s| !s.is_empty()), categories, ..Default::default() };
+    let list = |i: usize| field(i).split('|').filter(|c| !c.is_empty()).map(str::to_string).collect();
+    let mut show = Show { title: field(3), author: field(4), image: Some(field(5)).filter(|s| !s.is_empty()), categories: list(6), subcategories: list(7), ..Default::default() };
     for l in lines {
         let f: Vec<&str> = l.splitn(6, '\t').collect();
         if let [guid, published, dur, url, mime, title] = f[..] {
@@ -121,9 +122,9 @@ pub fn load_feed(url: &str) -> Option<Cached> {
             });
         }
     }
-    // a cache from before categories were kept (6 fields): forget its validators so the next
-    // refresh fetches the whole feed once instead of getting "not modified"
-    let old = h.len() < 7;
+    // a cache from before (sub)categories were kept (6 or 7 fields): forget its validators so
+    // the next refresh fetches the whole feed once instead of getting "not modified"
+    let old = h.len() < 8;
     let (etag, last_modified) = if old { (String::new(), String::new()) } else { (field(0), field(1)) };
     Some(Cached { show, etag, last_modified, fetched: field(2).parse().unwrap_or(0) })
 }
@@ -284,6 +285,18 @@ pub fn load_show_prefs() -> HashMap<String, ShowPrefs> {
 pub fn save_show_prefs<'a>(prefs: impl Iterator<Item = (&'a str, &'a ShowPrefs)>) -> std::io::Result<()> {
     let text: String = prefs.filter(|(_, p)| **p != ShowPrefs::default()).map(|(u, p)| format!("{}\tsort={}\n", clean(u), p.sort.id())).collect();
     write_atomic(&data_dir().join("show-prefs.tsv"), text.as_bytes())
+}
+
+/// Feeds you said no to in For you (`x`), one url per line.
+pub fn load_hidden() -> std::collections::HashSet<String> {
+    std::fs::read_to_string(data_dir().join("not-interested.txt")).unwrap_or_default().lines().map(str::trim).filter(|l| !l.is_empty()).map(str::to_string).collect()
+}
+
+pub fn save_hidden(h: &std::collections::HashSet<String>) -> std::io::Result<()> {
+    let mut v: Vec<&String> = h.iter().collect();
+    v.sort();
+    let text: String = v.iter().map(|u| format!("{}\n", clean(u))).collect();
+    write_atomic(&data_dir().join("not-interested.txt"), text.as_bytes())
 }
 
 /// `hark --export`: your shows as OPML on stdout, for any other podcast app.

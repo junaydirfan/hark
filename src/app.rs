@@ -56,6 +56,10 @@ pub fn rewind_for(away_s: i64) -> f64 {
 /// The Inbox: unplayed episodes from the last 30 days, newest first.
 const INBOX_DAYS: i64 = 30;
 const INBOX_MAX: usize = 300;
+/// How many genre charts For you mixes.
+const FOR_YOU_CHARTS: usize = 4;
+/// How far the Inbox lifts the episodes of a show you listen to a lot.
+const INBOX_LIFT_S: i64 = 3 * 86400;
 
 pub enum Msg {
     /// A feed fetch finished: Some = new content, None = not modified.
@@ -166,6 +170,8 @@ pub struct App {
     pub update: Option<String>,
     /// Per-show settings (episode order), by feed url.
     show_prefs: HashMap<String, store::ShowPrefs>,
+    /// Feeds you said no to (`x`): never in For you.
+    hidden: std::collections::HashSet<String>,
     /// Shows opened from Discover or Search, not followed.
     previews: Vec<ShowView>,
     /// Directory results this session, by key; and the keys being fetched.
@@ -241,6 +247,7 @@ impl App {
             quit: false,
             update: None,
             show_prefs: store::load_show_prefs(),
+            hidden: store::load_hidden(),
             previews: Vec::new(),
             cards: HashMap::new(),
             cards_loading: Vec::new(),
@@ -321,9 +328,11 @@ impl App {
         match kind {
             Kind::Inbox => {
                 let since = unix_now() - INBOX_DAYS * 86400;
+                // newest first, but the shows you actually listen to are lifted by up to 3 days
+                let lift: HashMap<&str, i64> = self.shows.iter().map(|s| (s.sub.url.as_str(), ((self.affinity(s) - 1.0).clamp(0.0, 5.0) / 5.0 * INBOX_LIFT_S as f64) as i64)).collect();
                 let mut v: Vec<(i64, Item)> = all()
                     .filter(|(_, _, e)| e.published >= since && !listen(&e.guid).played)
-                    .map(|(s, i, e)| (e.published, Item::Ep { show: s.url.clone(), i }))
+                    .map(|(s, i, e)| (e.published + lift.get(s.sub.url.as_str()).copied().unwrap_or(0), Item::Ep { show: s.url.clone(), i }))
                     .collect();
                 v.sort_by_key(|(p, _)| std::cmp::Reverse(*p));
                 v.into_iter().take(INBOX_MAX).map(|(_, it)| it).collect()
@@ -456,27 +465,19 @@ impl App {
         }
         let (client, tx, cc) = (self.client.clone(), self.tx.clone(), self.country.clone());
         if key == "foryou" {
-            // your genres, most common first, from the categories your feeds declare
-            let mut count: HashMap<u32, usize> = HashMap::new();
-            for s in &self.shows {
-                for c in &s.show.categories {
-                    if let Some(g) = discover::genre_id(c) {
-                        *count.entry(g).or_default() += 1;
-                    }
-                }
-            }
-            let mut genres: Vec<(u32, usize)> = count.into_iter().collect();
-            genres.sort_by_key(|(g, n)| (std::cmp::Reverse(*n), *g));
+            // your genres and subgenres, from the categories your feeds declare, by what you listen to
+            let taste: Vec<discover::Taste> = self.shows.iter().map(|s| discover::Taste { weight: self.affinity(s), genres: &s.show.categories, subgenres: &s.show.subcategories }).collect();
+            let genres = discover::taste_genres(&taste, FOR_YOU_CHARTS);
             if genres.is_empty() {
                 self.cards.insert(key, Vec::new());
                 return;
             }
-            let genres: Vec<u32> = genres.into_iter().map(|(g, _)| g).collect();
             let follows: Vec<(String, String)> = self.shows.iter().map(|s| (s.sub.url.clone(), s.show.title.to_lowercase())).collect();
+            let hidden = self.hidden.clone();
             self.cards_loading.push(key.clone());
             tokio::spawn(async move {
-                let followed = |c: &Card| follows.iter().any(|(u, t)| *u == c.feed || *t == c.title.to_lowercase());
-                let res = discover::for_you(&client, &cc, &genres, &followed).await;
+                let skip = |c: &Card| hidden.contains(&c.feed) || follows.iter().any(|(u, t)| *u == c.feed || *t == c.title.to_lowercase());
+                let res = discover::for_you(&client, &cc, &genres, &skip).await;
                 let _ = tx.send(Msg::Cards { key, res });
             });
             return;
@@ -496,6 +497,55 @@ impl App {
         self.cards.remove(&format!("search:{q}")); // a new search asks again
         self.fetch_cards(format!("search:{q}"));
         self.push(Kind::Search(q));
+    }
+
+    /// How much you're into a show: 1 for following it, plus the hours you've listened, the
+    /// last 90 days counting fully and older listening fading by half every 90 days after.
+    fn affinity(&self, s: &ShowView) -> f64 {
+        let now = unix_now();
+        let hours: f64 = s
+            .show
+            .episodes
+            .iter()
+            .filter_map(|e| self.state.get(&e.guid).map(|l| (e, l)))
+            .map(|(e, l)| {
+                let secs = if !l.played { l.pos } else if l.dur > 0.0 { l.dur } else { e.duration_s as f64 };
+                let age_days = (now - l.updated).max(0) as f64 / 86400.0;
+                secs / 3600.0 * 0.5f64.powf((age_days - 90.0).max(0.0) / 90.0)
+            })
+            .sum();
+        1.0 + hours
+    }
+
+    /// `x` on a show card: not for me. It leaves For you now and doesn't come back.
+    fn hide_card(&mut self) {
+        let Some(Item::Show(c)) = self.selected_item().cloned() else {
+            self.status = "x hides a show from For you; pick one in Discover.".into();
+            return;
+        };
+        self.hidden.insert(c.feed.clone());
+        let _ = store::save_hidden(&self.hidden);
+        if let Some(v) = self.cards.get_mut("foryou") {
+            v.retain(|k| k.feed != c.feed);
+        }
+        self.status = format!("{} won't be suggested again.", c.title);
+        self.rebuild();
+    }
+
+    /// `M`: more from the same author or network, through a directory search.
+    fn more_from_author(&mut self) {
+        let author = match self.selected_item() {
+            Some(Item::Show(c)) => c.author.clone(),
+            _ => match &self.view.kind {
+                Kind::Show(u) => self.show(u).map(|s| s.show.author.clone()).unwrap_or_default(),
+                _ => self.selected_item().and_then(|it| self.episode(it)).map(|(s, _)| s.show.author.clone()).unwrap_or_default(),
+            },
+        };
+        if author.trim().is_empty() {
+            self.status = "This show doesn't say who makes it.".into();
+            return;
+        }
+        self.search(author.trim().to_string());
     }
 
     fn sort_of(&self, url: &str) -> feed::Sort {
@@ -1320,6 +1370,8 @@ impl App {
             KeyCode::Char('f') => self.follow(),
             KeyCode::Char('s') => self.cycle_sort(),
             KeyCode::Char('o') => self.cycle_genre(1),
+            KeyCode::Char('x') => self.hide_card(),
+            KeyCode::Char('M') => self.more_from_author(),
             KeyCode::Char('O') => self.cycle_genre(-1),
             KeyCode::Char('D') => self.unsubscribe(),
             _ => {}
