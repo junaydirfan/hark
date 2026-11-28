@@ -43,6 +43,13 @@ fn finished(pos: f64, dur: f64) -> bool {
     dur > 0.0 && pos >= dur - NEAR_END_S
 }
 
+/// Whether a directory card is a show you follow. Apple's feed address isn't always the one you
+/// subscribed with (The Daily has two), so title plus author also counts; title alone doesn't,
+/// since different shows share names.
+fn same_show(url: &str, title: &str, author: &str, c: &Card) -> bool {
+    url == c.feed || (title.eq_ignore_ascii_case(&c.title) && author.eq_ignore_ascii_case(&c.author))
+}
+
 /// Smart resume: how far to go back when you come back to an episode, so you hear the end of
 /// the sentence again. The longer you were away, the more context you need.
 pub fn rewind_for(away_s: i64) -> f64 {
@@ -324,10 +331,8 @@ impl App {
         self.shows.iter().any(|s| *s.url == *url)
     }
 
-    /// Apple's feed address isn't always the one you subscribed with (The Daily has two), so
-    /// a directory card also counts as followed when the title matches.
     pub fn follows(&self, c: &Card) -> Option<Url> {
-        self.shows.iter().find(|s| s.sub.url == c.feed || s.show.title.eq_ignore_ascii_case(&c.title)).map(|s| s.url.clone())
+        self.shows.iter().find(|s| same_show(&s.sub.url, &s.show.title, &s.show.author, c)).map(|s| s.url.clone())
     }
 
     pub fn episode(&self, item: &Item) -> Option<(&ShowView, &Episode)> {
@@ -516,11 +521,11 @@ impl App {
                 self.cards.insert(key, Vec::new());
                 return;
             }
-            let follows: Vec<(String, String)> = self.shows.iter().map(|s| (s.sub.url.clone(), s.show.title.to_lowercase())).collect();
+            let follows: Vec<(String, String, String)> = self.shows.iter().map(|s| (s.sub.url.clone(), s.show.title.clone(), s.show.author.clone())).collect();
             let hidden = self.hidden.clone();
             self.cards_loading.push(key.clone());
             tokio::spawn(async move {
-                let skip = |c: &Card| hidden.contains(&c.feed) || follows.iter().any(|(u, t)| *u == c.feed || *t == c.title.to_lowercase());
+                let skip = |c: &Card| hidden.contains(&c.feed) || follows.iter().any(|(u, t, a)| same_show(u, t, a, c));
                 let res = discover::for_you(&client, &cc, &genres, &skip).await;
                 let _ = tx.send(Msg::Cards { key, res });
             });
@@ -1890,6 +1895,14 @@ mod tests {
         assert_eq!(fmt_date(86400), "1970-01-02");
         assert_eq!(fmt_date(1582957800), "2020-02-29");
         assert_eq!(fmt_date(feed::rfc2822("Wed, 31 Dec 2025 23:00:00 GMT").unwrap()), "2025-12-31");
+    }
+
+    #[test]
+    fn same_name_different_show() {
+        let c = Card { title: "The Daily".into(), author: "The New York Times".into(), feed: "apple".into(), genre: String::new(), episodes: 0, updated: 0, explicit: false, tag: String::new() };
+        assert!(same_show("apple", "x", "y", &c), "same feed");
+        assert!(same_show("mine", "the daily", "The New York Times", &c), "moved feed, same show");
+        assert!(!same_show("mine", "The Daily", "Someone Else", &c), "same name, other show");
     }
 
     #[test]
